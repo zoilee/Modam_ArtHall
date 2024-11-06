@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="../bootstrap.min.css">
+    <script src="../bootstrap.bundle.min.js"></script>
+    <script src="../popper.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>회원가입</h1>
+        <div class="py-3 px-3">
+            <form action="/register" method="POST" id="register-form">
+                <label for="name">이름</label>
+                <input type="text" id="name" name="name" placeholder="이름을 입력하세요" class="form-control col-md-9">
+        
+                <label for="userid">아이디</label>
+                <div class="userid-field row">
+                    <input type="text" id="userid" name="userid" placeholder="아이디를 입력하세요" class="form-control col-md-8">
+                    <button type="button" class="btn btn-primary duplicate-check-btn">중복확인</button>
+                </div>
+        
+                <label for="password">비밀번호</label>
+                <input type="password" id="password" name="password" placeholder="비밀번호를 입력하세요" class="form-control col-md-9">
+        
+                <label for="confirm_password">비밀번호 확인</label>
+                <input type="password" id="confirm_password" name="confirm_password" placeholder="비밀번호를 확인하세요" class="form-control col-md-9">
+        
+                <label for="email">이메일</label>
+                <input type="text" id="email" name="email" placeholder="이메일" class="form-control col-md-9">
+        
+                <label for="phone">연락처</label>
+                    <div class="phone row">
+                        <input type="text" class="form-control col-md-3 mx-1" id="phone1" name="phone1" value="010" maxlength="3">
+                        <input type="text" class="form-control col-md-3 mx-1" id="phone2" name="phone2" maxlength="4">
+                        <input type="text" class="form-control col-md-3 mx-1" id="phone3" name="phone3" maxlength="4">
+                    </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

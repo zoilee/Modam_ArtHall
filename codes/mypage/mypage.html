@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <section class="user-mypage">
+        <h1>어서오세요 {user} 고객님!</h1>
+        <div class="mypage-point">
+            <h3>고객님의 적립금 현황</h3>
+            <div class="mypage-point-view">
+                <p id="mypage-user-point">{userPoint}</p>
+                <p>포인트</p>
+            </div>   
+        </div>
+        <h1>예매내역</h1>
+        <div class="mypage-history">
+            <div class="mypage-history-img">
+                이미지
+            </div>
+            <div class="mypage-history-detail">
+                <label for="showTitle">관람공연</label>
+                <p name="showTitle">{showTitle}</p>
+                <label for="viewDate">관람일자/시간</label>
+                <p name="viewDate">{viewDate}</p>
+                <label for="tickets">인원</label>
+                <p name="tickets">{tickets}</p>
+                <label for="reservationCode">예매번호</label>
+                <p name="reservationCode">{reservationCode}</p>
+            </div>
+        </div>
+        <h1>고객정보</h1>
+        <div class="mypage-userinfo">
+            <label for="name">이름</label>
+            <p name="name">{name}</p>
+            <label for="email">이메일</label>
+            <p name="email">{email}</p>
+            <label for="phone">전화번호</label>
+            <p name="phone">{phone}</p>
+            <button type="button" class="btn btn-primary">회원정보수정</button>
+        </div>
+    </section>
+</body>
+</html>
