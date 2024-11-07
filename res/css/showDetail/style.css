@@ -46,3 +46,21 @@ html, body {
 #sd_scrollToTopBtn:hover {
     background-color: #0056b3;
 }
+/* 반응형 스타일 */
+@media (max-width: 768px) {
+    #sd_scrollToTopBtn {
+        bottom: 60px; /* 모바일 환경에서 조금 위로 */
+        right: 20px;  /* 화면의 오른쪽 가장자리로 이동 */
+        padding: 8px 12px; /* 버튼 크기 축소 */
+        font-size: 16px; /* 버튼 아이콘 크기 축소 */
+    }
+}
+
+@media (max-width: 480px) {
+    #sd_scrollToTopBtn {
+        bottom: 50px; /* 더 위로 */
+        right: 20px;
+        padding: 6px 10px; /* 더 작게 */
+        font-size: 14px;
+    }
+}
