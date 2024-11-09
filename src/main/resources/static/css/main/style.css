@@ -1,0 +1,27 @@
+.hero {
+    height: 800px;
+    background-color: #ccc;
+}
+.m_carousel-item {
+    padding: 20px 0;
+}
+.m_showcase-item {
+    background-color: #e0e0e0;
+    padding: 15px;
+    text-align: center;
+}
+.m_showcase-item img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+.m_announcement-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+    font-size: 1rem;
+}
+.m_announcement-item:last-child {
+    border-bottom: none;
+}

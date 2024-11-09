@@ -1,0 +1,29 @@
+#포트
+server:
+  port: 8082
+
+spring: 
+  #database 연동
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/modam?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
+    username: root
+    password: 4986
+  thymeleaf:
+    cache: false
+    check-template-location: true
+    prefix: classpath:/templates/   # 기본 폴더 위치
+    suffix: .html                   # 파일 확장자
+    enabled: true
+  devtools:
+    restart: 
+       enabled: true
+    livereload:
+       enabled: true   
+  #spring data jpa 설정  MySQL5InnoDBDialect(mysql5 버전)
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect  
+    open-in-view: false
+    show-sql: true
+    hibernate: 
+       ddl-auto: update  

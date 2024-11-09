@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>포인트 및 예매내역</title>
+    <!-- 스타일 시트 -->
+    <link rel="stylesheet" th:href="@{/css/layout/style.css}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- 헤더 -->
+    <th:block th:replace="fragments/header :: headerFragment"></th:block>
+    <!-- Welcome Section -->
+    <div class="container mt-4">
+        <div class="row align-items-center">
+            <div class="col-8">
+                <h4>어서오세요 user 고객님!</h4>
+            </div>
+            <div class="col-4 text-end">
+                <button class="btn btn-secondary">개인정보수정</button>
+            </div>
+        </div>
+
+        <!-- Points Section -->
+        <div class="row mt-3 bg-light p-4">
+            <div class="col-5 text-center">
+                <h5>고객님의 적립금 현황</h5>
+            </div>
+            <div class="col-2 text-center">
+                <h5>|</h5>
+            </div>
+            <div class="col-5 text-center">
+                <h5>NNNN 포인트</h5>
+            </div>
+        </div>
+
+        <!-- Reservation History -->
+        <h5 class="mt-4">예매내역</h5>
+        <div class="row mt-2 bg-light p-4 align-items-center">
+            <div class="col-3">
+                <div class="bg-secondary" style="width: 100%; height: 150px;"></div>
+            </div>
+            <div class="col-9">
+                <div class="row mb-2">
+                    <div class="col-4"><strong>공연제목</strong>:</div>
+                    <div class="col-6 text-center">title</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-4"><strong>관람일자</strong>:</div>
+                    <div class="col-6 text-center">yyyy-MM-dd</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-4"><strong>시간</strong>:</div>
+                    <div class="col-6 text-center">hh:mm ~ hh:mm</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-4"><strong>인원</strong>:</div>
+                    <div class="col-6 text-center">N</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-4"><strong>예매번호</strong>:</div>
+                    <div class="col-6 text-center">rnumber</div>
+                </div>
+            </div>
+        </div>
+
+
+        <h5 class="mt-4">이전 예매내역</h5>
+        <div class="row mt-2 bg-light p-4 align-items-center">
+            <div class="col-3">
+                <div class="bg-secondary" style="width: 100%; height: 150px;"></div>
+            </div>
+            <div class="col-9">
+                <div class="row mb-2">
+                    <div class="col-4"><strong>공연제목</strong>:</div>
+                    <div class="col-6 text-center">title</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-4"><strong>관람일자</strong>:</div>
+                    <div class="col-6 text-center">yyyy-MM-dd</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-4"><strong>시간</strong>:</div>
+                    <div class="col-6 text-center">hh:mm ~ hh:mm</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-4"><strong>인원</strong>:</div>
+                    <div class="col-6 text-center">N</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-4"><strong>예매번호</strong>:</div>
+                    <div class="col-6 text-center">rnumber</div>
+                </div>
+            </div>
+        </div>
+    </div>
+<!-- 푸터 가져오기 -->
+<th:block th:replace="fragments/footer :: footerFragment"></th:block>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
