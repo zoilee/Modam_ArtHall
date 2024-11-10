@@ -46,13 +46,18 @@ public class HomeController {
         return "noticeView";
     }
 
+@GetMapping("/seatSelect")
+    public String seatSelect(){
+        return "seatSelect";
+    }
+
 @GetMapping("/reservConfirm")
     public String reservConfirm(){
         return "reservConfirm";
     }
-    
-@GetMapping("/seatSelect")
-    public String seatSelect(){
-        return "seatSelect";
+
+@GetMapping("/reservForm")
+    public String reservForm(){
+        return "reservForm";
     }
 }
