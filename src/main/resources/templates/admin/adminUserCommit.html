@@ -11,7 +11,7 @@
 </head>
 <body>
     <!-- 헤더 -->
-    <th:block th:replace="fragments/header :: headerFragment"></th:block>
+    <th:block th:replace="~{fragments/header :: headerFragment}"></th:block>
 
         <!-- 콘텐츠 부분 (회원 관리) -->
         <div class="content container my-5" style="padding-top: 100px;">
@@ -50,6 +50,6 @@
     </div>
    
    <!-- 푸터 가져오기 -->
-<th:block th:replace="fragments/footer :: footerFragment"></th:block> 
+<th:block th:replace="~{fragments/footer :: footerFragment}"></th:block> 
 </body>
 </html>

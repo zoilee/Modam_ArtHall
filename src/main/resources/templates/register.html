@@ -11,7 +11,7 @@
 </head>
 <body>
  <!-- 헤더 -->
- <th:block th:replace="fragments/header :: headerFragment"></th:block>
+ <th:block th:replace="~{fragments/header :: headerFragment}"></th:block>
     <!-- Main Form Section -->
     <div class="container my-5">
         <div class="row justify-content-center">
@@ -21,37 +21,39 @@
                         <h5>회원정보입력</h5>
                     </div>
                     <div class="card-body">
-                        <form>
+                        <form th:action="@{/register}" th:object="${userDto}" method="post">
                             <div class="form-group">
                                 <label for="userid">아이디</label>
-                                <input type="text" class="form-control" id="userid" placeholder="아이디">
+                                <input type="text" th:field="*{userId}" class="form-control" id="userid" placeholder="아이디">
                             </div>
                             <div class="form-group">
                                 <label for="password">비밀번호</label>
-                                <input type="password" class="form-control" id="password" placeholder="비밀번호">
+                                <input type="password" th:field="*{password}" class="form-control" id="password" placeholder="비밀번호">
                             </div>
                             <div class="form-group">
                                 <label for="name">이름</label>
-                                <input type="text" class="form-control" id="name" placeholder="이름">
+                                <input type="text" th:field="*{name}" class="form-control" id="name" placeholder="이름">
                             </div>
                             <div class="form-group">
                                 <label for="email">이메일</label>
-                                <input type="email" class="form-control" id="email" placeholder="이메일">
+                                <input type="email" th:field="*{email}" class="form-control" id="email" placeholder="이메일">
                             </div>
                             <div class="form-group">
                                 <label for="phone">전화번호</label>
-                                <input type="tel" class="form-control" id="phone" placeholder="전화번호">
+                                <input type="tel" th:field="*{phoneNumber}" class="form-control" id="phone" placeholder="전화번호">
                             </div>
                             <button type="submit" class="btn btn-primary btn-block">제출하기</button>
                             <button type="reset" class="btn btn-secondary btn-block">취소</button>
                         </form>
+                        <!-- 에러 메시지 표시 -->
+                        <p th:if="${error}" th:text="${error}" class="text-danger"></p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 <!-- 푸터 가져오기 -->
-<th:block th:replace="fragments/footer :: footerFragment"></th:block>
+<th:block th:replace="~{fragments/footer :: footerFragment}"></th:block>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

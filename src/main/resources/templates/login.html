@@ -11,7 +11,7 @@
 </head>
 <body>
     <!-- 헤더 -->
-    <th:block th:replace="fragments/header :: headerFragment"></th:block>
+    <th:block th:replace="~{fragments/header :: headerFragment}"></th:block>
         <!-- 메인 컨테이너 -->
         <div class="container-fluid full-height d-flex flex-column">
             <div class="row">
@@ -45,7 +45,7 @@
             </div>
         </div>
 <!-- 푸터 가져오기 -->
-<th:block th:replace="fragments/footer :: footerFragment"></th:block>
+<th:block th:replace="~{fragments/footer :: footerFragment}"></th:block>
 <!-- Bootstrap JS, Popper.js, and jQuery -->
 <!-- <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>

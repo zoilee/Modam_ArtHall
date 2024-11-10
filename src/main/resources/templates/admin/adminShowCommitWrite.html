@@ -10,7 +10,7 @@
 <body>
 
      <!-- 헤더 -->
-     <th:block th:replace="fragments/header :: headerFragment"></th:block>
+     <th:block th:replace="~{fragments/header :: headerFragment}"></th:block>
 
     <div class="content container my-5" style="padding-top: 100px;">
         <h2 class="mb-4" style="color: black; font-weight: bold;">공연관리</h2>
@@ -77,6 +77,6 @@
 
 
     <!-- 푸터 가져오기 -->
-<th:block th:replace="fragments/footer :: footerFragment"></th:block>  
+<th:block th:replace="~{fragments/footer :: footerFragment}"></th:block>  
 </body>
 </html>

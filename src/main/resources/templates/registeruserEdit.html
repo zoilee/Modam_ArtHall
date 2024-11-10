@@ -12,7 +12,7 @@
     <script th:src="@{/js/popper.min.js}"></script>
     <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 <!-- 헤더 -->
-<th:block th:replace="fragments/header :: headerFragment"></th:block>
+<th:block th:replace="~{fragments/header :: headerFragment}"></th:block>
     <div class="container">
         <h1>회원가입</h1>
         <div class="py-3 px-3">
@@ -45,6 +45,6 @@
         </div>
     </div>
 <!-- 푸터 가져오기 -->
-<th:block th:replace="fragments/footer :: footerFragment"></th:block>
+<th:block th:replace="~{fragments/footer :: footerFragment}"></th:block>
 </body>
 </html>

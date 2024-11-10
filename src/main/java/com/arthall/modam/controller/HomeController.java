@@ -21,11 +21,6 @@ public class HomeController {
         return "mypage";
     }
 
-@GetMapping("/register")
-    public String register(){
-        return "register";
-    }
-
 @GetMapping("/registeruserEdit")
     public String registeruserEdit(){
         return "registeruserEdit";
