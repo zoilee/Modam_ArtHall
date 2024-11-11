@@ -22,7 +22,7 @@ public class UserService {
     public void registerUser(UserDto userDto) {
         // UserDto를 UserEntity로 변환
         UserEntity userEntity = new UserEntity();
-        userEntity.setUserId(userDto.getUserId());
+        userEntity.setLoginId(userDto.getLoginId());
         userEntity.setPassword(passwordEncoder.encode(userDto.getPassword())); // 비밀번호 암호화
         userEntity.setName(userDto.getName());
         userEntity.setEmail(userDto.getEmail());
@@ -30,5 +30,17 @@ public class UserService {
 
         // 데이터베이스에 저장
         userRepository.save(userEntity);
+    }
+
+    // 로그인
+    public boolean login(String loginId, String rawPassword){
+        UserEntity user = userRepository.findByLoginId(loginId);
+
+        if (user != null && passwordEncoder.matches(rawPassword, user.getPassword())) {
+            // 로그인 성공
+            return true;
+        }
+        // 로그인 실패
+        return false;
     }
 }
