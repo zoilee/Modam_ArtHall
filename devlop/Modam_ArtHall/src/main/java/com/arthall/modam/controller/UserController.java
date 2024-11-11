@@ -2,6 +2,7 @@ package com.arthall.modam.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,6 +11,7 @@ import com.arthall.modam.dto.UserDto;
 import com.arthall.modam.service.UserService;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 
 @Controller
 public class UserController {
@@ -29,21 +31,30 @@ public class UserController {
 
     // 회원가입 처리
     @PostMapping("/register")
-    public String registerUser(@ModelAttribute UserDto userDto, Model model) {
-        // 필수 필드 검증
-        if (userDto.getLoginId() == null || userDto.getPassword() == null || userDto.getName() == null ||
-            userDto.getEmail() == null || userDto.getPhoneNumber() == null ||
-            userDto.getLoginId().isEmpty() || userDto.getPassword().isEmpty() || 
-            userDto.getName().isEmpty() || userDto.getEmail().isEmpty() || 
-            userDto.getPhoneNumber().isEmpty()) {
-            
-            model.addAttribute("error", "모든 필수 항목을 입력해 주세요.");
-            return "register";
+    public String registerUser(@Valid UserDto userDto, BindingResult bindingResult, Model model) {
+        
+        if(bindingResult.hasErrors()){
+
+            return "/register";
         }
 
-        // 회원가입 처리
         userService.registerUser(userDto);
         return "redirect:/login";
+        
+        // 필수 필드 검증
+        // if (userDto.getLoginId() == null || userDto.getPassword() == null || userDto.getName() == null ||
+        //     userDto.getEmail() == null || userDto.getPhoneNumber() == null ||
+        //     userDto.getLoginId().isEmpty() || userDto.getPassword().isEmpty() || 
+        //     userDto.getName().isEmpty() || userDto.getEmail().isEmpty() || 
+        //     userDto.getPhoneNumber().isEmpty()) {
+            
+        //     model.addAttribute("error", "모든 필수 항목을 입력해 주세요.");
+        //     return "register";
+        // }
+
+        // // 회원가입 처리
+        // userService.registerUser(userDto);
+        // return "redirect:/login";
     }
     // 로그인 폼 표시
     @GetMapping("/login")
