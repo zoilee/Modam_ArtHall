@@ -1,0 +1,82 @@
+@import url("https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css");
+
+/**************** 헤더 ********************/
+.header-container {
+    max-width: 100%;
+    height: 100px;
+    background-color: #ffffff; /* 헤더 배경을 하얀색으로 설정 */
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1030; /* 부트스트랩의 고정 네비게이션 바와 같은 레벨 */
+}
+.logo-img {
+    height: 100%;
+    max-width: 100%; /* 로고가 부모 요소의 너비를 넘지 않도록 설정 */
+    height: auto; 
+    object-fit: contain;
+}
+
+.content{
+    margin-top: 100px;
+}
+/**************** 푸터 *******************/
+
+/* 전체 푸터 스타일 */
+.custom-footer {
+    max-width: 100%;
+    height: 225px;
+    display: flex;
+}
+/* 왼쪽 영역 스타일 */
+.footer-left {
+    display: flex;
+    flex-direction: row; /* 로고와 텍스트를 가로로 배치 */
+    align-items: center;
+    color: #333;
+    background-color: #d3d3d3;
+    padding-right: 40px;
+    }
+.footer-logo {
+    margin-right: 100px; /* 로고와 텍스트 사이의 간격 */
+    margin-left: 100px;
+}
+.footer-info p {
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 5px 0;
+}
+.footer-info a {
+    color: #333;
+    text-decoration: none;
+}
+.footer-info a:hover {
+    text-decoration: underline;
+}
+/* 오른쪽 영역 스타일 */
+.footer-right {
+    flex: 1;
+    background-color: #777777;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start; /* 텍스트를 왼쪽 정렬로 변경 */
+    text-align: left; /* 텍스트의 내부 정렬도 왼쪽으로 설정 */
+    padding-left: 40px; /* 왼쪽 여백 추가 */
+}
+.footer-right h5 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+.footer-right p {
+    font-size: 18px;
+    margin: 5px 0;
+}
+.footer-slogan {
+    font-style: italic;
+    margin-top: 10px;
+    font-size: 13px;
+    color: #555;
+}

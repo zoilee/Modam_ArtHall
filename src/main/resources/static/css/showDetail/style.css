@@ -1,0 +1,66 @@
+
+/* 컨테이너 전체 높이 설정 */
+.full-height {
+    min-height: 100vh;
+}
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    overflow-x: hidden;
+}
+.sd_info-section {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: left; 
+}
+.sd_comment-box {
+    border: 1px solid #ddd;
+    padding: 10px;
+    background-color: #f8f9fa;
+}
+.sd_comment-author {
+    font-weight: bold;
+    margin-right: 10px;
+}
+.sd_comment-timestamp {
+    font-size: 0.85em;
+    color: #888;
+}
+#sd_scrollToTopBtn {
+    position: fixed;
+    bottom: 80px;
+    right: 170px;
+    display: none; /* 스크롤할 때만 보이도록 */
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+    z-index: 1000;
+}
+#sd_scrollToTopBtn:hover {
+    background-color: #0056b3;
+}
+/* 반응형 스타일 */
+@media (max-width: 768px) {
+    #sd_scrollToTopBtn {
+        bottom: 60px; /* 모바일 환경에서 조금 위로 */
+        right: 20px;  /* 화면의 오른쪽 가장자리로 이동 */
+        padding: 8px 12px; /* 버튼 크기 축소 */
+        font-size: 16px; /* 버튼 아이콘 크기 축소 */
+    }
+}
+
+@media (max-width: 480px) {
+    #sd_scrollToTopBtn {
+        bottom: 50px; /* 더 위로 */
+        right: 20px;
+        padding: 6px 10px; /* 더 작게 */
+        font-size: 14px;
+    }
+}

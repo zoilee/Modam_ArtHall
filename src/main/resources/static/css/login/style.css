@@ -1,0 +1,12 @@
+@charset "UTF-8";
+    /* 컨테이너 전체 높이 설정 */
+    .full-height {
+        min-height: 100vh;
+    }
+    html, body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        overflow-x: hidden;
+    }
+    
