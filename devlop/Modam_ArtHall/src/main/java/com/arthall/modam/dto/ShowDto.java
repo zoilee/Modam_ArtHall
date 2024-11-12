@@ -1,14 +1,14 @@
 package com.arthall.modam.dto;
 
-import java.sql.Date;
+import java.time.LocalDate;
+import java.util.List;
 
 import lombok.Data;
 
 @Data
 public class ShowDto {
     private int showId;
-    private Date showDate;
+    private LocalDate showDate;
     private int showTime;
     private int seatLimit;
-    private int seatAvail;
 }
