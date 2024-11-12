@@ -11,24 +11,36 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-
-     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    //Spring Security 6.1 버전부터 csrf().disable() 메서드가 더 이상 권장되지 않으며 제거될 예정이라는 경고 메시지
-    //실행해도 문제는 없으나 경고는 계속 뜰 수 있음
+    
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .authorizeHttpRequests((requests) -> requests
-                .requestMatchers("/**").permitAll() // 모든 요청에 대해 인증 없이 접근 허용
+            .csrf(csrf -> csrf.disable())  // Lambda DSL로 CSRF 보호 비활성화
+            .authorizeHttpRequests(authorize -> authorize
+                .requestMatchers("/", "/noticeList", "/showDetail", "/reservForm", "/noticeView", "/register", "/login", "/css/**", "/js/**", "/imgs/**").permitAll()  // 로그인, 회원가입 페이지와 정적 리소스는 모두 접근 가능하게 설정
+                .requestMatchers("/admin/**").hasRole("ADMIN")  // /admin 경로는 ADMIN 역할만 접근 가능
+                .anyRequest().authenticated()  // 그 외 모든 요청은 인증 필요
             )
-            .csrf().disable(); // CSRF 보호 비활성화 (개발 중 일시적으로 비활성화)
-
+            .formLogin(form -> form
+                .loginPage("/login")  // 사용자 정의 로그인 페이지
+                .loginProcessingUrl("/login")  // 로그인 폼의 action URL
+                .defaultSuccessUrl("/")  // 로그인 성공 시 이동할 기본 URL
+                .failureUrl("/login?error=true")  // 로그인 실패 시 이동할 URL
+                .usernameParameter("loginId")  // 로그인 아이디 파라미터 이름 설정
+                .passwordParameter("password")  // 비밀번호 파라미터 이름 설정
+            )
+            .logout(logout -> logout
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/login?logout=true")  // 로그아웃 성공 시 이동할 URL
+                .invalidateHttpSession(true)  // 세션 무효화
+            );
+        
         return http.build();
     }
 
-
+    // 비밀번호 암호화 빈 설정
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 }
