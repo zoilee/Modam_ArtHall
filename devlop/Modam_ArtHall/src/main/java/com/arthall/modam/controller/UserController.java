@@ -53,7 +53,6 @@ public class UserController {
         userService.registerUser(userDto);
         return "redirect:/login";
     }
-
     // 로그인 폼 표시
     @GetMapping("/login")
     public String showLoginForm(Model model) {
