@@ -50,6 +50,17 @@
             </div>
 
             <div class="row mb-3">
+                <label for="location" class="col-sm-2 col-form-label ms-4">상영관</label>
+                <div class="col-sm-4">
+                    <select class="form-control" id="location">
+                        <option value="" disabled selected>상영관 선택</option>
+                        <option value="theater1">상영관 1</option>
+                        <option value="theater2">상영관 2</option>                     
+                    </select>
+                </div>
+            </div>
+
+            <div class="row mb-3">
                 <label for="poster" class="col-sm-2 col-form-label ms-4">포스터</label>
                 <div class="col-sm-7">
                     <input type="file" class="form-control" id="poster">
@@ -77,6 +88,10 @@
 
 
     <!-- 푸터 가져오기 -->
-<th:block th:replace="~{fragments/footer :: footerFragment}"></th:block>  
+<th:block th:replace="~{fragments/footer :: footerFragment}"></th:block>
 </body>
+<script>
+ 
+
+</script>
 </html>

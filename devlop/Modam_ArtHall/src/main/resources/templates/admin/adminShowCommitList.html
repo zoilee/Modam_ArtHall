@@ -17,30 +17,34 @@
             <h2 class="mb-4">공연관리</h2>
             <div class="table-responsive">
                 <table class="table table-bordered text-center align-middle">
+                    
                     <thead>
                         <tr>
-                            <th>번호</th> <!-- db부분-->
+                            <th >번호</th> <!-- db부분-->
                             <th>공연제목</th> <!-- db부분-->
                             <th>등록일</th> <!-- db부분-->
                             <th>수정/삭제</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>{num}</td> <!-- db부분-->
-                            <td>{showTitle}</td> <!-- db부분-->
-                            <td>nnnn.nn.nn</td> <!-- db부분-->
+                        <!-- loop -->
+                        <tr th:each="bbs: ${performances}">
+                            <td th:text="${bbs.id}"></td> <!-- db부분-->
+                            <td th:text="${bbs.title}"></td> <!-- db부분-->
+                            <td th:text="${bbs.createdAt}"></td> <!-- db부분-->
                             <td>
                                 <button class="btn btn-primary btn-sm me-2">수정</button>
                                 <button class="btn btn-danger btn-sm">삭제</button>
                             </td>
                         </tr>
+                        <!-- /loop -->
                         <!-- Repeat similar rows as needed -->
                     </tbody>
+                    
                 </table>
             </div>
             <div class="text-end">
-                <button class="btn btn-secondary mt-3">등록하기</button>
+                <button class="btn btn-secondary mt-3"><a href="showCommitWrite" style="text-decoration: none; color: white;">등록하기</a></button>
             </div>
         </div>
 
