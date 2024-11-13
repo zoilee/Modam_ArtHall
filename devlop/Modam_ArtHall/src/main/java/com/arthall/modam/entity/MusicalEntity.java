@@ -25,7 +25,7 @@ public class MusicalEntity {
     private int musicalAValue;
 
     @OneToMany(mappedBy = "musical")
-    private List<ShowDto> shows;  // 여러 회차를 가질 수 있음
+    private List<ShowEntity> shows;  // 여러 회차를 가질 수 있음
 
     // getters and setters
 }

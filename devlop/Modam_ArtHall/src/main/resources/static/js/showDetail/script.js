@@ -27,3 +27,15 @@ function scrollToTop() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+$(document).ready(function(){
+    $("#toReserveForm").click(function(){
+        $.ajax({
+            url:'/modam/reservForm',
+            method: 'POST',
+            data: JSON.stringify({
+                musicalId: musicalIdVal,
+                
+            })
+        })
+    })
+})

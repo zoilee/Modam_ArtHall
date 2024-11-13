@@ -1,7 +1,6 @@
 package com.arthall.modam.dto;
 
 import java.time.LocalDate;
-import java.util.List;
 
 import lombok.Data;
 
