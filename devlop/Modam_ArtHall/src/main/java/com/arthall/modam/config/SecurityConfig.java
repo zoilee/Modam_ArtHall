@@ -34,8 +34,13 @@ public class SecurityConfig {
                 .logoutSuccessUrl("/")  // 로그아웃 성공 시 이동할 URL
                 .invalidateHttpSession(true)  // 세션 무효화
                 .permitAll()
+            )
+            .oauth2Login(oauth2 -> oauth2
+                .loginPage("/login")  // OAuth2 로그인 페이지
+                .defaultSuccessUrl("/")  // OAuth2 로그인 성공 시 이동할 URL
+                .failureUrl("/login?error=true")  // OAuth2 로그인 실패 시 이동할 URL
             );
-        
+
         return http.build();
     }
 
