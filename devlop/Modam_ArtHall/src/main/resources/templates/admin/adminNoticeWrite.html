@@ -22,37 +22,38 @@
     <div class="container my-5" style="padding: 120px 0;">
         <h2 class="mb-4">공지사항</h2>
 
-        <form>
+        <form action="/admin/noticeWrite" method="post" enctype="multipart/form-data">
             <!-- 제목 입력 -->
             <div class="mb-3 row">
                 <label for="title" class="col-sm-2 col-form-label">제목</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" id="title" placeholder="제목을 입력하세요">
+                    <input type="text" class="form-control" id="title" name="title" placeholder="제목을 입력하세요" required>
                 </div>
             </div>
-
+        
             <!-- 내용 입력 (Summernote 에디터) -->
             <div class="mb-3 row">
-                <label for="summernote" class="col-sm-2 col-form-label">내용</label>
+                <label for="content" class="col-sm-2 col-form-label">내용</label>
                 <div class="col-sm-10">
-                    <div id="summernote">내용을 입력하세요.</div>
+                    <textarea id="summernote" name="content">내용을 입력하세요.</textarea>
                 </div>
             </div>
-
+        
             <!-- 파일 첨부 -->
             <div class="mb-3 row">
                 <label for="fileInput" class="col-sm-2 col-form-label">파일첨부</label>
                 <div class="col-sm-10">
-                    <input type="file" class="form-control" id="fileInput">
+                    <input type="file" class="form-control" id="fileInput" name="file">
                 </div>
             </div>
-
+        
             <!-- 등록/취소 버튼 -->
             <div class="text-center mt-4">
                 <button type="submit" class="btn btn-primary me-2">등록하기</button>
-                <button type="button" class="btn btn-secondary">취소</button>
+                <a href="/admin/noticeList" class="btn btn-secondary">취소</a>
             </div>
         </form>
+        
     </div>
 
     <!-- 푸터 가져오기 -->
