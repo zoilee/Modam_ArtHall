@@ -1,6 +1,8 @@
 <header class="header-container container d-flex justify-content-between align-items-center" th:fragment="headerFragment">
     <div>
-        <img src="/imgs/logo-text-black.png" alt="Modam Art Hall Logo" class="logo-img">
+        <a th:href="@{/}">
+            <img src="/imgs/logo-text-black.png" alt="Modam Art Hall Logo" class="logo-img">
+        </a>
     </div>
     <nav class="col-9 d-flex align-items-center">
         <a href="#" class="text-decoration-none text-dark p-3 mx-2">아트홀소개</a>
@@ -9,5 +11,6 @@
     </nav>
     <div class="col-2 bg-secondary text-center d-flex align-items-center justify-content-center mx-3" style="width: 30px; height: 30px;">
         icon
-    </div>
+    <div>
+    
 </header>
