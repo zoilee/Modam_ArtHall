@@ -45,28 +45,100 @@ import com.arthall.modam.service.AdminNoticeListService;
                                     @RequestParam("content") String content,
                                     @RequestParam(value = "file", required = false) MultipartFile file,
                                     RedirectAttributes redirectAttributes) {
-            // 새로운 공지사항 객체 생성
             AdminNoticeList notice = new AdminNoticeList();
             notice.setTitle(title);
             notice.setContent(content);
-            notice.setAdminId(1L); // 관리자 ID 예시로 설정 (실제 구현에서는 로그인한 관리자 ID를 사용)
+            notice.setAdminId(1L); // 예시 관리자 ID 설정
 
-            // 파일 처리 로직 (필요에 따라 구현)
             if (file != null && !file.isEmpty()) {
-                // 파일 저장 로직을 구현하세요.
+                // 파일 저장 로직
+                String filePath = fileService.saveFile(file); // 파일 저장 후 경로 반환
+
+                // images 테이블에 데이터 저장
+                Image image = new Image();
+                image.setImageUrl(filePath);
+                image.setReferenceId(notice.getId());
+                image.setReferenceType("notice"); // 공지사항임을 표시
+                imageRepository.save(image);
+                
+                // 공지사항에 이미지 정보 설정 (이미지 URL 사용 시)
+                notice.setImageUrl(filePath);
             }
 
-            // 공지사항 저장
             adminNoticeListService.saveNotice(notice);
-
-            // 성공 메시지와 함께 리다이렉트
             redirectAttributes.addFlashAttribute("message", "공지사항이 성공적으로 등록되었습니다.");
             return "redirect:/admin/noticeList";
         }
 
 
 
+       // 공지사항 상세 조회
+        @GetMapping("/noticeView")
+        public String showAdminNoticeView(@RequestParam("id") Long id, Model model) {
+            // 공지사항 ID에 해당하는 데이터를 조회
+            AdminNoticeList notice = adminNoticeListService.getNoticeById(id).orElse(null);
 
+            // 조회한 공지사항을 모델에 추가하여 뷰로 전달
+            model.addAttribute("notice", notice);
+            return "admin/adminNoticeView"; // 공지사항 상세 페이지
+        }
+
+        //수정
+        @GetMapping("/noticeEdit")
+        public String showEditForm(@RequestParam("id") Long id, Model model) {
+            AdminNoticeList notice = adminNoticeListService.getNoticeById(id).orElse(null);
+            model.addAttribute("notice", notice);
+            return "admin/adminNoticeEdit";
+        }
+
+
+
+        // 수정 요청 처리
+        @PostMapping("/noticeEdit")
+    public String updateAdminNotice(@RequestParam("id") Long id,
+                                    @RequestParam("title") String title,
+                                    @RequestParam("content") String content,
+                                    @RequestParam(value = "file", required = false) MultipartFile file,
+                                    RedirectAttributes redirectAttributes) {
+        AdminNoticeList notice = adminNoticeListService.getNoticeById(id).orElse(null);
+        if (notice != null) {
+            notice.setTitle(title);
+            notice.setContent(content);
+
+            if (file != null && !file.isEmpty()) {
+                // 새 이미지 파일 저장 로직
+                String filePath = fileService.saveFile(file);
+
+                // 기존 이미지가 있다면 삭제
+                if (notice.getImageUrl() != null) {
+                    fileService.deleteFile(notice.getImageUrl());
+                }
+
+                // 새 이미지 정보 저장
+                Image image = new Image();
+                image.setImageUrl(filePath);
+                image.setReferenceId(notice.getId());
+                image.setReferenceType("notice");
+                imageRepository.save(image);
+
+                // 공지사항에 새 이미지 URL 설정
+                notice.setImageUrl(filePath);
+            }
+
+            adminNoticeListService.saveNotice(notice);
+            redirectAttributes.addFlashAttribute("message", "공지사항이 성공적으로 수정되었습니다.");
+        }
+        return "redirect:/admin/noticeList";
+    }
+
+
+        // 삭제 요청 처리
+        @PostMapping("/noticeDelete")
+        public String deleteAdminNotice(@RequestParam("id") Long id, RedirectAttributes redirectAttributes) {
+            adminNoticeListService.deleteNotice(id);
+            redirectAttributes.addFlashAttribute("message", "공지사항이 성공적으로 삭제되었습니다.");
+            return "redirect:/admin/noticeList";
+        }
 
 
 
@@ -77,12 +149,6 @@ import com.arthall.modam.service.AdminNoticeListService;
             return "admin/adminMenu";
         }
 
-        @GetMapping("/noticeView")
-        public String showAdminNoticeView() {
-            return "admin/adminNoticeView";
-        }
-
-        
 
         @GetMapping("/redservView")
         public String showAdminRedservView() {
