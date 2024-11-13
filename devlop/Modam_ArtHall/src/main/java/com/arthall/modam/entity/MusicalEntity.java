@@ -11,18 +11,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 
 @Entity
-public class MusicalEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int musicalId;
-
-    private String musicaltitle;
-    private int musicalDuration;
-    private int musicalAgeLimit;
-    private int musicalVIPValue;
-    private int musicalRValue;
-    private int musicalSValue;
-    private int musicalAValue;
+public MusicalEntity(String musicalTitle, int musicalDuration, int musicalAgeLimit, int musicalVIPValue, int musicalRValue, int musicalSValue, int musicalAValue) {
+    this.musicalTitle = musicalTitle;
+    this.musicalDuration = musicalDuration;
+    this.musicalAgeLimit = musicalAgeLimit;
+    this.musicalVIPValue = musicalVIPValue;
+    this.musicalRValue = musicalRValue;
+    this.musicalSValue = musicalSValue;
+    this.musicalAValue = musicalAValue;
 
     @OneToMany(mappedBy = "musical")
     private List<ShowEntity> shows;  // 여러 회차를 가질 수 있음

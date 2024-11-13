@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.arthall.modam.dto.ShowDto;
 
 @Repository
-public interface ShowRepository extends JpaRepository<ShowDto, Integer> {
-    List<ShowDto> findByMusicalId(int musicalId);
+public interface ShowRepository extends JpaRepository<ShowEntity, Integer> {
+    ShowEntity findByMusicalAndShowDateAndShowTime(MusicalEntity musical, LocalDate showDate, int showTime);
 }
 

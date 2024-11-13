@@ -18,8 +18,7 @@ public class ShowEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int showId;
 
-    @ManyToOne
-    @JoinColumn(name = "performance_id")
+    @JoinColumn(name = "musical_id")
     private MusicalEntity musical;  // 어떤 뮤지컬의 회차인지를 나타냄
 
     private LocalDate showDate; // 공연 날짜
