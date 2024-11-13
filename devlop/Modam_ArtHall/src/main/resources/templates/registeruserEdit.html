@@ -9,8 +9,7 @@
     
 </head>
 <body>
-    <script th:src="@{/js/popper.min.js}"></script>
-    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+
 <!-- 헤더 -->
 <th:block th:replace="~{fragments/header :: headerFragment}"></th:block>
     <div class="container">
@@ -46,5 +45,7 @@
     </div>
 <!-- 푸터 가져오기 -->
 <th:block th:replace="~{fragments/footer :: footerFragment}"></th:block>
+    <script th:src="@{/js/popper.min.js}"></script>
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>
