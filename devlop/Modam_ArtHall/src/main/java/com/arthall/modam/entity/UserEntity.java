@@ -30,7 +30,7 @@ public class UserEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
-    private Role role = Role.user;
+    private Role role = Role.USER;
 
     @Column(name = "status", nullable = false)
     private String status = "active";
@@ -45,7 +45,7 @@ public class UserEntity {
 
     // Enum for role
     public enum Role {
-        user, admin
+        USER, ADMIN
     }
 
 }

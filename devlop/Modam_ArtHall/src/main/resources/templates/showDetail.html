@@ -5,16 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>showDetail 레이아웃</title>
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" th:href="@{/css/layout/style.css}">
-    <link rel="stylesheet" th:href="@{/css/showDetail/style.css}">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/showDetail/style.css}">
+    <link rel="stylesheet" th:href="@{/css/layout/style.css}">
+    
 </head>
 <body class="">
     <script th:src="@{/js/showDetail/script.js}"></script>
     <!-- 헤더 -->
     <th:block th:replace="~{fragments/header :: headerFragment}"></th:block>
     <!-- 메인 컨테이너 -->
-    <div class="container my-4">
+    <div class="container my-4" style="padding: 100px 0;">
         <div class="row justify-content-center">
             <!-- 공연 정보 -->
             <div class="col-md-8 my-4 sd_info-section">
@@ -141,8 +142,7 @@
     <!-- 푸터 가져오기 -->
     <th:block th:replace="~{fragments/footer :: footerFragment}"></th:block>
 
-    <!-- <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script> -->
-</body>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </html>
