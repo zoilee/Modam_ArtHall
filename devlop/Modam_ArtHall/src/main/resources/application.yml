@@ -2,6 +2,8 @@
 server:
   port: 8082
 
+
+
 spring: 
   #database 연동
   datasource:
@@ -31,3 +33,19 @@ spring:
 # 파일 업로드 설정
 file:
   upload-dir: C:/springboot/Modam_ArtHall/uploads/
+  
+
+  #파일 업로드 경로 설정 추가
+  web:
+    resources:
+      static-locations: classpath:/static/, file:uploads/
+  #파일 크기제한
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB    
+      
+#사용자 정의 파일 업로드 경로
+custom:
+  upload-dir: uploads/
+  temp-dir: temp/
