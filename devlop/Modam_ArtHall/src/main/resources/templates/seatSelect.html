@@ -125,14 +125,20 @@
     <div class="row mt-4">
         <div class="col text-center">
             <h5>선택좌석</h5>
-            <p>D열 4번, D열 5번</p>
+            <p id="seatPicked"><!--선택좌석 값 출력--></p>
         </div>
     </div>
 
     <!-- Payment Button -->
     <div class="row mt-4">
         <div class="col text-center">
-            <button class="btn btn-danger btn-lg">결제하기</button>
+            <form action="/modam/reservConfirm" method="post">
+                <input type="hidden" name="selectedSeatId1" id="selectedSeatId1" value="${selectedSeats[0]}">
+                <input type="hidden" name="selectedSeatId2" id="selectedSeatId2" value="${selectedSeats[1]}">
+                <input type="hidden" name="selectedSeatClass1" id="selectedSeatClass1" value="${selectedSeatClass}">
+                <input type="hidden" name="selectedSeatClass2" id="selectedSeatClass2" value="${selectedSeatClass}">
+            </form>
+            <button class="btn btn-danger btn-lg" id="toReservConfirm">결제하기</button>
         </div>
     </div>
 </div>

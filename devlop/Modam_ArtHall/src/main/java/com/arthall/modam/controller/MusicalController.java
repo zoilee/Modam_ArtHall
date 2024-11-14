@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.arthall.modam.dto.MusicalDto;
+import com.arthall.modam.dto.PerformanceDto;
 import com.arthall.modam.service.MusicalService;
 
 @RestController
@@ -19,12 +19,12 @@ public class MusicalController {
     private MusicalService musicalService;
 
     @GetMapping
-    public List<MusicalDto> getAllMusicals() {
+    public List<PerformanceDto> getAllMusicals() {
         return musicalService.getAllMusicals();
     }
 
     @GetMapping("/{musicalId}")
-    public MusicalDto getMusical(@PathVariable int musicalId) {
+    public PerformanceDto getMusical(@PathVariable int musicalId) {
         return musicalService.getMusical(musicalId);
     }
 }

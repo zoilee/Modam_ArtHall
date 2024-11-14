@@ -48,12 +48,12 @@
             <div class="col-md-6 right-section">
                 <h5 class="section-title">캘린더</h5>
                 <div class="calendar-box">캘린더 부분</div>
-                <input type="hidden" name="selectedDate" class="selectedDateVal" id="selectedDateVal">
+                <input type="hidden" name="selectedDate" class="selectedDate" id="selectedDate">
                 <h6>회차</h6>
                 <div class="d-flex justify-content-start mb-3">
-                    <button class="btn btn-light me-2">13:00</button>
-                    <button class="btn btn-light">17:00</button>
-                    <input type="hidden" name="selectedTime" class="selectedTimeVal" id="selectedTimeVal">
+                    <button class="btn btn-light me-2 timeselect-btn" value="1">13:00</button>
+                    <button class="btn btn-light timeselect-btn" value="2">17:00</button>
+                    <input type="hidden" name="selectedTime" class="selectedTime" id="selectedTime" value="$('.timePicked').val()">
                 </div>
                 <h6>인원</h6>
                 <select class="form-select" name="numberOfPeople" id="numberOfPeople">

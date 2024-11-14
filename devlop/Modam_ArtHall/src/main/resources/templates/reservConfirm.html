@@ -46,18 +46,12 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">티켓 수</label>
-                        <input type="text" class="form-control" value="${guestCount}" readonly>
+                        <input type="text" class="form-control" value="${numberOfPeople}" readonly>
                     </div>
                 </div>
             </div>
         </div>
-        <input type="hidden" name="selectedSeatId1" id="selectedSeatId1" value="${selectedSeatId}">
-        <input type="hidden" name="selectedSeatId2" id="selectedSeatId2" value="${selectedSeatId}">
-        <input type="hidden" name="selectedSeatClass1" id="selectedSeatClass1" value="${selectedSeatClass}">
-        <input type="hidden" name="selectedSeatClass2" id="selectedSeatClass2" value="${selectedSeatClass}">
-        <input type="hidden" name="pricePerClass1" id="pricePerClass1" value="${}">
-        <input type="hidden" name="pricePerClass2" id="pricePerClass2" value="${}">
-        <input type="hidden" name="totalPrice" id="totalPrice" value="${pricePerClass1 + pricePerClass2}">
+        
 
         <!-- 중간 섹션: 적립금 사용 및 결제 요약 -->
         <div class="row mb-4">
@@ -84,7 +78,7 @@
                         <span class="fw-bold">총 액</span>
                         <span class="total-amount">275,000 원</span>
                     </div>
-                    <button class="btn btn-custom mt-3">결제하기</button>
+                    <button class="btn btn-custom mt-3" id="confirm-reserv-button">결제하기</button>
                 </div>
             </div>
         </div>

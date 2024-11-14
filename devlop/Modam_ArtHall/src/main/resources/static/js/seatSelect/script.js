@@ -1,6 +1,7 @@
 let selectedSeats = new Array();
-let selectedSeatsMap = [];
+let selectedSeatsClass = new Array();
 const seatWrapper = document.querySelector(".seat-wrapper");
+const seatPicked = document.querySelector("#seatPicked");
 let div = "";
 
 for (let i = 0; i < 12; i++) {
@@ -26,6 +27,7 @@ for (let i = 0; i < 12; i++) {
         } else {
             seatButton.addClass('selected');
             selectedSeats.push(seatId);
+            seatPicked.append(seatId);
         }
         
     });
@@ -60,4 +62,30 @@ function mapping(input, i, j) {
         input.value = "L" + j;
     }
 }
+
+$(document).ready(function(){
+// 선택된 정보를 서버로 POST 요청
+const form = $('<form></form>');
+form.attr('method', 'POST');
+form.attr('action', '/modam/reservConfirm');  // 정보를 전달할 서버 경로
+
+// 선택된 musical ID를 폼에 추가
+const musicalIdInput = $('<input>').attr('type', 'hidden').attr('name', 'musicalId').val(musicalId);
+form.append(musicalIdInput);
+
+// 선택한 날짜, 회차, 인원, 좌석 정보를 폼에 추가
+const selectedDateInput = $('<input>').attr('type', 'hidden').attr('name', 'selectedDate').val(selected_date);
+const selectedTimeInput = $('<input>').attr('type', 'hidden').attr('name', 'selectedTime').val(selected_time);
+const numberOfPeopleInput = $('<input>').attr('type', 'hidden').attr('name', 'numberOfPeople').val(numberOfPeople);
+const selectedSeatsInput = $('<input>').attr('type', 'hidden').attr('name', 'selectedSeats').val(selectedSeats);
+
+form.append(selectedDateInput);
+form.append(selectedTimeInput);
+form.append(numberOfPeopleInput);
+form.append(selectedSeatsInput);
+
+// 폼을 body에 추가하고 제출
+$('body').append(form);
+form.submit();
+});
 
