@@ -30,11 +30,13 @@
                         <!-- loop -->
                         <tr th:each="bbs: ${performances}">
                             <td th:text="${bbs.id}"></td> <!-- db부분-->
-                            <td th:text="${bbs.title}"></td> <!-- db부분-->
+                            <td ><a th:text="${bbs.title}" th:href="@{/admin/showCommitView(id=${bbs.id})}"></a></td> <!-- db부분-->
                             <td th:text="${bbs.createdAt}"></td> <!-- db부분-->
                             <td>
                                 <button class="btn btn-primary btn-sm me-2">수정</button>
-                                <button class="btn btn-danger btn-sm">삭제</button>
+                                <a th:href="@{/admin/showCommitDelete(id=${bbs.id})}" 
+                                   class="btn btn-danger btn-sm" 
+                                   onclick="return confirm('정말 삭제하시겠습니까?');">삭제</a>
                             </td>
                         </tr>
                         <!-- /loop -->
@@ -44,7 +46,7 @@
                 </table>
             </div>
             <div class="text-end">
-                <button class="btn btn-secondary mt-3"><a href="showCommitWrite" style="text-decoration: none; color: white;">등록하기</a></button>
+                <a class="btn btn-secondary mt-3" th:href="@{/admin/showCommitWrite}">등록하기</a>
             </div>
         </div>
 

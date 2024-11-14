@@ -14,7 +14,7 @@ public class PerformancesDto {
     private String description; // 설명
     private Date startDate; // 시작 날짜
     private Date endDate; // 종료 날짜
-    private Time time; // 공연 시간
+    private int time; // 공연 시간
     private String location; // 장소
     private Timestamp createdAt; // 생성 날짜 및 시간
     private int age; // 관람 연령

@@ -2,13 +2,16 @@ package com.arthall.modam.entity;
 
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.annotations.Where;
 
 import java.sql.Date;
 
 import jakarta.persistence.*;
-
+import javafx.scene.image.Image;
 import lombok.Data;
 
 @Entity
@@ -32,7 +35,7 @@ public class PerformancesEntity {
     private Date end_date;
 
     @Column
-    private Time time;
+    private int time;
 
     @Column(length = 100)
     private String location;
@@ -43,5 +46,9 @@ public class PerformancesEntity {
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private Timestamp created_at; // 생성 시간 자동 설정
+
+    @OneToMany
+    @JoinColumn(name = "reference_id", referencedColumnName = "id")
+    private List<ImagesEntity> imagesEntities;
 
 }
