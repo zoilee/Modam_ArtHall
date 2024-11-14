@@ -38,10 +38,12 @@
         </table>
 
          <!-- 이미지 미리보기 -->
-         <div class="mb-3">
+        <div class="mb-3" th:if="${notice.imageUrl != null}">
             <h5>첨부된 이미지</h5>
-            <img th:if="${notice.imageUrl}" th:src="@{${notice.imageUrl}}" alt="공지사항 이미지" style="max-width: 100%; max-height: 500px;">
+            <img th:src="@{${notice.imageUrl}}" alt="공지사항 이미지" style="max-width: 100%; max-height: 500px;">
+
         </div>
+
 
         <!-- 본문 -->
         <div class="mb-3 p-3" style="border: 1px solid #ddd; background-color: #f8f9fa;">

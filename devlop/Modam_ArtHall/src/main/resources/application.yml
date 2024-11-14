@@ -1,4 +1,4 @@
-#포트
+#포트 설정
 server:
   port: 8082
 
@@ -27,3 +27,7 @@ spring:
     show-sql: true
     hibernate: 
        ddl-auto: update  
+
+# 파일 업로드 설정
+file:
+  upload-dir: C:/springboot/Modam_ArtHall/uploads/

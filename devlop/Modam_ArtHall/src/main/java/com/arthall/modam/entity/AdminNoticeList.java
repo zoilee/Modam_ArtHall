@@ -31,6 +31,10 @@ public class AdminNoticeList {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    // 이미지 URL 필드 추가
+    @Column(name = "image_url")
+    private String imageUrl;
+
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
@@ -77,4 +81,15 @@ public class AdminNoticeList {
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
+
+    // imageUrl Getter and Setter
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    
 }
