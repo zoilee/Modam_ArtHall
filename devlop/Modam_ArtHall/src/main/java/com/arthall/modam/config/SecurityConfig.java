@@ -8,9 +8,17 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+import com.arthall.modam.service.CustomOAuth2UserService;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    private final CustomOAuth2UserService customOAuth2UserService;
+
+    public SecurityConfig(CustomOAuth2UserService customOAuth2UserService) {
+        this.customOAuth2UserService = customOAuth2UserService;
+    }
     
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -36,9 +44,11 @@ public class SecurityConfig {
                 .permitAll()
             )
             .oauth2Login(oauth2 -> oauth2
-                .loginPage("/login")  // OAuth2 로그인 페이지
-                .defaultSuccessUrl("/")  // OAuth2 로그인 성공 시 이동할 URL
-                .failureUrl("/login?error=true")  // OAuth2 로그인 실패 시 이동할 URL
+                .loginPage("/login")
+                .defaultSuccessUrl("/", true)
+                .userInfoEndpoint(userInfo -> userInfo
+                    .userService(customOAuth2UserService)  // 주입된 CustomOAuth2UserService 사용
+                )
             );
 
         return http.build();

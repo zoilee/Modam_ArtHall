@@ -48,4 +48,9 @@ public class UserEntity {
         USER, ADMIN
     }
 
+    // Set the role using the Role enum
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
 }
