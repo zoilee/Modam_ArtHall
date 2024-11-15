@@ -14,12 +14,12 @@ public class MusicalService {
     @Autowired
     private MusicalRepository musicalRepository;
 
-    public List<PerformanceDto> getAllMusicals() {
+    public List<PerformanceDto> getAllPerformance() {
         return musicalRepository.findAll();
     }
 
-    public PerformanceDto getMusical(int musicalId) {
-        return musicalRepository.findById(musicalId).orElseThrow(() -> new RuntimeException("해당 공연을 찾을 수 없습니다."));
+    public PerformanceDto getPerformance(int performanceId) {
+        return musicalRepository.findById(performanceId).orElseThrow(() -> new RuntimeException("해당 공연을 찾을 수 없습니다."));
     }
 }
 

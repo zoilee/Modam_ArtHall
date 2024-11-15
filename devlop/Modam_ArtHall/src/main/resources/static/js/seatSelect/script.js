@@ -1,5 +1,4 @@
 let selectedSeats = new Array();
-let selectedSeatsClass = new Array();
 const seatWrapper = document.querySelector(".seat-wrapper");
 const seatPicked = document.querySelector("#seatPicked");
 let div = "";
@@ -63,7 +62,62 @@ function mapping(input, i, j) {
     }
 }
 
+// 입력값을 기준으로 class를 추가하는 함수
+function setClassBasedOnValue(input) {
+    // vip 클래스 조건
+    if ((input.value >= "A4" && input.value <= "A15") ||
+        (input.value >= "B4" && input.value <= "B15") ||
+        (input.value >= "C4" && input.value <= "C15")) {
+        input.classList.add("vip");
+    }
+    // r 클래스 조건
+    else if (
+        (input.value >= "A1" && input.value <= "A3") ||
+        (input.value >= "A16" && input.value <= "A18") ||
+        (input.value >= "B1" && input.value <= "B3") ||
+        (input.value >= "B16" && input.value <= "B18") ||
+        (input.value >= "C1" && input.value <= "C3") ||
+        (input.value >= "C16" && input.value <= "C18") ||
+        (input.value >= "D1" && input.value <= "D18") ||
+        (input.value >= "E4" && input.value <= "E15") ||
+        (input.value >= "F4" && input.value <= "F15") ||
+        (input.value >= "G4" && input.value <= "G15") ||
+        (input.value >= "H4" && input.value <= "H15")
+    ) {
+        input.classList.add("r");
+    }
+    // s 클래스 조건
+    else if (
+        (input.value >= "E1" && input.value <= "E3") ||
+        (input.value >= "E16" && input.value <= "E18") ||
+        (input.value >= "F1" && input.value <= "F3") ||
+        (input.value >= "F16" && input.value <= "F18") ||
+        (input.value >= "G1" && input.value <= "G3") ||
+        (input.value >= "G16" && input.value <= "G18") ||
+        (input.value >= "H1" && input.value <= "H3") ||
+        (input.value >= "H16" && input.value <= "H18") ||
+        (input.value >= "I1" && input.value <= "I18") ||
+        (input.value >= "J4" && input.value <= "J15")
+    ) {
+        input.classList.add("s");
+    }
+    // 그 외 a 클래스
+    else{
+        input.classList.add("a")
+    }
+}
+let input = document.querySelector('input');
+setClassBasedOnValue(input);
+
+
+
 $(document).ready(function(){
+//이전 페이지에서 선택한 값들 받기
+const musicalId = musicalId;
+const selectedDate = selectedDate;
+const selectedTime = selectedTime;
+const numberOfPeople = numberOfPeople;
+
 // 선택된 정보를 서버로 POST 요청
 const form = $('<form></form>');
 form.attr('method', 'POST');
@@ -74,15 +128,17 @@ const musicalIdInput = $('<input>').attr('type', 'hidden').attr('name', 'musical
 form.append(musicalIdInput);
 
 // 선택한 날짜, 회차, 인원, 좌석 정보를 폼에 추가
-const selectedDateInput = $('<input>').attr('type', 'hidden').attr('name', 'selectedDate').val(selected_date);
-const selectedTimeInput = $('<input>').attr('type', 'hidden').attr('name', 'selectedTime').val(selected_time);
+const selectedDateInput = $('<input>').attr('type', 'hidden').attr('name', 'selectedDate').val(selectedDate);
+const selectedTimeInput = $('<input>').attr('type', 'hidden').attr('name', 'selectedTime').val(selectedTime);
 const numberOfPeopleInput = $('<input>').attr('type', 'hidden').attr('name', 'numberOfPeople').val(numberOfPeople);
-const selectedSeatsInput = $('<input>').attr('type', 'hidden').attr('name', 'selectedSeats').val(selectedSeats);
+const selectedSeatsInput1 = $('<input>').attr('type', 'hidden').attr('name', 'selectedSeats1').val(selectedSeats[0]);
+const selectedSeatsInput2 = $('<input>').attr('type', 'hidden').attr('name', 'selectedSeats2').val(selectedSeats[1]);
 
 form.append(selectedDateInput);
 form.append(selectedTimeInput);
 form.append(numberOfPeopleInput);
-form.append(selectedSeatsInput);
+form.append(selectedSeatsInput1);
+form.append(selectedSeatsInput2);
 
 // 폼을 body에 추가하고 제출
 $('body').append(form);

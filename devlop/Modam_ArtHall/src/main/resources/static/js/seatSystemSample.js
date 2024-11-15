@@ -223,3 +223,5 @@ $('div#show-seat').on("click","input[type=button].seat-condition-choise",functio
             input.value = "G" + j;
         }
     }
+
+    

@@ -15,7 +15,10 @@ public class ShowEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int showId;
 
-    private int performanceId;
+    @ManyToOne(fetch = FetchType.LAZY) // ManyToOne 관계 설정
+    @JoinColumn(name = "performance_id", referencedColumnName = "performanceId", nullable = false) // 외래키 설정
+    private PerformanceEntity performanceEntity;
+
     private Date showDate;
     private int showTime; //회차
     private int seatLimit; //가로18 * 세로12 216
@@ -26,7 +29,7 @@ public class ShowEntity {
 
     // 생성자 (필드 초기화용)
     public ShowEntity(int performanceId, int showId, Date showDate, int showTime, int seatLimit, int seatAvailable) {
-        this.performanceId = performanceId;
+        this.performanceEntity = performanceEntity;
         this.showId = showId;
         this.showDate = showDate;
         this.showTime = showTime;

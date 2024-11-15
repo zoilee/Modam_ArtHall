@@ -5,10 +5,12 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.List;
 
 @Entity
 @Table(name = "performances")
@@ -51,6 +53,9 @@ public class PerformanceEntity {
         this.age = age;
         this.location = location;
         this.createdAt = createdAt;
+
+        @OneToMany(mappedBy = "performanceEntity") // PerformanceEntity -> ShowEntity (1:N 관계)
+        private List<ShowEntity> findByPerformanceId;
     }
 
     // Getter and Setter methods

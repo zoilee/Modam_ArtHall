@@ -1,6 +1,22 @@
 $(document).ready(function () {
     //뮤지컬 아이디 받기
-    const musicalId = $("#selectedMusical").val();
+    const musicalId = musicalId;
+
+    //회차선택 버튼 누르면 표시,hidden에 값 주기
+    $(".timeselect-btn").click(function(){
+        const timeButton = $(this);
+        const selectedTime = document.querySelector("#selectedTime");
+        if (timeButton.hasClass('selected')) {
+            timeButton.removeClass('selected');
+            selectedTime.value = '';
+        } else {
+            seatButton.addClass('selected');
+            selectedTime.value = timeButton.val();
+        }
+    });
+
+    //인원수
+    const numberOfPeople = $("#numberOfPeople").val();
 
 
     //다음 페이지로 정보 넘기기
@@ -24,18 +40,5 @@ $(document).ready(function () {
     // 폼을 body에 추가하고 제출
     $('body').append(form);
     form.submit();
-
-    //회차선택 버튼 누르면 표시,hidden에 값 주기
-    $(".timeselect-btn").click(function(){
-        const timeButton = $(this);
-        const selectedTime = document.querySelector("#selectedTime");
-        if (timeButton.hasClass('selected')) {
-            timeButton.removeClass('selected');
-            selectedTime.value = '';
-        } else {
-            seatButton.addClass('selected');
-            selectedTime.value = timeButton.val();
-        }
-    })
     
 });

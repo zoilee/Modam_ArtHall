@@ -26,17 +26,3 @@ function toggleScrollToTopBtn() {
 function scrollToTop() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
-
-//뮤지컬 아이디 보내기
-$(document).ready(function(){
-    $("#toReserveForm").click(function(){
-        $.ajax({
-            url:'/modam/reservForm',
-            method: 'POST',
-            data: JSON.stringify({
-                musicalId: musicalIdVal,
-                musicalTitle: musicalTitleVal
-            })
-        })
-    })
-})

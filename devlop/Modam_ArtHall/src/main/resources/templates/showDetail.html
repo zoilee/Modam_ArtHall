@@ -30,8 +30,10 @@
             <!-- 포스터 및 예매하기 버튼 -->
             <div class="col-md-4 poster-section">
                 <div class="bg-secondary" style="height: 300px; width: 300px; margin: 0 auto;">포스터</div><!--db에서-->
-                <input type="hidden" name="musicalId" class="musicalIdVal">
-                <input type="hidden" name="musicalTitle" class="musicalTitleVal"><!--공연 id와 제목 보내기-->
+                <form action="/modam/reservForm" method="post">
+                    <input type="hidden" name="musicalId" class="musicalIdVal">
+                    <input type="hidden" name="musicalTitle" class="musicalTitleVal"><!--공연 id와 제목 보내기-->
+                </form>
                 <button class="btn btn-primary btn-block mt-3" id="toReservForm">예매하기</button> <!--예매하기로 이동-->
             </div>
         </div>

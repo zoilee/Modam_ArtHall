@@ -1,3 +1,19 @@
+import java.time.LocalDate;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.arthall.modam.entity.PerformanceEntity;
+import com.arthall.modam.entity.ShowEntity;
+import com.arthall.modam.repository.MusicalRepository;
+import com.arthall.modam.repository.ShowRepository;
+
 @RestController
 @RequestMapping("/reserve")
 public class ReservController {
@@ -19,10 +35,10 @@ public class ReservController {
         int time = Integer.parseInt(selectedTime.equals("13:00") ? "1" : "2");  // 시간은 1 또는 2로 변환
 
         // 예시: "뮤지컬 제목"에 해당하는 뮤지컬 찾기 (필요에 따라 수정)
-        MusicalEntity musical = musicalRepository.findByMusicalTitle("뮤지컬 제목");
+        PerformanceEntity musical = musicalRepository.findByPerformanceTitle("뮤지컬 제목");
 
         // 해당 날짜와 시간에 맞는 쇼 회차 찾기
-        ShowEntity show = showRepository.findByMusicalAndShowDateAndShowTime(musical, date, time);
+        ShowEntity show = showRepository.findByMusicalAndShowDateAndShowTime(performanceId, date, time);
 
         if (show == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("success", false, "message", "해당 회차가 없습니다."));
