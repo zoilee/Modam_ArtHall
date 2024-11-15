@@ -1,5 +1,8 @@
 package com.arthall.modam.controller;
 
+
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -7,14 +10,18 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import com.arthall.modam.dto.UserDto;
+
 import com.arthall.modam.service.UserService;
 
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class UserController {
-
+    @Autowired
     private final UserService userService;
+
+    // @Autowired
+    // private ReservationService reservationService;
 
     public UserController(UserService userService) {
         this.userService = userService;
@@ -66,4 +73,23 @@ public class UserController {
             return "login";  // 로그인 실패 시 다시 로그인 페이지로 이동
         }
     }
+
+    // @GetMapping("/mypage")
+    // public String mypage(Model model) {
+    //     int userId = 1; // 예시 사용자 ID, 실제로는 인증된 사용자 ID 사용
+    //     UserEntity user = userService.getUserById(userId);
+
+    //     if (user == null) {
+    //         throw new RuntimeException("User not found with ID: " + userId);
+    //     }
+
+    //     List<ReservationEntity> upcomingReservations = reservationService.getUpcomingReservationsByUserId(userId);
+    //     List<ReservationEntity> pastReservations = reservationService.getPastReservationsByUserId(userId);
+
+    //     model.addAttribute("user", user);
+    //     model.addAttribute("upcomingReservations", upcomingReservations);
+    //     model.addAttribute("pastReservations", pastReservations);
+
+    //     return "mypage"; // mypage.html로 이동
+    // }
 }
