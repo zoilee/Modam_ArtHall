@@ -10,6 +10,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface PerformancesRepository extends JpaRepository<PerformancesEntity, Integer> {
-    @Query("SELECT i FROM ImagesEntity i WHERE i.referenceId = :performanceId AND i.referenceType = 'PERFORMANCE'")
-    List<ImagesEntity> findPerformanceImages(@Param("performanceId") int performanceId);
+    @Query("SELECT i FROM ImagesEntity i WHERE i.referenceId = :id AND i.referenceType = 'PERFORMANCE'")
+    List<ImagesEntity> findPerformanceImages(@Param("id") int id);
 }

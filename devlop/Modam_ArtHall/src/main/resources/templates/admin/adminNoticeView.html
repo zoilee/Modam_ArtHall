@@ -29,7 +29,7 @@
                 <tr>
                     <th style="width: 100px;">작성일</th>
                     <!-- 작성일 데이터 표시 -->
-                    <td style="width: 200px;" th:text="${#temporals.format(notice.createdAt, 'yyyy-MM-dd')}">작성일 데이터 없음</td>
+                    <td style="width: 200px;" th:text="${#dates.format(notice.createdAt, 'yyyy-MM-dd')}">작성일 데이터 없음</td>
                     <th style="width: 100px;">작성자</th>
                     <!-- 작성자 ID 데이터 표시 -->
                     <td th:text="${notice.adminId}">작성자 데이터 없음</td>
@@ -38,10 +38,12 @@
         </table>
 
          <!-- 이미지 미리보기 -->
-        <div class="mb-3" th:if="${notice.imageUrl != null}">
+        <div class="mb-3" th:if="${notice.imagesEntities != null}">
             <h5>첨부된 이미지</h5>
-            <img th:src="@{${notice.imageUrl}}" alt="공지사항 이미지" style="max-width: 100%; max-height: 500px;">
-
+            <li th:each="image : ${notice.imagesEntities}">
+                <img th:src="@{{image}(image=${image.imageUrl})}" alt="공지사항 이미지" style="max-width: 100%; max-height: 500px;">
+                
+            </li>
         </div>
 
 

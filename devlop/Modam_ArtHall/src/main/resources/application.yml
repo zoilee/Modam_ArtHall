@@ -10,7 +10,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/modam?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
     username: root
-    password: Abcd123@
+    password: z1z2z3z4
   thymeleaf:
     cache: false
     check-template-location: true
@@ -29,23 +29,13 @@ spring:
     show-sql: true
     hibernate: 
        ddl-auto: update  
-
-# 파일 업로드 설정
-file:
-  upload-dir: C:/springboot/Modam_ArtHall/uploads/
-  
-
-  #파일 업로드 경로 설정 추가
   web:
     resources:
-      static-locations: classpath:/static/, file:uploads/
-  #파일 크기제한
-  servlet:
-    multipart:
-      max-file-size: 10MB
-      max-request-size: 10MB    
-      
-#사용자 정의 파일 업로드 경로
-custom:
-  upload-dir: uploads/
-  temp-dir: temp/
+    
+      static-locations: 
+        - classpath:/static/     # 기존 정적 리소스 경로
+        - file:./uploads/  
+# 파일 업로드 설정
+file:
+  upload-dir: ./uploads/
+  

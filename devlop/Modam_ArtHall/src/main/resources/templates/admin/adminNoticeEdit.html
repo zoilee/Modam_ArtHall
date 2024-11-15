@@ -40,14 +40,16 @@
             </div>
 
             <!-- 기존 이미지 미리보기 및 삭제 옵션 -->
-            <div class="mb-3 row" th:if="${notice.imageUrl != null}">
+            <div class="mb-3 row" th:if="${notice.imagesEntities != null and !notice.imagesEntities.isEmpty()}">
                 <label for="currentImage" class="col-sm-2 col-form-label">기존 이미지</label>
                 <div class="col-sm-10">
-                    <img th:src="@{${notice.imageUrl}}" alt="이미지" style="max-width: 100%; max-height: 200px;">
-                    <div class="form-check mt-2">
-                        <input class="form-check-input" type="checkbox" name="deleteImage" id="deleteImage">
-                        <label class="form-check-label" for="deleteImage">이미지 삭제</label>
-                    </div>
+                    <li th:each="image : ${notice.imagesEntities}">
+                        <img th:src="@{{image}(image=${image.imageUrl})}" alt="이미지" style="max-width: 100%; max-height: 200px;">
+                        <div class="form-check mt-2">
+                            <input class="form-check-input" type="checkbox" name="deleteImage" id="deleteImage">
+                            <label class="form-check-label" for="deleteImage">이미지 삭제</label>
+                        </div>
+                    </li>
                 </div>
             </div>
 

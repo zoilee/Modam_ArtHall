@@ -2,7 +2,6 @@ package com.arthall.modam.dto;
 
 import com.arthall.modam.entity.PerformancesEntity;
 import java.sql.Date;
-import java.sql.Time;
 import java.sql.Timestamp;
 
 import lombok.Data;

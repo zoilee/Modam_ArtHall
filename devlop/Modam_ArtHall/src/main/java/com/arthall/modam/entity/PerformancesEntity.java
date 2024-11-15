@@ -1,6 +1,5 @@
 package com.arthall.modam.entity;
 
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -11,7 +10,6 @@ import org.hibernate.annotations.Where;
 import java.sql.Date;
 
 import jakarta.persistence.*;
-import javafx.scene.image.Image;
 import lombok.Data;
 
 @Entity
@@ -49,6 +47,7 @@ public class PerformancesEntity {
 
     @OneToMany
     @JoinColumn(name = "reference_id", referencedColumnName = "id")
+    @SQLRestriction("reference_type = 'PERFORMANCE'")
     private List<ImagesEntity> imagesEntities;
 
 }

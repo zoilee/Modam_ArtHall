@@ -34,7 +34,7 @@
                     <td th:text="${notice.id}">1</td> <!-- 공지사항 ID -->
                     <!-- 제목에 링크 추가 -->
                     <td><a th:href="@{/admin/noticeView(id=${notice.id})}" th:text="${notice.title}">공지사항 제목</a></td>
-                    <td th:text="${#temporals.format(notice.createdAt, 'yyyy-MM-dd')}">2023-11-08</td> <!-- 작성일자 -->
+                    <td th:text="${#dates.format(notice.createdAt, 'yyyy-MM-dd')}">2023-11-08</td> <!-- 작성일자 -->
                     <td>
                         <a th:href="@{/admin/noticeEdit(id=${notice.id})}" class="btn btn-sm btn-primary">수정하기</a>
                         <form th:action="@{/admin/noticeDelete(id=${notice.id})}" method="post" style="display: inline;" 
