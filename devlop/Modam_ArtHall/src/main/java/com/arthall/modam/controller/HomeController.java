@@ -1,6 +1,9 @@
 package com.arthall.modam.controller;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
@@ -51,7 +54,16 @@ public class HomeController {
     }
 
 @GetMapping("/reservForm")
-    public String reservForm(){
+    public String reservForm(Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        // 로그인되지 않은 경우
+        if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal().equals("anonymousUser")) {
+            model.addAttribute("alertMessage", "로그인 후 이용하세요.");
+            return "redirect:/login"; // 로그인 페이지로 리다이렉트
+        }
+
+        // 로그인된 경우 예약 폼 페이지로 이동
         return "reservForm";
     }
 }

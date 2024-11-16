@@ -2,7 +2,7 @@ package com.arthall.modam.dto;
 
 import java.time.LocalDateTime;
 
-import javax.management.relation.Role;
+import com.arthall.modam.entity.UserEntity.Role;
 
 import lombok.Data;
 
@@ -14,8 +14,7 @@ public class UserDto {
     private String name;
     private String email;
     private String phoneNumber;
-    private Role role;
+    private Role role; // UserEntity.Role로 변경
     private String status;
     private LocalDateTime createdAt;
-    
 }

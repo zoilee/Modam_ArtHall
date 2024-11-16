@@ -31,6 +31,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client' //OAuth2 연동 라이브러리 추가
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6' // Spring Security Thymeleaf 통합 추가
 	implementation 'org.projectlombok:lombok'
 	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.0.0' //Thymeleaf Layout Dialect 의존성 추가
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'

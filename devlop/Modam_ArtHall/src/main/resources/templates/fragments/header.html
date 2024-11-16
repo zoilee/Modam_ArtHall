@@ -10,7 +10,15 @@
         <a th:href="@{/noticeList}" class="text-decoration-none text-dark p-3 mx-2">공지사항</a>
     </nav>
     <div class="col-2 bg-secondary text-center d-flex align-items-center justify-content-center mx-3" style="width: 30px; height: 30px;">
-        icon
-    <div>
-    
+        <!-- 비로그인 사용자 -->
+        <div th:if="${#authentication == null or !#authentication.authenticated}">
+            <a th:href="@{/login}" class="btn btn-primary">로그인</a>
+        </div>
+
+        <!-- 로그인된 사용자 -->
+        <div th:if="${#authentication != null and #authentication.authenticated}">
+            <a th:href="@{/mypage}" class="btn btn-outline-dark me-2">마이페이지</a>
+            <a th:href="@{/logout}" class="btn btn-danger">로그아웃</a>
+        </div>
+    </div>
 </header>
