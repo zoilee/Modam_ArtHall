@@ -27,7 +27,7 @@ public class PerformancesDto {
         dto.setEndDate(performancesEntity.getEnd_date());
         dto.setTime(performancesEntity.getTime());
         dto.setLocation(performancesEntity.getLocation());
-        dto.setCreatedAt(performancesEntity.getCreated_at());
+        dto.setCreatedAt(performancesEntity.getCreatedAt());
 
         return dto;
     }

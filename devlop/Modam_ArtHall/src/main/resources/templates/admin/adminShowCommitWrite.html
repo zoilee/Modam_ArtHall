@@ -61,20 +61,18 @@
             </div>
 
             <div class="row mb-3">
-                <label for="poster" class="col-sm-2 col-form-label ms-4">포스터</label>
-                <div class="col-sm-7">
-                    <input type="file" class="form-control" id="poster" name="file">
+                <label for="fileInput" class="col-sm-2 col-form-label ms-4">파일첨부</label>
+                <div class="col-sm-8">
+                    <input type="file" class="form-control" id="fileInput" name="file" onchange="uploadPoster(event)">
+                    <img id="preview" alt="이미지 미리보기" style="max-width: 100%; max-height: 200px; margin-top: 10px; display: none;">
                 </div>
-                <div class="col-sm-1">
-                    <button type="button" class="scwImgbtn btn btn-secondary w-100" onclick="uploadPoster()">등록</button>
-                </div>
+            
             </div>
 
             <div class="d-flex justify-content-center mt-4">
                 <button type="submit" class="btn btn-secondary mx-2">등록하기</button>
                 <button type="reset" class="btn btn-secondary mx-2">취소</button>
             </div>
-            <input type="hidden" name="imageTokens" value="">
         </form>
     </div>
 
@@ -93,49 +91,26 @@
 <script src="/js/jquery-3.6.0.min.js"></script>
 </body>
 <script>
-    function uploadPoster(){
-        const fileInput = $('#poster')[0].files[0];
-
-        if(!fileInput){
-            alert("파일을 올려주세요")
-            return;
+    function uploadPoster(event){
+        const preview = $('#preview');
+        const file = event.target.files[0];
+        //확장자 검사
+        const currentExt  = ['image/jpeg', 'image/png', 'image/gif'];
+        if(file && !currentExt.includes(file.type)){
+            alert('이미지 파일만 업로드 가능합니다(jpeg, png, gif).')
         }
 
-        const formData = new FormData();
-        formData.append("file", fileInput);
-
-        $.ajax({
-            url: "/upload/upload-temp",
-            type: "POST",
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function(referenceToken){
-                console.log("File uploaded with token", referenceToken );
-                
-                alert("파일이 성공적으로 업로드 되었습니다.")
-                const imageTokensField = $("input[name='imageTokens']");
-
-                let currentTokens = imageTokensField.val();
-               
-                if (currentTokens) {
-                    currentTokens += ',' + referenceToken;
-                } else {
-                    currentTokens = referenceToken;
-                }
-
-                imageTokensField.val(currentTokens);
-                
-            },
-            error: function(xhr, status, error){
-                console.error("파일 업로드 실패", error);
-                alert("파일 업로드에 실패했습니다.")
-            }
-
-        });
 
 
-    }
 
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.attr('src', e.target.result);
+                preview.css('display', 'block');
+            };
+            reader.readAsDataURL(file);
+        }
+    }    
 </script>
 </html>

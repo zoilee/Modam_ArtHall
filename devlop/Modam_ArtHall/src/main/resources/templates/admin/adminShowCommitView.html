@@ -12,73 +12,85 @@
      <!-- 헤더 -->
      <th:block th:replace="~{fragments/header :: headerFragment}"></th:block>
 
-    <div class="content container my-5" style="padding-top: 100px;">
-        <h2 class="mb-4" style="color: black; font-weight: bold;">공연관리</h2>
-        <form id="showCommitForm" enctype="multipart/form-data" action="/admin/showComitWrite" method="post">
-            <div class="row mb-3">
-                <label for="showTitle" class="col-sm-2 col-form-label ms-4">공연제목</label>
-                <div class="col-sm-8">
-                    <input type="text" class="form-control" id="showTitle" name="title" >
-                </div>
-            </div>
+    <!-- 공연관리 상세 Section -->
+    <div class="container my-5" style="padding: 100px;">
+        <h2 class="mb-4">공연관리</h2>
+        
+        <!-- 공연관리 제목 및 작성 정보 -->
+        <table class="table table-bordered">
+            <tbody>
+                <tr>
+                    <th style="width: 100px;">제목</th>
+                    <!-- 제목 데이터 표시 -->
+                    <td colspan="3" th:text="${performance.title}">제목 데이터 없음</td>
+                </tr>
+                <tr>
+                    <th style="width: 100px;">작성일</th>
+                    <!-- 작성일 데이터 표시 -->
+                    <td style="width: 200px;" th:text="${#dates.format(performance.createdAt, 'yyyy-MM-dd')}">작성일 데이터 없음</td>
+                    <th style="width: 100px;">작성자</th>
+                </tr>
+            </tbody>
+        </table>
 
-            <div class="row mb-3">
-                <label for="showPeriodStart" class="col-sm-2 col-form-label ms-4">공연기간</label>
-                <div class="col-sm-3">
-                    <input type="date" class="form-control" id="showPeriodStart" name="start_date">
-                </div>
-                <div class="col-sm-2 text-center align-self-center">~</div>
-                <div class="col-sm-3">
-                    <input type="date" class="form-control" id="showPeriodEnd" name="end_date">
-                </div>
-            </div>
+         <!-- 이미지 미리보기 -->
+        <div class="mb-3" th:if="${performance.imagesEntities != null}">
+            <h5>첨부된 이미지</h5>
+            <li th:each="image : ${performance.imagesEntities}">
+                <img th:src="@{{image}(image=${image.imageUrl})}" alt="공연관리 이미지" style="max-width: 100%; max-height: 500px;">
+                
+            </li>
+        </div>
 
-            <div class="row mb-3">
-                <label for="duration" class="col-sm-2 col-form-label ms-4">관람시간</label>
-                <div class="col-sm-4">
-                    <input type="number" class="form-control" id="duration" name="time">
-                </div>
-                <div class="col-sm-1 align-self-center">분</div>
-            </div>
+        <!-- 공연 날짜-->
+        <table class="table table-bordered">
+            <tbody>
+                <tr>
+                    <!-- 공연 시작일 -->
+                    <th style="width: 100px;">공연 시작</th>
+                    <td style="width: 200px;" th:text="${performance.start_date}">공연 시작 데이터 없음</td>
+                    <!-- 공연 종료일 -->
+                    <th style="width: 100px;">공연 종료</th>
+                    <td style="width: 200px;" th:text="${performance.end_date}">공연 종료 데이터 없음</td>
+                </tr>
+            </tbody>
+        </table>
 
-            <div class="row mb-3">
-                <label for="ageLimit" class="col-sm-2 col-form-label ms-4">관람연령</label>
-                <div class="col-sm-4">
-                    <input type="number" class="form-control" id="ageLimit" name="age">
-                </div>
-                <div class="col-sm-1 align-self-center">세</div>
-            </div>
+        <!-- 공연 장소-->
+        <table class="table table-bordered">
+            <tbody>
+                <tr>
+                    <th style="width: 100px;">공연 장소</th>
+                    <td th:text="${performance.location}">공연 장소</td>
+                </tr>
+            </tbody>
+        </table>
 
-            <div class="row mb-3">
-                <label for="location" class="col-sm-2 col-form-label ms-4">상영관</label>
-                <div class="col-sm-4">
-                    <select class="form-control" id="location" name="location">
-                        <option value="" disabled selected>상영관 선택</option>
-                        <option value="theater1">상영관 1</option>
-                        <option value="theater2">상영관 2</option>                     
-                    </select>
-                </div>
-            </div>
 
-            <div class="row mb-3">
-                <label for="poster" class="col-sm-2 col-form-label ms-4">포스터</label>
-                <div class="col-sm-7">
-                    <input type="file" class="form-control" id="poster" name="file">
-                </div>
-                <div class="col-sm-1">
-                    <button type="button" class="scwImgbtn btn btn-secondary w-100" onclick="uploadPoster()">등록</button>
-                </div>
-            </div>
+        <!-- 첨부 파일 -->
+        <table class="table table-bordered">
+            <tbody>
+                <tr>
+                    <th style="width: 100px;">첨부파일</th>
+                    <td>파일명.txt</td>
+                </tr>
+            </tbody>
+        </table>
 
-            <div class="d-flex justify-content-center mt-4">
-                <button type="submit" class="btn btn-secondary mx-2">등록하기</button>
-                <button type="reset" class="btn btn-secondary mx-2">취소</button>
+        <!-- 목록으로 돌아가기, 수정하기, 삭제하기 버튼 -->
+        <div class="d-flex justify-content-between mt-4">
+            <a href="/admin/showCommitList" class="btn btn-secondary">목록으로</a>
+            <div>
+                <a th:href="@{/admin/showCommitEdit(id=${performance.id})}" class="btn btn-primary me-2">수정하기</a>
+                
+                <!-- 삭제하기 버튼 -->
+                <form th:action="@{/admin/showCommitDelete}" method="post" style="display: inline;">
+                    <input type="hidden" name="id" th:value="${performance.id}" />
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('정말 삭제하시겠습니까?');">삭제하기</button>
+                </form>
             </div>
-            <input type="hidden" name="imageTokens" value="">
-        </form>
+        </div>
     </div>
-
-   
 
 
 
@@ -91,51 +103,11 @@
     <!-- 푸터 가져오기 -->
 <th:block th:replace="~{fragments/footer :: footerFragment}"></th:block>
 <script src="/js/jquery-3.6.0.min.js"></script>
+
 </body>
-<script>
-    function uploadPoster(){
-        const fileInput = $('#poster')[0].files[0];
 
-        if(!fileInput){
-            alert("파일을 올려주세요")
-            return;
-        }
-
-        const formData = new FormData();
-        formData.append("file", fileInput);
-
-        $.ajax({
-            url: "/upload/upload-temp",
-            type: "POST",
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function(referenceToken){
-                console.log("File uploaded with token", referenceToken );
-                
-                alert("파일이 성공적으로 업로드 되었습니다.")
-                const imageTokensField = $("input[name='imageTokens']");
-
-                let currentTokens = imageTokensField.val();
-               
-                if (currentTokens) {
-                    currentTokens += ',' + referenceToken;
-                } else {
-                    currentTokens = referenceToken;
-                }
-
-                imageTokensField.val(currentTokens);
-                
-            },
-            error: function(xhr, status, error){
-                console.error("파일 업로드 실패", error);
-                alert("파일 업로드에 실패했습니다.")
-            }
-
-        });
-
-
-    }
-
-</script>
 </html>
+
+
+
+   

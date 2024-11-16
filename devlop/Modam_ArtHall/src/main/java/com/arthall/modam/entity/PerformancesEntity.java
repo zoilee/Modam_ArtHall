@@ -43,9 +43,9 @@ public class PerformancesEntity {
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
-    private Timestamp created_at; // 생성 시간 자동 설정
+    private Timestamp createdAt; // 생성 시간 자동 설정
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "reference_id", referencedColumnName = "id")
     @SQLRestriction("reference_type = 'PERFORMANCE'")
     private List<ImagesEntity> imagesEntities;
