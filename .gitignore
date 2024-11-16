@@ -1,9 +1,6 @@
 # Gradle
 .gradle/
 build/
-fileHashes.bin
-fileHashes.lock
-buildOutputCleanup.lock
 
 HELP.md
 .gradle
