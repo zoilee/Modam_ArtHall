@@ -31,6 +31,8 @@ import com.arthall.modam.repository.ImagesRepository;
 import com.arthall.modam.repository.PerformancesRepository;
 
 import com.arthall.modam.dto.PerformancesDto;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 @Controller
 @RequestMapping("/admin")
@@ -289,7 +291,7 @@ public class AdminController {
 
         return "redirect:showCommitList";
     }
-
+ 
     @GetMapping("/showCommitView")
     public String showCommitView(@RequestParam("id") int id, Model model) {
         PerformancesEntity performance = bbsService.getPerformancesById(id).orElse(null);
@@ -297,6 +299,68 @@ public class AdminController {
         model.addAttribute("performance", performance);
         return "admin/adminShowCommitView";
     }
+
+    @GetMapping("/showCommitEdit")
+    public String showAdminCommitWrite(@RequestParam("id") int id, Model model) {
+        PerformancesEntity performance = performancesRepository.findById(id).orElse(null);
+        model.addAttribute("performance", performance);
+        return "admin/adminShowCommitEdit";
+    }
+    @PostMapping("/showCommitEdit")
+    public String adminCommitEdit(PerformancesEntity performancesEntity,
+        @RequestParam(value = "file", required = false) MultipartFile file,
+        @RequestParam(value = "deleteImage", required = false) boolean deleteImage,
+        RedirectAttributes redirectAttributes) {
+        
+            try {
+                // 기존 엔티티 조회
+                PerformancesEntity existingEntity = performancesRepository.findById(performancesEntity.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("해당 공연 정보를 찾을 수 없습니다."));
+        
+                existingEntity.setTitle(performancesEntity.getTitle());
+                existingEntity.setStart_date(performancesEntity.getStart_date());
+                existingEntity.setEnd_date(performancesEntity.getEnd_date());
+                existingEntity.setLocation(performancesEntity.getLocation());
+                existingEntity.setTime(performancesEntity.getTime());
+                existingEntity.setAge(performancesEntity.getAge());
+        
+                // 공연 정보 저장
+                performancesRepository.save(existingEntity);
+        
+                System.out.println("기존 공연 ID: " + existingEntity.getId());
+        
+                ImagesEntity.ReferenceType referenceType = ImagesEntity.ReferenceType.PERFORMANCE;
+        
+                // 이미지 삭제 처리
+                if (deleteImage) {
+                    List<ImagesEntity> images = imagesRepository.findByReferenceIdAndReferenceType(performancesEntity.getId(), referenceType);
+                    for (ImagesEntity image : images) {
+                        fileService.deleteFile(image.getImageUrl());
+                    }
+                    imagesRepository.deleteAll(images);
+                }
+        
+                // 파일 업로드 처리
+                if (file != null && !file.isEmpty()) {
+                    String filePath = fileService.saveFile(file);
+                    ImagesEntity image = new ImagesEntity();
+                    image.setImageUrl(filePath);
+                    image.setReferenceId(existingEntity.getId());
+                    image.setReferenceType(referenceType);
+        
+                    System.out.println("이미지에 설정된 Reference ID: " + image.getReferenceId());
+                    imagesRepository.save(image);
+                }
+        
+                redirectAttributes.addFlashAttribute("message", "공연 정보가 성공적으로 업데이트되었습니다.");
+            } catch (Exception e) {
+                redirectAttributes.addFlashAttribute("error", "공연 정보 업데이트 중 오류가 발생했습니다.");
+                e.printStackTrace();
+            }
+        return "redirect:showCommitList";
+    }
+    
+    
 
     @GetMapping("/userCommit")
     public String showAdminUserCommit() {
