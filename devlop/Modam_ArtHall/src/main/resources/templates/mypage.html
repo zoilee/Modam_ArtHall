@@ -16,7 +16,7 @@
                 <h4>어서오세요 <strong><span th:text="${user.name}"></span></strong> 고객님!</h4>
             </div>
             <div class="col-4 text-end">
-                <button type="button" class="btn btn-secondary" onclick="location.href='/registeruserEdit'">개인정보수정</button>
+                <a th:href="@{/registeruserEdit}" class="btn btn-secondary">개인정보수정</a>
             </div>
         </div>
 

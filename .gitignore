@@ -1,3 +1,7 @@
+# Gradle
+.gradle/
+build/
+
 HELP.md
 .gradle
 build/
@@ -39,3 +43,5 @@ out/
 
 #이미지 업로드용
 /uploads/
+### .env파일 ###
+.env
