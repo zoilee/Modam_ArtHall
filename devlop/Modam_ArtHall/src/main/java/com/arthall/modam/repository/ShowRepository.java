@@ -11,7 +11,7 @@ import com.arthall.modam.entity.ShowEntity;
 
 @Repository
 public interface ShowRepository extends JpaRepository<ShowEntity, Integer> {
-    ShowEntity findByMusicalAndShowDateAndShowTime(PerformanceEntity musical, LocalDate showDate, int showTime);
+    ShowEntity findByMusicalAndShowDateAndShowTime(int performanceId, LocalDate showDate, int showTime);
 
     List<ShowEntity> findByPerformanceId(int performanceId);
 }

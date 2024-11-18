@@ -1,3 +1,5 @@
+package com.arthall.modam.controller;
+
 import java.time.LocalDate;
 import java.util.Map;
 
@@ -24,18 +26,22 @@ public class ReservController {
     @Autowired
     private ShowRepository showRepository;
 
+    @Autowired
+    private PerformanceEntity performanceEntity;
+
     @PostMapping
     public ResponseEntity<Map<String, Object>> reserve(@RequestBody Map<String, String> reservationData) {
         String selectedDate = reservationData.get("selectedDate");
         String selectedTime = reservationData.get("selectedTime");
         int numberOfPeople = Integer.parseInt(reservationData.get("numberOfPeople"));
+        int performanceId = performanceEntity.getId();
 
         // 공연 날짜와 시간에 해당하는 ShowEntity 찾기
         LocalDate date = LocalDate.parse(selectedDate);
         int time = Integer.parseInt(selectedTime.equals("13:00") ? "1" : "2");  // 시간은 1 또는 2로 변환
 
         // 예시: "뮤지컬 제목"에 해당하는 뮤지컬 찾기 (필요에 따라 수정)
-        PerformanceEntity musical = musicalRepository.findByPerformanceTitle("뮤지컬 제목");
+        PerformanceEntity musical = musicalRepository.findByTitle("뮤지컬 제목");
 
         // 해당 날짜와 시간에 맞는 쇼 회차 찾기
         ShowEntity show = showRepository.findByMusicalAndShowDateAndShowTime(performanceId, date, time);

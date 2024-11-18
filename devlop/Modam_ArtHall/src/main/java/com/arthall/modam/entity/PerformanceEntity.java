@@ -53,10 +53,10 @@ public class PerformanceEntity {
         this.age = age;
         this.location = location;
         this.createdAt = createdAt;
-
-        @OneToMany(mappedBy = "performanceEntity") // PerformanceEntity -> ShowEntity (1:N 관계)
-        private List<ShowEntity> findByPerformanceId;
     }
+
+    @OneToMany(mappedBy = "performanceEntity") // PerformanceEntity -> ShowEntity (1:N 관계)
+    List<ShowEntity> findByPerformanceId;
 
     // Getter and Setter methods
     public int getId() {

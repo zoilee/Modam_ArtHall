@@ -3,13 +3,18 @@ package com.arthall.modam.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.arthall.modam.entity.PerformanceEntity;
 import com.arthall.modam.entity.ShowEntity;
 import com.arthall.modam.repository.ShowRepository;
 
 @Service
 public class ShowService {
+
+    @Autowired
+    PerformanceEntity performanceEntity = new PerformanceEntity();
 
     // ShowRepository를 주입받음
     private final ShowRepository showRepository;
@@ -25,6 +30,7 @@ public class ShowService {
 
     // performanceId로 검색한 목록을 반환하는 메서드
     public List<ShowEntity> getShowsByPerformanceId() {
+        var performanceId = performanceEntity.getId();
         return showRepository.findByPerformanceId(performanceId);
     }
 
