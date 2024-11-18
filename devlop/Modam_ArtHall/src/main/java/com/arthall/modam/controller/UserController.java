@@ -5,6 +5,7 @@ package com.arthall.modam.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +15,7 @@ import com.arthall.modam.dto.UserDto;
 import com.arthall.modam.service.UserService;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 
 @Controller
 public class UserController {
@@ -36,13 +38,19 @@ public class UserController {
 
     // 회원가입 처리
     @PostMapping("/register")
-    public String registerUser(@ModelAttribute UserDto userDto, Model model) {
-        // 필수 필드 검증
-        if (userDto.getLoginId() == null || userDto.getPassword() == null || userDto.getName() == null ||
-            userDto.getEmail() == null || userDto.getPhoneNumber() == null ||
-            userDto.getLoginId().isEmpty() || userDto.getPassword().isEmpty() || 
-            userDto.getName().isEmpty() || userDto.getEmail().isEmpty() || 
-            userDto.getPhoneNumber().isEmpty()) {
+    public String registerUser(@Valid UserDto userDto, BindingResult bindingResult, Model model) {
+        
+        // 입력 유효성 검사: BindingResult를 통해 @Valid 어노테이션 기반 유효성 검사
+        if(bindingResult.hasErrors()) {
+            return "/register";
+        }
+
+        // 필수 필드 검증: 각 필드가 null 또는 빈 문자열인지 확인
+        if (userDto.getLoginId() == null || userDto.getLoginId().isEmpty() ||
+            userDto.getPassword() == null || userDto.getPassword().isEmpty() ||
+            userDto.getName() == null || userDto.getName().isEmpty() ||
+            userDto.getEmail() == null || userDto.getEmail().isEmpty() ||
+            userDto.getPhoneNumber() == null || userDto.getPhoneNumber().isEmpty()) {
             
             model.addAttribute("error", "모든 필수 항목을 입력해 주세요.");
             return "register";

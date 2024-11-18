@@ -21,6 +21,27 @@
 .content{
     margin-top: 100px;
 }
+.auth-buttons .btn {
+    padding: 10px 20px;
+    font-size: 14px;
+    border-radius: 5px;
+}
+
+.auth-buttons .btn:not(:last-child) {
+    margin-right: 10px; /* 버튼 간격 조정 */
+}
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-container .auth-buttons {
+    margin-right: 15px; /* 헤더의 버튼 그룹 위치 조정 */
+}
+
+
 /**************** 푸터 *******************/
 
 /* 전체 푸터 스타일 */

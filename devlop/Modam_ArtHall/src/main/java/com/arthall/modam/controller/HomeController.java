@@ -1,8 +1,18 @@
 package com.arthall.modam.controller;
 
+<<<<<<< HEAD
+import java.util.Comparator;
+=======
+<<<<<<< HEAD
+>>>>>>> 87c95736d68f1e171e7230458440dfc593be3a67
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+=======
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+>>>>>>> feature-generalLogin
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,10 +32,13 @@ import com.arthall.modam.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.Collection;
+
 @Controller
 @RequiredArgsConstructor
 public class HomeController {
     @GetMapping("/")
+<<<<<<< HEAD
     public String home() {
         return "main";
     }
@@ -48,8 +61,13 @@ public class HomeController {
         UserEntity user = userService.getUserById(userId);
         int points = userService.getUserPoints(userId);
 
+        // 예매 내역 조회
         List<ReservationEntity> upcomingReservations = reservationService.getUpcomingReservationsByUserId(userId);
         List<ReservationEntity> pastReservations = reservationService.getPastReservationsByUserId(userId);
+
+        // 최신 날짜 순으로 정렬
+        upcomingReservations.sort(Comparator.comparing(ReservationEntity::getReservationDate).reversed());
+        pastReservations.sort(Comparator.comparing(ReservationEntity::getReservationDate).reversed());
 
         model.addAttribute("user", user);
         model.addAttribute("points", points);
@@ -150,31 +168,106 @@ public class HomeController {
 
     @GetMapping("/hallDetail")
     public String hallDetail() {
+=======
+    public String home(Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.isAuthenticated() && !authentication.getPrincipal().equals("anonymousUser")) {
+            model.addAttribute("username", authentication.getName());
+             // 사용자 역할 가져오기
+             String userRole = getUserRole(authentication);
+             model.addAttribute("userRole", userRole); // 역할 정보를 Model에 추가
+         } else {
+             model.addAttribute("userRole", "ROLE_ANONYMOUS"); // 비로그인 사용자
+         }
+
+
+        return "main";
+    }
+
+    @GetMapping("/mypage")
+    public String mypage(){
+        return "mypage";
+    }
+
+    @GetMapping("/registeruserEdit")
+    public String registeruserEdit(){
+        return "registeruserEdit";
+    }
+    
+    @GetMapping("/showDetail")
+    public String showDetail(){
+        return "showDetail";
+    }
+    
+    @GetMapping("/hallDetail")
+    public String hallDetail(){
+>>>>>>> feature-generalLogin
         return "hallDetail";
     }
 
     @GetMapping("/noticeList")
+<<<<<<< HEAD
     public String noticeList() {
+=======
+    public String noticeList(){
+>>>>>>> feature-generalLogin
         return "noticeList";
     }
 
     @GetMapping("/noticeView")
+<<<<<<< HEAD
     public String noticeView() {
+=======
+    public String noticeView(){
+>>>>>>> feature-generalLogin
         return "noticeView";
     }
 
     @GetMapping("/seatSelect")
+<<<<<<< HEAD
     public String seatSelect() {
+=======
+    public String seatSelect(){
+>>>>>>> feature-generalLogin
         return "seatSelect";
     }
 
     @GetMapping("/reservConfirm")
+<<<<<<< HEAD
     public String reservConfirm() {
+=======
+    public String reservConfirm(){
+>>>>>>> feature-generalLogin
         return "reservConfirm";
     }
 
     @GetMapping("/reservForm")
+<<<<<<< HEAD
     public String reservForm() {
+=======
+    public String reservForm(Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        // 로그인되지 않은 경우
+        if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal().equals("anonymousUser")) {
+            model.addAttribute("alertMessage", "로그인 후 이용하세요.");
+            return "redirect:/login"; // 로그인 페이지로 리다이렉트
+        }
+
+        // 로그인된 경우 예약 폼 페이지로 이동
+>>>>>>> feature-generalLogin
         return "reservForm";
+    }
+
+    // 사용자 역할을 반환하는 유틸리티 메서드
+    private String getUserRole(Authentication authentication) {
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+
+        // 사용자의 첫 번째 권한을 가져옴 (ROLE_USER, ROLE_ADMIN 등)
+        if (authorities != null && !authorities.isEmpty()) {
+            return authorities.iterator().next().getAuthority();
+        }
+        return "ROLE_ANONYMOUS"; // 기본값
     }
 }

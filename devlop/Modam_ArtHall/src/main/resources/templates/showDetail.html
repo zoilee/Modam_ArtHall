@@ -55,7 +55,7 @@
             <div class="col-md-8 my-4 sd_info-section">
                 <h4 class="my-4" th:text="${performance.title}">공연 제목</h4>
                 <p th:text="'공연기간: ' + ${performance.start_date} + ' ~ ' + ${performance.end_date}">공연 기간</p>
-                <p th:text="'공연시간: ' + ${performance.time}">공연 시간</p>
+                <p th:text="'공연시간: ' + ${performance.time} + '분'">공연 시간</p>
                 <p th:text="'관람연령: ' + ${performance.age} + '세 이상'">관람 연령</p>
                 <p th:text="'장소: ' + ${performance.location}">공연 장소</p>
                 <p th:text="'평균 평점: ' + (${performance.formattedAverageRating} ?: '0.0') + ' / 5'">
@@ -66,8 +66,18 @@
 
             <!-- 포스터 및 예매 버튼 -->
             <div class="col-md-4 poster-section">
-                <div class="bg-secondary" style="height: 300px; width: 300px; margin: 0 auto;">포스터</div>
+<<<<<<< HEAD
+                <div th:each="image : ${performance.imagesEntities}" style="height: 300px; width: 300px; margin: 0 auto;">
+                    <img th:src="@{{image}(image=${image.imageUrl})}" alt="공연관리 이미지" style="max-width: 100%; max-height: 500px;">
+                </div>
                 <button class="btn btn-primary btn-block mt-3">예매하기</button>
+=======
+                <div class="bg-secondary" style="height: 300px; width: 300px; margin: 0 auto;">포스터</div><!--db에서-->
+                <!-- 로그인된 사용자만 접근 가능 -->
+                <button th:if="${#authentication.authenticated}" th:onclick="window.location.href='/reservForm'" class="btn btn-primary btn-block mt-3">예매하기</button>
+                <!-- 비로그인 사용자 -->
+                <button th:if="${!#authentication.authenticated}" class="btn btn-primary btn-block mt-3" onclick="alert('로그인 후 이용하세요.');">예매하기</button>
+>>>>>>> 87c95736d68f1e171e7230458440dfc593be3a67
             </div>
         </div>
 
