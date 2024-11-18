@@ -33,7 +33,6 @@ import com.arthall.modam.repository.PerformancesRepository;
 import com.arthall.modam.dto.PerformancesDto;
 import org.springframework.web.bind.annotation.RequestBody;
 
-
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
@@ -198,10 +197,9 @@ public class AdminController {
     public String showAdminCommitList(
             Model model,
             @RequestParam(name = "page", defaultValue = "0") int page) {
-        int pageSize = 5; // 페이지당 표시할 공지사항 수        
+        int pageSize = 5; // 페이지당 표시할 공지사항 수
 
         Page<PerformancesEntity> performances = bbsService.getPerformances(page, pageSize);
-
 
         model.addAttribute("performances", performances);
         model.addAttribute("currentPage", page);
@@ -218,8 +216,8 @@ public class AdminController {
 
     @PostMapping("/showComitWrite")
     public String AdminCommitWrite(PerformancesEntity performancesEntity,
-        @RequestParam(value = "file", required = false) MultipartFile file,
-        RedirectAttributes redirectAttributes) {
+            @RequestParam(value = "file", required = false) MultipartFile file,
+            RedirectAttributes redirectAttributes) {
 
         // 공연데이터가 먼저 생성
         PerformancesEntity savedPerformance = performancesRepository.save(performancesEntity);
@@ -228,7 +226,7 @@ public class AdminController {
             // 파일 저장 로직
             try {
                 String filePath = fileService.saveFile(file); // 파일 저장 후 경로 반환
-
+                System.out.println(filePath);
                 // images 테이블에 데이터 저장
                 ImagesEntity image = new ImagesEntity();
                 image.setImageUrl(filePath);
@@ -244,54 +242,52 @@ public class AdminController {
 
         redirectAttributes.addFlashAttribute("message", "공연 정보가 성공적으로 등록되었습니다.");
 
-       
         return "redirect:showCommitList";
     }
 
     @GetMapping("/showCommitDelete")
-    public String showCommitDelete(@RequestParam("id") int id,RedirectAttributes redirectAttributes) {
+    public String showCommitDelete(@RequestParam("id") int id, RedirectAttributes redirectAttributes) {
 
         // 공연데이터 가져오기
         PerformancesEntity performance = performancesRepository.findById(id).orElse(null);
         ImagesEntity.ReferenceType referenceType = ImagesEntity.ReferenceType.PERFORMANCE;
- 
+
         if (performance == null) {
             redirectAttributes.addFlashAttribute("error", "공연 정보를 찾을 수 없습니다.");
             return "redirect:showCommitList";
         }
 
-        List<ImagesEntity> images = imagesRepository.findByReferenceIdAndReferenceType(performance.getId(), referenceType);
-        
-        //파일 삭제
-        boolean filDeleteError =false;
-        for (ImagesEntity image : images){
+        List<ImagesEntity> images = imagesRepository.findByReferenceIdAndReferenceType(performance.getId(),
+                referenceType);
+
+        // 파일 삭제
+        boolean filDeleteError = false;
+        for (ImagesEntity image : images) {
             try {
                 fileService.deleteFile(image.getImageUrl());
                 System.out.println("파일 삭제 성공: " + image.getImageUrl());
             } catch (IOException e) {
                 System.err.println("파일 삭제 실패: " + image.getImageUrl());
-                filDeleteError =true;
+                filDeleteError = true;
             }
-            
+
         }
 
         // 이미지 db 삭제
         imagesRepository.deleteAll(images);
- 
 
         // 공연 db 삭제
         performancesRepository.deleteById(id);
 
-        if(filDeleteError){
-        redirectAttributes.addFlashAttribute("message", "이미지파일이 삭제되지 않았습니다.");
-        }else{
+        if (filDeleteError) {
+            redirectAttributes.addFlashAttribute("message", "이미지파일이 삭제되지 않았습니다.");
+        } else {
             redirectAttributes.addFlashAttribute("message", "공연이 삭제되었습니다.");
         }
 
-
         return "redirect:showCommitList";
     }
- 
+
     @GetMapping("/showCommitView")
     public String showCommitView(@RequestParam("id") int id, Model model) {
         PerformancesEntity performance = bbsService.getPerformancesById(id).orElse(null);
@@ -306,61 +302,61 @@ public class AdminController {
         model.addAttribute("performance", performance);
         return "admin/adminShowCommitEdit";
     }
+
     @PostMapping("/showCommitEdit")
     public String adminCommitEdit(PerformancesEntity performancesEntity,
-        @RequestParam(value = "file", required = false) MultipartFile file,
-        @RequestParam(value = "deleteImage", required = false) boolean deleteImage,
-        RedirectAttributes redirectAttributes) {
-        
-            try {
-                // 기존 엔티티 조회
-                PerformancesEntity existingEntity = performancesRepository.findById(performancesEntity.getId())
+            @RequestParam(value = "file", required = false) MultipartFile file,
+            @RequestParam(value = "deleteImage", required = false) boolean deleteImage,
+            RedirectAttributes redirectAttributes) {
+
+        try {
+            // 기존 엔티티 조회
+            PerformancesEntity existingEntity = performancesRepository.findById(performancesEntity.getId())
                     .orElseThrow(() -> new IllegalArgumentException("해당 공연 정보를 찾을 수 없습니다."));
-        
-                existingEntity.setTitle(performancesEntity.getTitle());
-                existingEntity.setStart_date(performancesEntity.getStart_date());
-                existingEntity.setEnd_date(performancesEntity.getEnd_date());
-                existingEntity.setLocation(performancesEntity.getLocation());
-                existingEntity.setTime(performancesEntity.getTime());
-                existingEntity.setAge(performancesEntity.getAge());
-        
-                // 공연 정보 저장
-                performancesRepository.save(existingEntity);
-        
-                System.out.println("기존 공연 ID: " + existingEntity.getId());
-        
-                ImagesEntity.ReferenceType referenceType = ImagesEntity.ReferenceType.PERFORMANCE;
-        
-                // 이미지 삭제 처리
-                if (deleteImage) {
-                    List<ImagesEntity> images = imagesRepository.findByReferenceIdAndReferenceType(performancesEntity.getId(), referenceType);
-                    for (ImagesEntity image : images) {
-                        fileService.deleteFile(image.getImageUrl());
-                    }
-                    imagesRepository.deleteAll(images);
+
+            existingEntity.setTitle(performancesEntity.getTitle());
+            existingEntity.setStart_date(performancesEntity.getStart_date());
+            existingEntity.setEnd_date(performancesEntity.getEnd_date());
+            existingEntity.setLocation(performancesEntity.getLocation());
+            existingEntity.setTime(performancesEntity.getTime());
+            existingEntity.setAge(performancesEntity.getAge());
+
+            // 공연 정보 저장
+            performancesRepository.save(existingEntity);
+
+            System.out.println("기존 공연 ID: " + existingEntity.getId());
+
+            ImagesEntity.ReferenceType referenceType = ImagesEntity.ReferenceType.PERFORMANCE;
+
+            // 이미지 삭제 처리
+            if (deleteImage) {
+                List<ImagesEntity> images = imagesRepository
+                        .findByReferenceIdAndReferenceType(performancesEntity.getId(), referenceType);
+                for (ImagesEntity image : images) {
+                    fileService.deleteFile(image.getImageUrl());
                 }
-        
-                // 파일 업로드 처리
-                if (file != null && !file.isEmpty()) {
-                    String filePath = fileService.saveFile(file);
-                    ImagesEntity image = new ImagesEntity();
-                    image.setImageUrl(filePath);
-                    image.setReferenceId(existingEntity.getId());
-                    image.setReferenceType(referenceType);
-        
-                    System.out.println("이미지에 설정된 Reference ID: " + image.getReferenceId());
-                    imagesRepository.save(image);
-                }
-        
-                redirectAttributes.addFlashAttribute("message", "공연 정보가 성공적으로 업데이트되었습니다.");
-            } catch (Exception e) {
-                redirectAttributes.addFlashAttribute("error", "공연 정보 업데이트 중 오류가 발생했습니다.");
-                e.printStackTrace();
+                imagesRepository.deleteAll(images);
             }
+
+            // 파일 업로드 처리
+            if (file != null && !file.isEmpty()) {
+                String filePath = fileService.saveFile(file);
+                ImagesEntity image = new ImagesEntity();
+                image.setImageUrl(filePath);
+                image.setReferenceId(existingEntity.getId());
+                image.setReferenceType(referenceType);
+
+                System.out.println("이미지에 설정된 Reference ID: " + image.getReferenceId());
+                imagesRepository.save(image);
+            }
+
+            redirectAttributes.addFlashAttribute("message", "공연 정보가 성공적으로 업데이트되었습니다.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "공연 정보 업데이트 중 오류가 발생했습니다.");
+            e.printStackTrace();
+        }
         return "redirect:showCommitList";
     }
-    
-    
 
     @GetMapping("/userCommit")
     public String showAdminUserCommit() {

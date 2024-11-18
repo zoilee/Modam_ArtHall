@@ -38,7 +38,6 @@
             <h5>첨부된 이미지</h5>
             <li th:each="image : ${performance.imagesEntities}">
                 <img th:src="@{{image}(image=${image.imageUrl})}" alt="공연관리 이미지" style="max-width: 100%; max-height: 500px;">
-                
             </li>
         </div>
 

@@ -33,7 +33,7 @@
                             <td ><a th:text="${bbs.title}" th:href="@{/admin/showCommitView(id=${bbs.id})}"></a></td> <!-- db부분-->
                             <td th:text="${bbs.createdAt}"></td> <!-- db부분-->
                             <td>
-                                <button class="btn btn-primary btn-sm me-2">수정</button>
+                                <a class="btn btn-primary btn-sm me-2" th:href="@{/admin/showCommitEdit(id=${bbs.id})}">수정</a>
                                 <a th:href="@{/admin/showCommitDelete(id=${bbs.id})}" 
                                    class="btn btn-danger btn-sm" 
                                    onclick="return confirm('정말 삭제하시겠습니까?');">삭제</a>
@@ -49,6 +49,31 @@
                 <a class="btn btn-secondary mt-3" th:href="@{/admin/showCommitWrite}">등록하기</a>
             </div>
         </div>
+
+        <!-- Pagination -->
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                <!-- 이전 페이지로 이동 -->
+                <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                    <a class="page-link" th:href="@{|/admin/showCommitList?page=${currentPage - 1}|}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+
+                <!-- 각 페이지로 이동하는 링크 -->
+                <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                    th:classappend="${currentPage == i} ? 'active'">
+                    <a class="page-link" th:href="@{|/admin/showCommitList?page=${i}|}" th:text="${i + 1}">1</a>
+                </li>
+
+                <!-- 다음 페이지로 이동 -->
+                <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                    <a class="page-link" th:href="@{|/admin/showCommitList?page=${currentPage + 1}|}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
 
     </div>
 
