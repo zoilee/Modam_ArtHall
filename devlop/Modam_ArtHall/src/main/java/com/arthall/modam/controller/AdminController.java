@@ -113,36 +113,45 @@ public class AdminController {
 
     // 수정 요청 처리
     @PostMapping("/noticeEdit")
-    public String updateAdminNotice(@RequestParam("id") int id,
+    public String updateAdminNotice(
+            @RequestParam("id") int id,
             @RequestParam("title") String title,
             @RequestParam("content") String content,
             @RequestParam(value = "file", required = false) MultipartFile file,
-            @RequestParam(value = "deleteImage", required = false) boolean deleteImage,
+            @RequestParam(value = "deleteImageIds", required = false) List<Integer> deleteImageIds,
             RedirectAttributes redirectAttributes) {
+
         NoticesEntity notice = bbsService.getNoticeById(id).orElse(null);
         if (notice != null) {
             notice.setTitle(title);
             notice.setContent(content);
 
-            // // 이미지 삭제 요청 처리
-            // if (deleteImage && notice.getImageUrl() != null) {
-            // try {
-            // fileService.deleteFile(notice.getImageUrl());
-            // notice.setImageUrl(null); // 기존 이미지 경로 제거
-            // } catch (IOException e) {
-            // e.printStackTrace();
-            // }
-            // }
+            // 이미지 삭제 처리
+            if (deleteImageIds != null && !deleteImageIds.isEmpty()) {
+                List<ImagesEntity> imagesToDelete = imagesRepository.findAllById(deleteImageIds);
+                for (ImagesEntity image : imagesToDelete) {
+                    try {
+                        fileService.deleteFile(image.getImageUrl());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                imagesRepository.deleteAll(imagesToDelete);
+            }
 
-            // // 새 파일이 업로드된 경우 처리
-            // if (file != null && !file.isEmpty()) {
-            // try {
-            // String filePath = fileService.saveFile(file);
-            // notice.setImageUrl(filePath);
-            // } catch (IOException e) {
-            // e.printStackTrace();
-            // }
-            // }
+            // 새 파일 업로드 처리
+            if (file != null && !file.isEmpty()) {
+                try {
+                    String filePath = fileService.saveFile(file);
+                    ImagesEntity newImage = new ImagesEntity();
+                    newImage.setImageUrl(filePath);
+                    newImage.setReferenceId(notice.getId());
+                    newImage.setReferenceType(ImagesEntity.ReferenceType.NOTICE);
+                    imagesRepository.save(newImage);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
 
             bbsService.saveNotice(notice);
             redirectAttributes.addFlashAttribute("message", "공지사항이 성공적으로 수정되었습니다.");
@@ -150,26 +159,45 @@ public class AdminController {
         return "redirect:/admin/noticeList";
     }
 
+
     // 삭제 요청 처리
     @PostMapping("/noticeDelete")
     public String deleteAdminNotice(@RequestParam("id") int id, RedirectAttributes redirectAttributes) {
         NoticesEntity notice = bbsService.getNoticeById(id).orElse(null);
 
-        // if (notice != null) {
-        // if (notice.getImageUrl() != null) {
-        // try {
-        // fileService.deleteFile(notice.getImageUrl());
-        // } catch (IOException e) {
-        // System.err.println("이미지 파일 삭제 실패: " + notice.getImageUrl());
-        // e.printStackTrace();
-        // }
-        // }
-        // adminNoticeListService.deleteNotice(id);
-        // redirectAttributes.addFlashAttribute("message", "공지사항이 성공적으로 삭제되었습니다.");
-        // }
+        if (notice != null) {
+            // 공지사항에 연결된 이미지 가져오기
+            List<ImagesEntity> images = imagesRepository.findByReferenceIdAndReferenceType(id, ImagesEntity.ReferenceType.NOTICE);
+
+            // 이미지 파일 삭제
+            boolean fileDeleteError = false;
+            for (ImagesEntity image : images) {
+                try {
+                    fileService.deleteFile(image.getImageUrl());
+                } catch (IOException e) {
+                    System.err.println("이미지 파일 삭제 실패: " + image.getImageUrl());
+                    fileDeleteError = true;
+                }
+            }
+
+            // 이미지 데이터 삭제
+            imagesRepository.deleteAll(images);
+
+            // 공지사항 삭제
+            bbsService.deleteNotice(id);
+
+            if (fileDeleteError) {
+                redirectAttributes.addFlashAttribute("message", "이미지 파일 삭제 중 일부 오류가 발생했습니다.");
+            } else {
+                redirectAttributes.addFlashAttribute("message", "공지사항이 성공적으로 삭제되었습니다.");
+            }
+        } else {
+            redirectAttributes.addFlashAttribute("error", "공지사항을 찾을 수 없습니다.");
+        }
 
         return "redirect:/admin/noticeList";
     }
+
 
     // 공지사항 상세 조회 페이지
     @GetMapping("/noticeView")
@@ -362,4 +390,6 @@ public class AdminController {
     public String showAdminUserCommit() {
         return "admin/adminUserCommit";
     }
+
+
 }
