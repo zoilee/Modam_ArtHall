@@ -24,39 +24,47 @@
         <div class="row justify-content-center">
             <!-- 예약현황 -->
             <div class="col-6 col-md-3 text-center mb-4">
-                <div class="border rounded py-4 bg-light">
-                    <div class="mb-2">
-                        <img src="예약현황_아이콘.png" alt="예약현황 아이콘" class="img-fluid" style="width: 60px; height: 60px;">
+                <a th:href="@{/admin/redservView}" class="text-decoration-none">
+                    <div class="border rounded py-4 bg-light">
+                        <div class="mb-2">
+                            <img src="예약현황_아이콘.png" alt="예약현황 아이콘" class="img-fluid" style="width: 60px; height: 60px;">
+                        </div>
+                        <p class="mt-3">예약현황</p>
                     </div>
-                    <p class="mt-3">예약현황</p>
-                </div>
+                </a>
             </div>
             <!-- 회원관리 -->
             <div class="col-6 col-md-3 text-center mb-4">
-                <div class="border rounded py-4 bg-light">
-                    <div class="mb-2">
-                        <img src="회원관리_아이콘.png" alt="회원관리 아이콘" class="img-fluid" style="width: 60px; height: 60px;">
+                <a th:href="@{/admin/userCommit}" class="text-decoration-none">
+                    <div class="border rounded py-4 bg-light">
+                        <div class="mb-2">
+                            <img src="회원관리_아이콘.png" alt="회원관리 아이콘" class="img-fluid" style="width: 60px; height: 60px;">
+                        </div>
+                        <p class="mt-3">회원관리</p>
                     </div>
-                    <p class="mt-3">회원관리</p>
-                </div>
+                </a>
             </div>
             <!-- 공연관리 -->
             <div class="col-6 col-md-3 text-center mb-4">
-                <div class="border rounded py-4 bg-light">
-                    <div class="mb-2">
-                        <img src="공연관리_아이콘.png" alt="공연관리 아이콘" class="img-fluid" style="width: 60px; height: 60px;">
+                <a th:href="@{/admin/showCommitList}" class="text-decoration-none">
+                    <div class="border rounded py-4 bg-light">
+                        <div class="mb-2">
+                            <img src="공연관리_아이콘.png" alt="공연관리 아이콘" class="img-fluid" style="width: 60px; height: 60px;">
+                        </div>
+                        <p class="mt-3">공연관리</p>
                     </div>
-                    <p class="mt-3">공연관리</p>
-                </div>
+                </a>
             </div>
             <!-- 공지사항 -->
             <div class="col-6 col-md-3 text-center mb-4">
-                <div class="border rounded py-4 bg-light">
-                    <div class="mb-2">
-                        <img src="공지사항_아이콘.png" alt="공지사항 아이콘" class="img-fluid" style="width: 60px; height: 60px;">
+                <a th:href="@{/admin/noticeList}" class="text-decoration-none">
+                    <div class="border rounded py-4 bg-light">
+                        <div class="mb-2">
+                            <img src="공지사항_아이콘.png" alt="공지사항 아이콘" class="img-fluid" style="width: 60px; height: 60px;">
+                        </div>
+                        <p class="mt-3">공지사항</p>
                     </div>
-                    <p class="mt-3">공지사항</p>
-                </div>
+                </a>
             </div>
         </div>
     </div>

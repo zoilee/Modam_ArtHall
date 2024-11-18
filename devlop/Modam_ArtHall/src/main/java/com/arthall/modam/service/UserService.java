@@ -13,6 +13,8 @@ import com.arthall.modam.dto.UserDto;
 import com.arthall.modam.entity.UserEntity;
 import com.arthall.modam.repository.UserRepository;
 
+import jakarta.annotation.PostConstruct;
+
 @Service
 public class UserService implements UserDetailsService {
 
@@ -69,5 +71,22 @@ public class UserService implements UserDetailsService {
                 .password(userEntity.getPassword())
                 .roles(userEntity.getRole().name())  // 역할 설정
                 .build();
+    }
+
+    @PostConstruct
+    public void createAdminUser() {
+        Optional<UserEntity> admin = userRepository.findByLoginId("admin");
+        if (admin.isEmpty()) {
+            UserEntity adminUser = new UserEntity();
+            adminUser.setLoginId("admin");
+            adminUser.setPassword(passwordEncoder.encode("admin123")); // 비밀번호 암호화
+            adminUser.setName("관리자");
+            adminUser.setEmail("admin@example.com");
+            adminUser.setPhoneNumber("010-1234-5678");
+            adminUser.setRole(UserEntity.Role.ADMIN); // 관리자 권한 설정
+            adminUser.setStatus("active");
+            userRepository.save(adminUser);
+            System.out.println("관리자 계정 생성 완료");
+        }
     }
 }
