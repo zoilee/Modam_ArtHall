@@ -1,16 +1,12 @@
 package com.arthall.modam.service;
 
-<<<<<<< HEAD
-
-import org.springframework.beans.factory.annotation.Autowired;
-=======
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
->>>>>>> feature-generalLogin
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,13 +21,8 @@ import com.arthall.modam.repository.UserRewardsRepository;
 import jakarta.annotation.PostConstruct;
 
 @Service
-<<<<<<< HEAD
-public class UserService {
-    @Autowired
-=======
 public class UserService implements UserDetailsService {
 
->>>>>>> feature-generalLogin
     private final UserRepository userRepository;
 
 
@@ -57,19 +48,6 @@ public class UserService implements UserDetailsService {
         userRepository.save(userEntity);
     }
 
-<<<<<<< HEAD
-    public UserEntity getUserById(int id) {
-        return userRepository.findById(id).orElse(null);
-    }
-
-    // 로그인
-    public boolean login(String loginId, String rawPassword){
-        UserEntity user = userRepository.findByLoginId(loginId);
-
-        if (user != null && passwordEncoder.matches(rawPassword, user.getPassword())) {
-            // 로그인 성공
-            return true;
-=======
     public boolean login(String loginId, String rawPassword) {
         Optional<UserEntity> user = userRepository.findByLoginId(loginId);
     
@@ -83,11 +61,9 @@ public class UserService implements UserDetailsService {
             }
         } else {
             System.out.println("사용자 없음: " + loginId);
->>>>>>> feature-generalLogin
         }
         return false;
     }
-<<<<<<< HEAD
 
 
     public int getUserPoints(int userId) {
@@ -95,9 +71,6 @@ public class UserService implements UserDetailsService {
                 .map(UserRewardEntity::getPoints)
                 .orElse(0);
     }
-}
-=======
-    
 
     // UserDetailsService 인터페이스의 loadUserByUsername 메서드 구현
     @Override
@@ -133,4 +106,3 @@ public class UserService implements UserDetailsService {
         }
     }
 }
->>>>>>> feature-generalLogin
