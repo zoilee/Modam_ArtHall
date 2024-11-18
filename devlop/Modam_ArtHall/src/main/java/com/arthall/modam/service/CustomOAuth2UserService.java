@@ -34,34 +34,66 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     public OAuth2User loadUser(OAuth2UserRequest userRequest) {
         OAuth2User oAuth2User = super.loadUser(userRequest);
 
-        // 네이버에서 받은 사용자 정보를 매핑
+        // OAuth2 provider (Google, Kakao, Naver 등) 식별
+        String registrationId = userRequest.getClientRegistration().getRegistrationId();
         Map<String, Object> attributes = oAuth2User.getAttributes();
-        @SuppressWarnings("unchecked")
-        Map<String, Object> response = (Map<String, Object>) attributes.get("response");
 
-        String id = (String) response.getOrDefault("id", "default_id");  // id가 없을 경우 기본값 설정
-        String name = (String) response.get("name");
-        String email = (String) response.get("email");
-        String phone = (String) response.get("mobile");
-        logger.info("Naver User ID: {}", id);
-        // 이메일로 사용자 정보 조회 후 없으면 새로 저장
+        String email = null;
+        String name = null;
+
+        if ("kakao".equals(registrationId)) {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
+            @SuppressWarnings("unchecked")
+            Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");
+
+            email = (String) kakaoAccount.get("email");
+            name = (String) profile.get("nickname");
+            logger.info("Kakao User - Email: {}, Name: {}", email, name);
+        } else if ("google".equals(registrationId)) {
+            email = (String) attributes.get("email");
+            name = (String) attributes.get("name");
+            logger.info("Google User - Email: {}, Name: {}", email, name);
+        } else if ("naver".equals(registrationId)) {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> response = (Map<String, Object>) attributes.get("response");
+
+            email = (String) response.get("email");
+            name = (String) response.get("name");
+            logger.info("Naver User - Email: {}, Name: {}", email, name);
+        }
+
+        if (email == null) {
+            throw new IllegalArgumentException("Email is missing from the OAuth2 provider");
+        }
+
+        // 사용자 정보 저장 또는 업데이트
+        saveOrUpdateUser(email, name);
+
+        // OAuth2User 반환
+        return new DefaultOAuth2User(
+            Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
+            attributes,
+            "email"  // OAuth2 사용자 식별자로 사용할 속성 (공통적으로 email 사용)
+        );
+    }
+
+    private void saveOrUpdateUser(String email, String name) {
         Optional<UserEntity> existingUser = userRepository.findByEmail(email);
+
         if (existingUser.isEmpty()) {
             UserEntity newUser = new UserEntity();
             newUser.setEmail(email);
             newUser.setName(name);
-            newUser.setPhoneNumber(phone);
-            newUser.setRole(UserEntity.Role.USER); // 기본 역할 설정
+            newUser.setRole(UserEntity.Role.USER); // 기본 사용자 역할 설정
             newUser.setStatus("active"); // 기본 상태 설정
-
             userRepository.save(newUser);
+            logger.info("New user registered: {}", email);
+        } else {
+            UserEntity existing = existingUser.get();
+            existing.setName(name); // 이름 업데이트 (필요 시)
+            userRepository.save(existing);
+            logger.info("Existing user updated: {}", email);
         }
-
-        // OAuth2User를 반환하기 위해 필요한 권한 설정 (기본 권한 USER)
-        return new DefaultOAuth2User(
-            Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
-            response,  // `attributes` 대신 `response`를 전달
-            "id"  // user-name-attribute로 설정한 "id"를 기본 식별자로 사용
-        );
     }
 }
