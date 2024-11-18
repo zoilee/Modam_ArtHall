@@ -86,13 +86,17 @@ public class HomeController {
         UserEntity user = new UserEntity();
         user.setId(1); // 로그인된 사용자의 ID를 1로 가정
 
-        // 댓글 목록 가져오기
+        // PerformanceEntity 및 CommentEntity 가져오기
         List<CommentEntity> comments = commentService.getComments(performance, 0, 5);
+
+        // 총 댓글 수 계산
+        int totalComments = commentService.getTotalCommentsByPerformanceId(performanceId);
 
         // 모델에 데이터 추가
         model.addAttribute("performance", performance);
         model.addAttribute("comments", comments);
         model.addAttribute("userId", user.getId());
+        model.addAttribute("totalComments", totalComments);
 
         return "showDetail"; // Thymeleaf 템플릿 이름
     }

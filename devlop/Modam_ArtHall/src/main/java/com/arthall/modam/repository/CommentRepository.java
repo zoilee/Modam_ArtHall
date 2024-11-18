@@ -31,4 +31,8 @@ public interface CommentRepository extends JpaRepository<CommentEntity, Integer>
     @Query("SELECT c FROM CommentEntity c WHERE c.performance.id = :performanceId ORDER BY c.createdAt DESC")
     List<CommentEntity> findCommentsByPerformanceId(@Param("performanceId") int performanceId);
 
+    // 주어진 Performance ID에 대한 댓글 총 개수 반환
+    @Query("SELECT COUNT(c) FROM CommentEntity c WHERE c.performance.id = :performanceId")
+    long countByPerformanceId(@Param("performanceId") int performanceId);
+
 }

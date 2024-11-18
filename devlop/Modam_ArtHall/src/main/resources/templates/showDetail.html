@@ -113,7 +113,9 @@
 
             <!-- 더보기 버튼 -->
             <div class="text-center">
-                <button id="loadMoreBtn" class="btn btn-secondary mt-3" onclick="loadMoreComments()" th:if="${!#lists.isEmpty(comments)}">더보기</button>
+                <button id="loadMoreBtn" class="btn btn-secondary mt-3"
+                    th:if="${#lists.size(comments) < totalComments}" 
+                    onclick="loadMoreComments()">더보기</button>
             </div>
 
             <!-- 댓글 작성 -->
@@ -134,10 +136,11 @@
     </div>
 
     <script th:inline="javascript">
-         let offset = 5; // 초기 offset 값
+        let offset = 5; // 초기 offset 값
         const performanceId = /*[[${performance.id}]]*/; // Thymeleaf에서 값 전달
         const userId = /*[[${userId}]]*/; // 로그인한 사용자 ID
         let rating = 0;
+        let totalComments = /*[[${totalComments}]]*/; // 총 댓글 수
 
         // 별점 선택
         document.querySelectorAll('.rating .star').forEach(star => {
@@ -304,56 +307,56 @@
     }
 
 
-        // 더보기 버튼 기능
-        function loadMoreComments() {
-            fetch(`/showDetail/loadComments?performanceId=${performanceId}&offset=${offset}`)
-                .then(response => {
-                    if (!response.ok) throw new Error("Network response was not ok");
-                    return response.json();
-                })
-                .then(comments => {
-                    if (comments.length === 0) {
-                        document.getElementById('loadMoreBtn').style.display = 'none'; // 더 이상 댓글이 없으면 버튼 숨기기
-                        return;
-                    }
+    //더보기 버튼 기능구현
+    function loadMoreComments() {
+        fetch(`/showDetail/loadComments?performanceId=${performanceId}&offset=${offset}`)
+            .then(response => response.json())
+            .then(comments => {
+                const commentSection = document.getElementById('comment-section');
+                if (!commentSection) {
+                    console.error("comment-section element not found.");
+                    return;
+                }
 
-                    const commentSection = document.getElementById('comment-section');
-                    if (!commentSection) {
-                        console.error("comment-section element not found.");
-                        return;
-                    }
-
-                    comments.forEach(comment => {
-                        const commentHtml = `
-                            <div class="card mb-2 position-relative" id="comment-${comment.id}">
-                                <div class="card-body d-flex justify-content-between">
-                                    <div>
-                                        <p>
-                                            <span class="sd_comment-author">${comment.user.name}</span>
-                                            <span class="text-muted sd_comment-timestamp">${comment.createdAt}</span>
-                                        </p>
-                                        <p class="card-text" id="comment-text-${comment.id}">${comment.commentText}</p>
-                                        <div class="rating-stars">
-                                            ${renderStars(comment.rating)}
-                                        </div>
-                                    </div>
-                                    <div class="action-buttons">
-                                        <button class="btn btn-sm btn-outline-primary" onclick="enterEditMode(${comment.id})" id="edit-button-${comment.id}">수정</button>
-                                        <button class="btn btn-sm btn-outline-danger" onclick="deleteComment(${comment.id})" id="delete-button-${comment.id}">삭제</button>
+                comments.forEach(comment => {
+                    const commentHtml = `
+                        <div class="card mb-2 position-relative" id="comment-${comment.id}">
+                            <div class="card-body d-flex justify-content-between">
+                                <div>
+                                    <p>
+                                        <span class="sd_comment-author">${comment.user.name}</span>
+                                        <span class="text-muted sd_comment-timestamp">${comment.createdAt}</span>
+                                    </p>
+                                    <p class="card-text" id="comment-text-${comment.id}">${comment.commentText}</p>
+                                    <div class="rating-stars">
+                                        ${renderStars(comment.rating)}
                                     </div>
                                 </div>
-                            </div>`;
-                        commentSection.insertAdjacentHTML('beforeend', commentHtml);
-                    });
-
-                    // offset 값을 불러온 댓글 개수만큼 증가
-                    offset += comments.length;
-                })
-                .catch(error => {
-                    console.error("Error loading comments:", error);
-                    alert("댓글을 로드하는 데 실패했습니다.");
+                                <div class="action-buttons">
+                                    <button class="btn btn-sm btn-outline-primary" onclick="enterEditMode(${comment.id})" id="edit-button-${comment.id}">수정</button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="deleteComment(${comment.id})" id="delete-button-${comment.id}">삭제</button>
+                                </div>
+                            </div>
+                        </div>`;
+                    commentSection.insertAdjacentHTML('beforeend', commentHtml);
                 });
-        }
+
+                // offset 증가
+                offset += comments.length;
+
+                // 현재 표시된 댓글 개수
+                const displayedComments = document.querySelectorAll('.card.mb-2').length;
+
+                // 더보기 버튼 숨기기 조건
+                if (displayedComments >= totalComments || comments.length < 5) {
+                    document.getElementById('loadMoreBtn').style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error("Error loading comments:", error);
+                alert("댓글을 로드하는 데 실패했습니다.");
+            });
+    }
 
         // 별점 렌더링 함수
         function renderStars(rating) {

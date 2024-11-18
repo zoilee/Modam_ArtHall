@@ -45,4 +45,9 @@ public class CommentService {
     public void deleteComment(int commentId) {
         commentRepository.deleteById(commentId);
     }
+
+    // 공연 ID에 대한 댓글 총 개수 반환
+    public int getTotalCommentsByPerformanceId(int performanceId) {
+        return (int) commentRepository.countByPerformanceId(performanceId);
+    }
 }
