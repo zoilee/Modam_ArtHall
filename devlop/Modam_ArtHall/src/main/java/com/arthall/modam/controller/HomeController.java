@@ -2,8 +2,6 @@ package com.arthall.modam.controller;
 
 import java.util.List;
 
-
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.arthall.modam.entity.CommentEntity;
-import com.arthall.modam.entity.PerformanceEntity;
+import com.arthall.modam.entity.PerformancesEntity;
 import com.arthall.modam.entity.ReservationEntity;
 import com.arthall.modam.entity.UserEntity;
 import com.arthall.modam.service.CommentService;
@@ -24,15 +22,12 @@ import com.arthall.modam.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 
-
-
-
 @Controller
 @RequiredArgsConstructor
 public class HomeController {
-@GetMapping("/")
+    @GetMapping("/")
     public String home() {
-        return "main"; 
+        return "main";
     }
 
     @Autowired
@@ -47,8 +42,6 @@ public class HomeController {
     @Autowired
     private CommentService commentService;
 
-
-
     @GetMapping("/mypage")
     public String mypage(Model model) {
         int userId = 1; // 예시 사용자 ID, 실제로는 인증된 사용자 ID 사용
@@ -57,7 +50,6 @@ public class HomeController {
 
         List<ReservationEntity> upcomingReservations = reservationService.getUpcomingReservationsByUserId(userId);
         List<ReservationEntity> pastReservations = reservationService.getPastReservationsByUserId(userId);
-
 
         model.addAttribute("user", user);
         model.addAttribute("points", points);
@@ -70,14 +62,13 @@ public class HomeController {
         }
         if (pastReservations.isEmpty()) {
             model.addAttribute("noPastReservationsMessage", "과거 예약이 없습니다.");
-        }      
+        }
 
         return "mypage"; // mypage.html로 이동
     }
-    
 
-@GetMapping("/registeruserEdit")
-    public String registeruserEdit(){
+    @GetMapping("/registeruserEdit")
+    public String registeruserEdit() {
         return "registeruserEdit";
     }
 
@@ -85,25 +76,24 @@ public class HomeController {
         this.commentService = commentService;
     }
 
-    
     @GetMapping("/showDetail/{performanceId}")
     public String showPerformanceDetails(@PathVariable("performanceId") int performanceId, Model model) {
         // 평균 평점이 설정된 PerformanceEntity 가져오기
-        PerformanceEntity performance = performanceService.getPerformanceWithAverageRating(performanceId)
+        PerformancesEntity performance = performanceService.getPerformanceWithAverageRating(performanceId)
                 .orElseThrow(() -> new IllegalArgumentException("공연을 찾을 수 없습니다."));
-    
+
         // 로그인된 사용자를 임시로 설정
         UserEntity user = new UserEntity();
         user.setId(1); // 로그인된 사용자의 ID를 1로 가정
-    
+
         // 댓글 목록 가져오기
         List<CommentEntity> comments = commentService.getComments(performance, 0, 5);
-    
+
         // 모델에 데이터 추가
         model.addAttribute("performance", performance);
         model.addAttribute("comments", comments);
         model.addAttribute("userId", user.getId());
-    
+
         return "showDetail"; // Thymeleaf 템플릿 이름
     }
 
@@ -118,7 +108,7 @@ public class HomeController {
         UserEntity user = new UserEntity();
         user.setId(userId);
 
-        PerformanceEntity performance = new PerformanceEntity();
+        PerformancesEntity performance = new PerformancesEntity();
         performance.setId(performanceId);
 
         commentService.addComment(user, performance, commentText, rating);
@@ -149,39 +139,38 @@ public class HomeController {
     public List<CommentEntity> loadMoreComments(
             @RequestParam("performanceId") int performanceId,
             @RequestParam("offset") int offset) {
-        PerformanceEntity performance = new PerformanceEntity();
+        PerformancesEntity performance = new PerformancesEntity();
         performance.setId(performanceId);
         return commentService.getComments(performance, offset, 5);
     }
 
-    
-@GetMapping("/hallDetail")
-    public String hallDetail(){
+    @GetMapping("/hallDetail")
+    public String hallDetail() {
         return "hallDetail";
     }
 
-@GetMapping("/noticeList")
-    public String noticeList(){
+    @GetMapping("/noticeList")
+    public String noticeList() {
         return "noticeList";
     }
 
-@GetMapping("/noticeView")
-    public String noticeView(){
+    @GetMapping("/noticeView")
+    public String noticeView() {
         return "noticeView";
     }
 
-@GetMapping("/seatSelect")
-    public String seatSelect(){
+    @GetMapping("/seatSelect")
+    public String seatSelect() {
         return "seatSelect";
     }
 
-@GetMapping("/reservConfirm")
-    public String reservConfirm(){
+    @GetMapping("/reservConfirm")
+    public String reservConfirm() {
         return "reservConfirm";
     }
 
-@GetMapping("/reservForm")
-    public String reservForm(){
+    @GetMapping("/reservForm")
+    public String reservForm() {
         return "reservForm";
     }
 }

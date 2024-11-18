@@ -50,4 +50,7 @@ public class PerformancesEntity {
     @SQLRestriction("reference_type = 'PERFORMANCE'")
     private List<ImagesEntity> imagesEntities;
 
+    @Transient
+    private String formattedAverageRating; // 평균 평점 형식
+
 }

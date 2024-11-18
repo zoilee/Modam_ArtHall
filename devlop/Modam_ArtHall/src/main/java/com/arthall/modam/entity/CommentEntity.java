@@ -28,7 +28,7 @@ public class CommentEntity {
 
     @ManyToOne(fetch = FetchType.EAGER) // 공연 정보를 위한 PerformanceEntity와의 관계 설정
     @JoinColumn(name = "performance_id", nullable = false) // performance_id 외래 키와 매핑
-    private PerformanceEntity performance;
+    private PerformancesEntity performance;
 
     @Column(name = "comment_text", nullable = false)
     private String commentText;
@@ -37,5 +37,5 @@ public class CommentEntity {
     private Timestamp createdAt;
 
     @Column(name = "rating", nullable = false)
-    private Integer rating;  // 평점 필드 추가
+    private Integer rating; // 평점 필드 추가
 }

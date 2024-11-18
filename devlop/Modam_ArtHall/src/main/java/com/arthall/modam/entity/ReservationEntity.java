@@ -27,7 +27,7 @@ public class ReservationEntity {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "performance_id")
-    private PerformanceEntity performance; // 필드 확인
+    private PerformancesEntity performance; // 필드 확인
 
     @Column(name = "seat_id")
     private int seatId;

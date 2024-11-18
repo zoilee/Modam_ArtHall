@@ -10,12 +10,12 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.arthall.modam.entity.CommentEntity;
-import com.arthall.modam.entity.PerformanceEntity;
+import com.arthall.modam.entity.PerformancesEntity;
 
 @Repository
 public interface CommentRepository extends JpaRepository<CommentEntity, Integer> {
     // performanceId에 따라 댓글을 페이지로 가져오는 메서드
-    Page<CommentEntity> findByPerformanceOrderByCreatedAtDesc(PerformanceEntity performance, Pageable pageable);
+    Page<CommentEntity> findByPerformanceOrderByCreatedAtDesc(PerformancesEntity performance, Pageable pageable);
 
     @Query("SELECT c FROM CommentEntity c LEFT JOIN FETCH c.user LEFT JOIN FETCH c.performance WHERE c.performance.id = :performanceId")
     List<CommentEntity> findCommentsByPerformanceId(@Param("performanceId") Integer performanceId);
@@ -31,5 +31,4 @@ public interface CommentRepository extends JpaRepository<CommentEntity, Integer>
     @Query("SELECT c FROM CommentEntity c WHERE c.performance.id = :performanceId ORDER BY c.createdAt DESC")
     List<CommentEntity> findCommentsByPerformanceId(@Param("performanceId") int performanceId);
 
-    
 }
