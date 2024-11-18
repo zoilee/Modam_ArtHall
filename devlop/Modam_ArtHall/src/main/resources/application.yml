@@ -33,21 +33,31 @@ spring:
     oauth2:
       client:
         registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope:
+              - email
+              - profile
           kakao:
-            client-id: 563100b444f6f0b3713610c52f6e6d4d
-            client-secret: PCViwf16HFhcF35uJq9sPU0cYWt6QLhE
+            client-id: ${KAKAO_CLIENT_ID}
+            client-secret: ${KAKAO_CLIENT_SECRET}
             client-authentication-method: post
             authorization-grant-type: authorization_code
             redirect-uri: "http://localhost:8082/login/oauth2/code/{registrationId}"
             scope: profile
           naver:
-            client-id: wPQWrtbCYIc7HxgGH_vW
-            client-secret: 5jQsoHv3Q0
+            client-id: ${NAVER_CLIENT_ID}
+            client-secret: ${NAVER_CLIENT_SECRET}
             client-authentication-method: client_secret_post
             authorization-grant-type: authorization_code
             redirect-uri: "http://localhost:8082/login/oauth2/code/{registrationId}"
             scope: id, name, email, mobile
         provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
           kakao:
             authorization-uri: https://kauth.kakao.com/oauth/authorize
             token-uri: https://kauth.kakao.com/oauth/token

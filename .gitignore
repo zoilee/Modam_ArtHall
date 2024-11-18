@@ -39,3 +39,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### env파일(api정보) ###
+.env
