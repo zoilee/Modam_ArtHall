@@ -1,14 +1,13 @@
 package com.arthall.modam.controller;
 
-<<<<<<< HEAD
 import java.util.List;
+import java.util.Collection;
+import java.util.Comparator;
 
 import org.springframework.beans.factory.annotation.Autowired;
-=======
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
->>>>>>> feature-generalLogin
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,16 +27,9 @@ import com.arthall.modam.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 
-import java.util.Collection;
-
 @Controller
 @RequiredArgsConstructor
 public class HomeController {
-    @GetMapping("/")
-<<<<<<< HEAD
-    public String home() {
-        return "main";
-    }
 
     @Autowired
     private UserService userService;
@@ -51,14 +43,35 @@ public class HomeController {
     @Autowired
     private CommentService commentService;
 
+    @GetMapping("/")
+    public String home(Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.isAuthenticated() && !authentication.getPrincipal().equals("anonymousUser")) {
+            model.addAttribute("username", authentication.getName());
+            // 사용자 역할 가져오기
+            String userRole = getUserRole(authentication);
+            model.addAttribute("userRole", userRole); // 역할 정보를 Model에 추가
+        } else {
+            model.addAttribute("userRole", "ROLE_ANONYMOUS"); // 비로그인 사용자
+        }
+
+        return "main";
+    }
+
     @GetMapping("/mypage")
     public String mypage(Model model) {
         int userId = 1; // 예시 사용자 ID, 실제로는 인증된 사용자 ID 사용
         UserEntity user = userService.getUserById(userId);
         int points = userService.getUserPoints(userId);
 
+        // 예매 내역 조회
         List<ReservationEntity> upcomingReservations = reservationService.getUpcomingReservationsByUserId(userId);
         List<ReservationEntity> pastReservations = reservationService.getPastReservationsByUserId(userId);
+
+        // 최신 날짜 순으로 정렬
+        upcomingReservations.sort(Comparator.comparing(ReservationEntity::getReservationDate).reversed());
+        pastReservations.sort(Comparator.comparing(ReservationEntity::getReservationDate).reversed());
 
         model.addAttribute("user", user);
         model.addAttribute("points", points);
@@ -79,10 +92,6 @@ public class HomeController {
     @GetMapping("/registeruserEdit")
     public String registeruserEdit() {
         return "registeruserEdit";
-    }
-
-    public HomeController(CommentService commentService) {
-        this.commentService = commentService;
     }
 
     @GetMapping("/showDetail/{performanceId}")
@@ -110,7 +119,6 @@ public class HomeController {
         return "showDetail"; // Thymeleaf 템플릿 이름
     }
 
-    // 댓글 추가
     @PostMapping("/showDetail/addComment")
     @ResponseBody
     public String addComment(
@@ -128,7 +136,6 @@ public class HomeController {
         return "success";
     }
 
-    // 댓글 수정
     @PostMapping("/showDetail/updateComment")
     @ResponseBody
     public String updateComment(
@@ -138,7 +145,6 @@ public class HomeController {
         return "success";
     }
 
-    // 댓글 삭제
     @PostMapping("/showDetail/deleteComment")
     @ResponseBody
     public String deleteComment(@RequestParam("commentId") int commentId) {
@@ -146,7 +152,6 @@ public class HomeController {
         return "success";
     }
 
-    // 더보기 댓글 로드
     @GetMapping("/showDetail/loadComments")
     @ResponseBody
     public List<CommentEntity> loadMoreComments(
@@ -159,84 +164,30 @@ public class HomeController {
 
     @GetMapping("/hallDetail")
     public String hallDetail() {
-=======
-    public String home(Model model) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication != null && authentication.isAuthenticated() && !authentication.getPrincipal().equals("anonymousUser")) {
-            model.addAttribute("username", authentication.getName());
-             // 사용자 역할 가져오기
-             String userRole = getUserRole(authentication);
-             model.addAttribute("userRole", userRole); // 역할 정보를 Model에 추가
-         } else {
-             model.addAttribute("userRole", "ROLE_ANONYMOUS"); // 비로그인 사용자
-         }
-
-
-        return "main";
-    }
-
-    @GetMapping("/mypage")
-    public String mypage(){
-        return "mypage";
-    }
-
-    @GetMapping("/registeruserEdit")
-    public String registeruserEdit(){
-        return "registeruserEdit";
-    }
-    
-    @GetMapping("/showDetail")
-    public String showDetail(){
-        return "showDetail";
-    }
-    
-    @GetMapping("/hallDetail")
-    public String hallDetail(){
->>>>>>> feature-generalLogin
         return "hallDetail";
     }
 
     @GetMapping("/noticeList")
-<<<<<<< HEAD
     public String noticeList() {
-=======
-    public String noticeList(){
->>>>>>> feature-generalLogin
         return "noticeList";
     }
 
     @GetMapping("/noticeView")
-<<<<<<< HEAD
     public String noticeView() {
-=======
-    public String noticeView(){
->>>>>>> feature-generalLogin
         return "noticeView";
     }
 
     @GetMapping("/seatSelect")
-<<<<<<< HEAD
     public String seatSelect() {
-=======
-    public String seatSelect(){
->>>>>>> feature-generalLogin
         return "seatSelect";
     }
 
     @GetMapping("/reservConfirm")
-<<<<<<< HEAD
     public String reservConfirm() {
-=======
-    public String reservConfirm(){
->>>>>>> feature-generalLogin
         return "reservConfirm";
     }
 
     @GetMapping("/reservForm")
-<<<<<<< HEAD
-    public String reservForm() {
-=======
     public String reservForm(Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -247,7 +198,6 @@ public class HomeController {
         }
 
         // 로그인된 경우 예약 폼 페이지로 이동
->>>>>>> feature-generalLogin
         return "reservForm";
     }
 
