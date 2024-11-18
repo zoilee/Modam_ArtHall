@@ -1,16 +1,27 @@
 package com.arthall.modam.service;
 
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.arthall.modam.dto.UserDto;
 import com.arthall.modam.entity.UserEntity;
+import com.arthall.modam.entity.UserRewardEntity;
+
 import com.arthall.modam.repository.UserRepository;
+import com.arthall.modam.repository.UserRewardsRepository;
+
 
 @Service
 public class UserService {
-
+    @Autowired
     private final UserRepository userRepository;
+
+
+    @Autowired
+    private UserRewardsRepository userRewardsRepository;
+    
     private final PasswordEncoder passwordEncoder;
 
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
@@ -32,6 +43,10 @@ public class UserService {
         userRepository.save(userEntity);
     }
 
+    public UserEntity getUserById(int id) {
+        return userRepository.findById(id).orElse(null);
+    }
+
     // 로그인
     public boolean login(String loginId, String rawPassword){
         UserEntity user = userRepository.findByLoginId(loginId);
@@ -42,5 +57,12 @@ public class UserService {
         }
         // 로그인 실패
         return false;
+    }
+
+
+    public int getUserPoints(int userId) {
+        return userRewardsRepository.findByUserId(userId)
+                .map(UserRewardEntity::getPoints)
+                .orElse(0);
     }
 }
