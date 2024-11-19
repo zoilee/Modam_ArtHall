@@ -1,8 +1,8 @@
 package com.arthall.modam.controller;
 
 import java.util.List;
+import java.security.Principal;
 import java.util.Collection;
-import java.util.Comparator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -18,11 +18,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.arthall.modam.entity.CommentEntity;
 import com.arthall.modam.entity.PerformancesEntity;
-import com.arthall.modam.entity.ReservationEntity;
 import com.arthall.modam.entity.UserEntity;
 import com.arthall.modam.service.CommentService;
 import com.arthall.modam.service.PerformanceService;
-import com.arthall.modam.service.ReservationService;
 import com.arthall.modam.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -33,9 +31,6 @@ public class HomeController {
 
     @Autowired
     private UserService userService;
-
-    @Autowired
-    private ReservationService reservationService;
 
     @Autowired
     private PerformanceService performanceService;
@@ -59,35 +54,6 @@ public class HomeController {
         return "main";
     }
 
-    @GetMapping("/mypage")
-    public String mypage(Model model) {
-        int userId = 1; // 예시 사용자 ID, 실제로는 인증된 사용자 ID 사용
-        UserEntity user = userService.getUserById(userId);
-        int points = userService.getUserPoints(userId);
-
-        // 예매 내역 조회
-        List<ReservationEntity> upcomingReservations = reservationService.getUpcomingReservationsByUserId(userId);
-        List<ReservationEntity> pastReservations = reservationService.getPastReservationsByUserId(userId);
-
-        // 최신 날짜 순으로 정렬
-        upcomingReservations.sort(Comparator.comparing(ReservationEntity::getReservationDate).reversed());
-        pastReservations.sort(Comparator.comparing(ReservationEntity::getReservationDate).reversed());
-
-        model.addAttribute("user", user);
-        model.addAttribute("points", points);
-        model.addAttribute("upcomingReservations", upcomingReservations);
-        model.addAttribute("pastReservations", pastReservations);
-
-        // 예약 데이터가 없을 경우의 메시지 설정
-        if (upcomingReservations.isEmpty()) {
-            model.addAttribute("noUpcomingReservationsMessage", "현재 예약이 없습니다.");
-        }
-        if (pastReservations.isEmpty()) {
-            model.addAttribute("noPastReservationsMessage", "과거 예약이 없습니다.");
-        }
-
-        return "mypage"; // mypage.html로 이동
-    }
 
     @GetMapping("/registeruserEdit")
     public String registeruserEdit() {
@@ -95,27 +61,39 @@ public class HomeController {
     }
 
     @GetMapping("/showDetail/{performanceId}")
-    public String showPerformanceDetails(@PathVariable("performanceId") int performanceId, Model model) {
+    public String showPerformanceDetails(@PathVariable("performanceId") int performanceId, Model model, Principal principal) {
         // 평균 평점이 설정된 PerformanceEntity 가져오기
         PerformancesEntity performance = performanceService.getPerformanceWithAverageRating(performanceId)
                 .orElseThrow(() -> new IllegalArgumentException("공연을 찾을 수 없습니다."));
-
-        // 로그인된 사용자를 임시로 설정
-        UserEntity user = new UserEntity();
-        user.setId(1); // 로그인된 사용자의 ID를 1로 가정
-
+    
+        UserEntity user = null;
+        boolean isAdmin = false; // 관리자 여부 확인
+    
+        if (principal != null) {
+            String loginId = principal.getName(); // 로그인된 사용자의 loginId 가져오기
+            user = userService.getUserByLoginId(loginId); // loginId로 사용자 조회
+    
+            // 관리자 여부 확인
+            isAdmin = userService.isAdmin(user); // 사용자 서비스에서 ROLE_ADMIN 확인
+    
+            model.addAttribute("userId", user.getId()); // 로그인된 사용자 ID 추가
+            model.addAttribute("isAdmin", isAdmin); // 관리자 여부 추가
+        } else {
+            model.addAttribute("userId", 0); // 비로그인 사용자는 ID를 0으로 설정
+            model.addAttribute("isAdmin", false); // 비로그인 사용자는 관리자 아님
+        }
+    
         // PerformanceEntity 및 CommentEntity 가져오기
         List<CommentEntity> comments = commentService.getComments(performance, 0, 5);
-
+    
         // 총 댓글 수 계산
         int totalComments = commentService.getTotalCommentsByPerformanceId(performanceId);
-
+    
         // 모델에 데이터 추가
         model.addAttribute("performance", performance);
         model.addAttribute("comments", comments);
-        model.addAttribute("userId", user.getId());
         model.addAttribute("totalComments", totalComments);
-
+    
         return "showDetail"; // Thymeleaf 템플릿 이름
     }
 
@@ -211,4 +189,6 @@ public class HomeController {
         }
         return "ROLE_ANONYMOUS"; // 기본값
     }
+
+    
 }

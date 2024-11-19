@@ -7,7 +7,8 @@
     <link rel="stylesheet" th:href="@{/css/layout/style.css}">
 </head>
 <body>
-    <th:block th:replace="~{fragments/header :: headerFragment}"></th:block>
+    <th:block th:replace="~{fragments/header :: headerFragment}" 
+           th:if="${#strings.isNotEmpty(user.name)}"></th:block>
 
     <!-- Welcome Section -->
     <div class="container mt-4" style="padding: 100px 0;">
