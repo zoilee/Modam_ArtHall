@@ -21,19 +21,33 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         // Spring Security에서 기본적으로 제공하는 사용자 정보 가져오기
         OAuth2User oAuth2User = super.loadUser(userRequest);
 
-        // 사용자 정보 파싱 (카카오 사용자 정보 가져오기)
-        Map<String, Object> attributes = oAuth2User.getAttributes(); // 전체 사용자 정보
-        String kakaoId = String.valueOf(attributes.get("id")); // 카카오 고유 ID
+        String registrationId = userRequest.getClientRegistration().getRegistrationId(); // 플랫폼 구분
+        Map<String, Object> attributes = oAuth2User.getAttributes();
 
-        Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
-        String email = (String) kakaoAccount.get("email"); // 이메일
-        Map<String, Object> properties = (Map<String, Object>) attributes.get("properties");
-        String nickname = (String) properties.get("nickname"); // 닉네임
+        String platformId = null;
+        String email = null;
+        String name = null;
 
-        // 데이터베이스에 사용자 저장 (또는 기존 사용자 가져오기)
-        kakaoUserService.registerKakaoUser(kakaoId, email, nickname);
+        if ("google".equals(registrationId)) {
+            platformId = (String) attributes.get("sub"); // 구글 고유 ID
+            email = (String) attributes.get("email");
+            name = (String) attributes.get("name");
+        } else if ("kakao".equals(registrationId)) {
+            Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
+            Map<String, Object> properties = (Map<String, Object>) attributes.get("properties");
+            platformId = String.valueOf(attributes.get("id")); // 카카오 고유 ID
+            email = (String) kakaoAccount.get("email");
+            name = (String) properties.get("nickname");
+        } else if ("naver".equals(registrationId)) {
+            Map<String, Object> response = (Map<String, Object>) attributes.get("response");
+            platformId = (String) response.get("id"); // 네이버 고유 ID
+            email = (String) response.get("email");
+            name = (String) response.get("name");
+        }
 
-        // 반환된 OAuth2User는 필요 시 컨트롤러에서 사용 가능
+        // 사용자 정보 저장 또는 조회
+        kakaoUserService.registerUser(platformId, email, name, registrationId.toUpperCase());
+
         return oAuth2User;
     }
 }

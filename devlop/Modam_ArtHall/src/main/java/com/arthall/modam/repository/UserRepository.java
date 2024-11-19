@@ -8,7 +8,7 @@ import com.arthall.modam.entity.UserEntity;
 
 
 public interface UserRepository extends JpaRepository<UserEntity, Integer>{
-    Optional<UserEntity> findByKakaoId(String kakaoId);
+    Optional<UserEntity> findByPlatformId(String platformId);
     Optional<UserEntity> findByLoginId(String loginId);
     Optional<UserEntity> findByEmail(String email);
 }

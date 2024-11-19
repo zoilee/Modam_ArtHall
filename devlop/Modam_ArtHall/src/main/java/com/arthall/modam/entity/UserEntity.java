@@ -39,8 +39,8 @@ public class UserEntity {
     @Column(name = "provider", nullable = false)
     private String provider = "LOCAL"; // 로그인 제공자 (LOCAL, KAKAO)
 
-    @Column(name = "kakao_id", unique = true)
-    private String kakaoId; // 카카오 사용자 고유 ID
+    @Column(name = "platform_id", unique = true)
+    private String platformId; // sns별 상태
 
     @Column(name = "created_at", updatable = false)
     private Timestamp createdAt = new Timestamp(System.currentTimeMillis());
