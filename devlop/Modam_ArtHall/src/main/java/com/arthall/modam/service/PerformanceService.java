@@ -1,6 +1,7 @@
 package com.arthall.modam.service;
 
 import java.text.DecimalFormat;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -19,6 +20,16 @@ public class PerformanceService {
     public PerformanceService(PerformancesRepository performanceRepository, CommentRepository commentRepository) {
         this.performancesRepository = performanceRepository;
         this.commentRepository = commentRepository;
+    }
+
+    // 전체 목록 검색
+    public List<PerformancesEntity> findAll() {
+        return performancesRepository.findAll();
+    }
+
+    // title로 검색
+    public List<PerformancesEntity> findByTitle(String title) {
+        return performancesRepository.findByTitleContaining(title);
     }
 
     // ID로 공연 정보 가져오기
