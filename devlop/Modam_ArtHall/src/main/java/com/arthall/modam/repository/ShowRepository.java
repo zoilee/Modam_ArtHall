@@ -1,18 +1,17 @@
 package com.arthall.modam.repository;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.arthall.modam.entity.ShowEntity;
+
 import java.time.LocalDate;
 import java.util.List;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
-import com.arthall.modam.entity.PerformanceEntity;
-import com.arthall.modam.entity.ShowEntity;
-
-@Repository
 public interface ShowRepository extends JpaRepository<ShowEntity, Integer> {
-    ShowEntity findByMusicalAndShowDateAndShowTime(int performanceId, LocalDate showDate, int showTime);
-
     List<ShowEntity> findByPerformanceId(int performanceId);
+
+    List<ShowEntity> findByShowDate(LocalDate showDate);
+
+    List<ShowEntity> findByPerformanceIdAndShowDateAndShowTime(int performanceId, LocalDate showDate, int showTime);
 }
 
