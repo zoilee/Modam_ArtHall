@@ -159,7 +159,6 @@ public class AdminController {
         return "redirect:/admin/noticeList";
     }
 
-
     // 삭제 요청 처리
     @PostMapping("/noticeDelete")
     public String deleteAdminNotice(@RequestParam("id") int id, RedirectAttributes redirectAttributes) {
@@ -167,7 +166,8 @@ public class AdminController {
 
         if (notice != null) {
             // 공지사항에 연결된 이미지 가져오기
-            List<ImagesEntity> images = imagesRepository.findByReferenceIdAndReferenceType(id, ImagesEntity.ReferenceType.NOTICE);
+            List<ImagesEntity> images = imagesRepository.findByReferenceIdAndReferenceType(id,
+                    ImagesEntity.ReferenceType.NOTICE);
 
             // 이미지 파일 삭제
             boolean fileDeleteError = false;
@@ -197,7 +197,6 @@ public class AdminController {
 
         return "redirect:/admin/noticeList";
     }
-
 
     // 공지사항 상세 조회 페이지
     @GetMapping("/noticeView")
@@ -360,8 +359,18 @@ public class AdminController {
             if (deleteImage) {
                 List<ImagesEntity> images = imagesRepository
                         .findByReferenceIdAndReferenceType(performancesEntity.getId(), referenceType);
-                for (ImagesEntity image : images) {
-                    fileService.deleteFile(image.getImageUrl());
+                if (images != null && !images.isEmpty()) {
+                    for (ImagesEntity image : images) {
+                        try {
+                            // 파일 삭제 수행
+                            fileService.deleteFile(image.getImageUrl());
+                            System.out.println("파일 삭제 성공: " + image.getImageUrl());
+                        } catch (Exception e) {
+                            // 예외 발생 시 로그 출력
+                            System.err.println("파일 삭제 중 예외 발생: " + image.getImageUrl());
+                            e.printStackTrace();
+                        }
+                    }
                 }
                 imagesRepository.deleteAll(images);
             }
@@ -390,6 +399,5 @@ public class AdminController {
     public String showAdminUserCommit() {
         return "admin/adminUserCommit";
     }
-
 
 }
