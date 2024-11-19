@@ -18,6 +18,7 @@ import org.hibernate.annotations.CreationTimestamp;
 @Entity
 @Data
 @Table(name = "images")
+
 public class ImagesEntity {
 
     @Id

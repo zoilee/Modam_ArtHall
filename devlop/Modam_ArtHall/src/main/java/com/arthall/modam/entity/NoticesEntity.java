@@ -1,6 +1,7 @@
 package com.arthall.modam.entity;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -43,7 +44,7 @@ public class NoticesEntity {
     private Timestamp createdAt;
 
     @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "reference_id", referencedColumnName = "id")
+    @JoinColumn(name = "reference_id", referencedColumnName = "id", foreignKey = @jakarta.persistence.ForeignKey(value = jakarta.persistence.ConstraintMode.NO_CONSTRAINT))
     @SQLRestriction("reference_type = 'NOTICE'")
     private List<ImagesEntity> imagesEntities;
 

@@ -10,7 +10,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/modam?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
     username: root
-    password: 4986
+    password: z1z2z3z4
   thymeleaf:
     cache: false
     check-template-location: true
