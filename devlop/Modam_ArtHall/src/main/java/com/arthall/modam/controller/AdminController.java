@@ -308,7 +308,6 @@ public class AdminController {
             @RequestParam(value = "file", required = false) MultipartFile file,
             @RequestParam(value = "deleteImage", required = false) boolean deleteImage,
             RedirectAttributes redirectAttributes) {
-
         try {
             // 기존 엔티티 조회
             PerformancesEntity existingEntity = performancesRepository.findById(performancesEntity.getId())
@@ -332,8 +331,18 @@ public class AdminController {
             if (deleteImage) {
                 List<ImagesEntity> images = imagesRepository
                         .findByReferenceIdAndReferenceType(performancesEntity.getId(), referenceType);
-                for (ImagesEntity image : images) {
-                    fileService.deleteFile(image.getImageUrl());
+                if (images != null && !images.isEmpty()) {
+                    for (ImagesEntity image : images) {
+                        try {
+                            // 파일 삭제 수행
+                            fileService.deleteFile(image.getImageUrl());
+                            System.out.println("파일 삭제 성공: " + image.getImageUrl());
+                        } catch (Exception e) {
+                            // 예외 발생 시 로그 출력
+                            System.err.println("파일 삭제 중 예외 발생: " + image.getImageUrl());
+                            e.printStackTrace();
+                        }
+                    }
                 }
                 imagesRepository.deleteAll(images);
             }
