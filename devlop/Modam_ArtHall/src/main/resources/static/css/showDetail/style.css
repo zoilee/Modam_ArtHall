@@ -46,6 +46,29 @@ html, body {
 #sd_scrollToTopBtn:hover {
     background-color: #0056b3;
 }
+/* 평점 별 */
+.rating .star {
+    font-size: 2rem;
+    color: lightgray;
+    cursor: pointer;
+}
+.rating .star.filled {
+    color: gold;
+}
+.rating-stars {
+    display: inline-flex;
+    gap: 4px; /* 별 사이의 간격 */
+    align-items: center;
+}
+.rating-stars span {
+    font-size: 1.2em; /* 별 크기 조절 */
+    color: gold; /* 기본 금색 */
+}
+.rating-stars .empty-star {
+    color: lightgray; /* 빈 별 색상 */
+}
+
+
 /* 반응형 스타일 */
 @media (max-width: 768px) {
     #sd_scrollToTopBtn {

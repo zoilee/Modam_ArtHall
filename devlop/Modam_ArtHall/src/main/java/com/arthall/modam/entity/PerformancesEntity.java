@@ -46,8 +46,11 @@ public class PerformancesEntity {
     private Timestamp createdAt; // 생성 시간 자동 설정
 
     @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "reference_id", referencedColumnName = "id")
+    @JoinColumn(name = "reference_id", referencedColumnName = "id", foreignKey = @jakarta.persistence.ForeignKey(value = jakarta.persistence.ConstraintMode.NO_CONSTRAINT))
     @SQLRestriction("reference_type = 'PERFORMANCE'")
     private List<ImagesEntity> imagesEntities;
+
+    @Transient
+    private String formattedAverageRating; // 평균 평점 형식
 
 }

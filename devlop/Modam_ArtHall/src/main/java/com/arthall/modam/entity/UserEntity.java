@@ -1,6 +1,6 @@
 package com.arthall.modam.entity;
 
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -30,22 +30,27 @@ public class UserEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
-    private Role role = Role.user;
+    private Role role = Role.USER;
 
     @Column(name = "status", nullable = false)
     private String status = "active";
 
     @Column(name = "created_at")
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private Timestamp createdAt = new Timestamp(System.currentTimeMillis());
 
     @PrePersist
     protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = new Timestamp(System.currentTimeMillis());
     }
 
     // Enum for role
     public enum Role {
-        user, admin
+        USER, ADMIN
+    }
+
+    // Set the role using the Role enum
+    public void setRole(Role role) {
+        this.role = role;
     }
 
 }

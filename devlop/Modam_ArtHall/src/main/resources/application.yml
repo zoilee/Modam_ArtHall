@@ -38,4 +38,8 @@ spring:
 # 파일 업로드 설정
 file:
   upload-dir: ./uploads/
-  
+
+# Spring Security 디버그 설정 추가
+logging:
+  level:
+    "[org.springframework.security]": DEBUG
