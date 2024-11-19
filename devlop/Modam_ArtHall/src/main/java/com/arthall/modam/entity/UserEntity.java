@@ -1,48 +1,49 @@
 package com.arthall.modam.entity;
 
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
 @Table(name="users")
-@Data
 public class UserEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // 자동 증가
+    private Integer id;
 
-    @Column(name = "login_id", nullable = false, unique = true)
-    private String loginId;
+    @Column(name = "login_id", unique = true)
+    private String loginId; // 로컬 사용자 로그인 ID
 
-    @Column(name= "password", nullable = false)
-    private String password;
+    private String password; // 로컬 사용자 비밀번호 (카카오 사용자 NULL 가능)
 
-    @Column(name= "name", nullable = false)
-    private String name;
+    @Column(nullable = false)
+    private String name; // 사용자 이름 (카카오 닉네임 포함)
 
-    @Column(name= "email", nullable = false, unique = true)
-    private String email;
+    @Column(unique = true, nullable = false)
+    private String email; // 이메일
 
-    @Column(name = "phone_number", nullable = false)
-    private String phoneNumber;
+    @Column(name = "phone_number")
+    private String phoneNumber; // 휴대폰 번호 (NULL 가능)
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false)
-    private Role role = Role.USER;
+    private Role role = Role.USER; // 사용자 역할 (USER 또는 ADMIN)
 
-    @Column(name = "status", nullable = false)
-    private String status = "active";
+    @Column(nullable = false)
+    private String status = "ACTIVE"; // 계정 상태 (ACTIVE 기본값)
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @Column(name = "provider", nullable = false)
+    private String provider = "LOCAL"; // 로그인 제공자 (LOCAL, KAKAO)
 
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-    }
+    @Column(name = "kakao_id", unique = true)
+    private String kakaoId; // 카카오 사용자 고유 ID
 
+    @Column(name = "created_at", updatable = false)
+    private Timestamp createdAt = new Timestamp(System.currentTimeMillis());
     // Enum for role
     public enum Role {
         USER, ADMIN

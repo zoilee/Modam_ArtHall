@@ -7,6 +7,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 
 import com.arthall.modam.service.CustomOAuth2UserService;
@@ -15,7 +18,7 @@ import com.arthall.modam.service.CustomOAuth2UserService;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuth2UserService<OAuth2UserRequest, OAuth2User> customOAuth2UserService;
 
     public SecurityConfig(CustomOAuth2UserService customOAuth2UserService) {
         this.customOAuth2UserService = customOAuth2UserService;
@@ -55,9 +58,6 @@ public class SecurityConfig {
             .oauth2Login(oauth2 -> oauth2
                 .loginPage("/login")
                 .defaultSuccessUrl("/", true)
-                .userInfoEndpoint(userInfo -> userInfo
-                    .userService(customOAuth2UserService)  // 주입된 CustomOAuth2UserService 사용
-                )
             );
 
         return http.build();
