@@ -105,4 +105,9 @@ public class UserService implements UserDetailsService {
             System.out.println("관리자 계정 생성 완료");
         }
     }
+
+    public UserEntity getUserById(int userId) {
+
+        throw new UnsupportedOperationException("Unimplemented method 'getUserById'");
+    }
 }
