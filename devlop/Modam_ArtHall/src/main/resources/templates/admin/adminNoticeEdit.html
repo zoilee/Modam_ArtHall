@@ -38,26 +38,22 @@
             </div>
         </div>
 
-        <!-- 기존 이미지 미리보기 및 삭제 옵션 -->
-        <div class="mb-3 row" th:if="${notice.imagesEntities != null and !notice.imagesEntities.isEmpty()}">
+        <!-- 기존 이미지 삭제 체크박스 -->
+        <div class="mb-3 row" th:if="${notice.imagesEntities != null && !notice.imagesEntities.isEmpty()}">
             <label for="currentImage" class="col-sm-2 col-form-label">기존 이미지</label>
             <div class="col-sm-10">
-                <ul>
-                    <li th:each="image, iterStat : ${notice.imagesEntities}">
+                <ul th:each="image : ${notice.imagesEntities}">
+                    <li>
                         <img th:src="@{${image.imageUrl}}" alt="이미지" style="max-width: 100%; max-height: 200px;">
                         <div class="form-check mt-2">
-                            <!-- 체크박스를 이미지 ID와 연결 -->
-                            <input class="form-check-input" type="checkbox"
-                                   name="deleteImageIds"
-                                   th:id="'deleteImage-' + ${image.id}"
-                                   th:value="${image.id}">
-                            <label class="form-check-label"
-                                   th:for="'deleteImage-' + ${image.id}">이미지 삭제</label>
+                            <input class="form-check-input" type="checkbox" name="deleteImageIds" th:value="${image.id}">
+                            <label class="form-check-label">이미지 삭제</label>
                         </div>
                     </li>
                 </ul>
             </div>
         </div>
+
 
         <!-- 파일 첨부 -->
         <div class="mb-3 row">

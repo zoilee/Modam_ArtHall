@@ -113,51 +113,70 @@ public class AdminController {
 
     // 수정 요청 처리
     @PostMapping("/noticeEdit")
-    public String updateAdminNotice(
-            @RequestParam("id") int id,
-            @RequestParam("title") String title,
-            @RequestParam("content") String content,
-            @RequestParam(value = "file", required = false) MultipartFile file,
-            @RequestParam(value = "deleteImageIds", required = false) List<Integer> deleteImageIds,
-            RedirectAttributes redirectAttributes) {
+public String updateAdminNotice(
+        @RequestParam("id") int id,
+        @RequestParam("title") String title,
+        @RequestParam("content") String content,
+        @RequestParam(value = "file", required = false) MultipartFile file,
+        @RequestParam(value = "deleteImageIds", required = false) List<Integer> deleteImageIds,
+        RedirectAttributes redirectAttributes) {
 
-        NoticesEntity notice = bbsService.getNoticeById(id).orElse(null);
-        if (notice != null) {
-            notice.setTitle(title);
-            notice.setContent(content);
+    try {
+        // 트랜잭션 시작
+        // 공지사항 엔티티 조회
+        NoticesEntity notice = bbsService.getNoticeById(id).orElseThrow(
+            () -> new IllegalArgumentException("해당 공지사항을 찾을 수 없습니다. ID: " + id)
+        );
 
-            // 이미지 삭제 처리
-            if (deleteImageIds != null && !deleteImageIds.isEmpty()) {
-                List<ImagesEntity> imagesToDelete = imagesRepository.findAllById(deleteImageIds);
-                for (ImagesEntity image : imagesToDelete) {
-                    try {
-                        fileService.deleteFile(image.getImageUrl());
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-                imagesRepository.deleteAll(imagesToDelete);
-            }
+        // 공지사항 정보 수정
+        notice.setTitle(title);
+        notice.setContent(content);
 
-            // 새 파일 업로드 처리
-            if (file != null && !file.isEmpty()) {
+        // 이미지 삭제 처리 (트랜잭션 내부에서 실행)
+        if (deleteImageIds != null && !deleteImageIds.isEmpty()) {
+            List<ImagesEntity> imagesToDelete = imagesRepository.findAllById(deleteImageIds);
+            for (ImagesEntity image : imagesToDelete) {
                 try {
-                    String filePath = fileService.saveFile(file);
-                    ImagesEntity newImage = new ImagesEntity();
-                    newImage.setImageUrl(filePath);
-                    newImage.setReferenceId(notice.getId());
-                    newImage.setReferenceType(ImagesEntity.ReferenceType.NOTICE);
-                    imagesRepository.save(newImage);
+                    // 파일 삭제
+                    fileService.deleteFile(image.getImageUrl());
+                    imagesRepository.delete(image); // 데이터베이스에서 삭제
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    System.err.println("이미지 삭제 중 오류 발생: " + image.getImageUrl());
+                    throw new RuntimeException("이미지 삭제 중 오류가 발생했습니다.");
                 }
             }
-
-            bbsService.saveNotice(notice);
-            redirectAttributes.addFlashAttribute("message", "공지사항이 성공적으로 수정되었습니다.");
         }
+
+        // 새 이미지 업로드 처리
+        if (file != null && !file.isEmpty()) {
+            String filePath = fileService.saveFile(file); // 파일 저장
+            ImagesEntity newImage = new ImagesEntity();
+            newImage.setImageUrl(filePath);
+            newImage.setReferenceId(id);
+            newImage.setReferenceType(ImagesEntity.ReferenceType.NOTICE);
+            imagesRepository.save(newImage);
+        }
+
+        // 공지사항 저장
+        bbsService.saveNotice(notice);
+
+        // 성공 메시지 설정
+        redirectAttributes.addFlashAttribute("message", "공지사항이 성공적으로 수정되었습니다.");
         return "redirect:/admin/noticeList";
+
+    } catch (IllegalArgumentException e) {
+        redirectAttributes.addFlashAttribute("error", e.getMessage());
+        e.printStackTrace();
+    } catch (Exception e) {
+        redirectAttributes.addFlashAttribute("error", "공지사항 수정 중 오류가 발생했습니다.");
+        e.printStackTrace();
     }
+
+    return "redirect:/admin/noticeEdit?id=" + id; // 오류 발생 시 다시 수정 페이지로 이동
+}
+
+    
+    
 
     // 삭제 요청 처리
     @PostMapping("/noticeDelete")
