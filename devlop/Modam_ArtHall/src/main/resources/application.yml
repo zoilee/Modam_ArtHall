@@ -84,6 +84,21 @@ spring:
             token-uri: https://oauth2.googleapis.com/token
             user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
             user-name-attribute: sub
+        - file:./uploads/
+  #spirng email 전송
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: modamarthall@gmail.com
+    password: 'vfro cmec embc tlri'
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    from-address: modamArthall@gmail.com
+
 # 파일 업로드 설정
 file:
   upload-dir: ./uploads/

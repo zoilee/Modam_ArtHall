@@ -42,7 +42,8 @@ public class HomeController {
     public String home(Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (authentication != null && authentication.isAuthenticated() && !authentication.getPrincipal().equals("anonymousUser")) {
+        if (authentication != null && authentication.isAuthenticated()
+                && !authentication.getPrincipal().equals("anonymousUser")) {
             model.addAttribute("username", authentication.getName());
             // 사용자 역할 가져오기
             String userRole = getUserRole(authentication);
@@ -54,46 +55,46 @@ public class HomeController {
         return "main";
     }
 
-
     @GetMapping("/registeruserEdit")
     public String registeruserEdit() {
         return "registeruserEdit";
     }
 
     @GetMapping("/showDetail/{performanceId}")
-    public String showPerformanceDetails(@PathVariable("performanceId") int performanceId, Model model, Principal principal) {
+    public String showPerformanceDetails(@PathVariable("performanceId") int performanceId, Model model,
+            Principal principal) {
         // 평균 평점이 설정된 PerformanceEntity 가져오기
         PerformancesEntity performance = performanceService.getPerformanceWithAverageRating(performanceId)
                 .orElseThrow(() -> new IllegalArgumentException("공연을 찾을 수 없습니다."));
-    
+
         UserEntity user = null;
         boolean isAdmin = false; // 관리자 여부 확인
-    
+
         if (principal != null) {
             String loginId = principal.getName(); // 로그인된 사용자의 loginId 가져오기
             user = userService.getUserByLoginId(loginId); // loginId로 사용자 조회
-    
+
             // 관리자 여부 확인
             isAdmin = userService.isAdmin(user); // 사용자 서비스에서 ROLE_ADMIN 확인
-    
+
             model.addAttribute("userId", user.getId()); // 로그인된 사용자 ID 추가
             model.addAttribute("isAdmin", isAdmin); // 관리자 여부 추가
         } else {
             model.addAttribute("userId", 0); // 비로그인 사용자는 ID를 0으로 설정
             model.addAttribute("isAdmin", false); // 비로그인 사용자는 관리자 아님
         }
-    
+
         // PerformanceEntity 및 CommentEntity 가져오기
         List<CommentEntity> comments = commentService.getComments(performance, 0, 5);
-    
+
         // 총 댓글 수 계산
         int totalComments = commentService.getTotalCommentsByPerformanceId(performanceId);
-    
+
         // 모델에 데이터 추가
         model.addAttribute("performance", performance);
         model.addAttribute("comments", comments);
         model.addAttribute("totalComments", totalComments);
-    
+
         return "showDetail"; // Thymeleaf 템플릿 이름
     }
 
@@ -170,7 +171,8 @@ public class HomeController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         // 로그인되지 않은 경우
-        if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal().equals("anonymousUser")) {
+        if (authentication == null || !authentication.isAuthenticated()
+                || authentication.getPrincipal().equals("anonymousUser")) {
             model.addAttribute("alertMessage", "로그인 후 이용하세요.");
             return "redirect:/login"; // 로그인 페이지로 리다이렉트
         }
@@ -190,5 +192,9 @@ public class HomeController {
         return "ROLE_ANONYMOUS"; // 기본값
     }
 
-    
+    @GetMapping("/testmail")
+    public String testMail(Model model) {
+
+        return "testMail";
+    }
 }
