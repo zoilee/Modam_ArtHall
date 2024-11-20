@@ -70,9 +70,14 @@
                     <img th:src="@{{image}(image=${image.imageUrl})}" alt="공연관리 이미지" style="max-width: 100%; max-height: 500px;">
                 </div><!--db에서-->
                 <!-- 로그인된 사용자만 접근 가능 -->
-                <button th:if="${#authentication.authenticated}" th:onclick="window.location.href='/reservForm'" class="btn btn-primary btn-block mt-3">예매하기</button>
+                <button th:if="${#authentication.authenticated}" th:onclick="window.location.href='/reservForm'" class="btn btn-primary btn-block mt-3" id="toReservForm">예매하기</button>
                 <!-- 비로그인 사용자 -->
-                <button th:if="${!#authentication.authenticated}" class="btn btn-primary btn-block mt-3" onclick="alert('로그인 후 이용하세요.');">예매하기</button>
+                <button th:if="${!#authentication.authenticated}" class="btn btn-primary btn-block mt-3" onclick="alert('로그인 후 이용하세요.');" id="toReservForm">예매하기</button>
+                <!--공연 id와 제목 보내기-->
+                <form action="/modam/reservConfirm" method="post">
+                    <input type="hidden" name="musicalId" class="musicalIdVal" value="${performance.id}">
+                    <input type="hidden" name="musicalTitle" class="musicalTitleVal" value="${performance.title}">
+                </form>
             </div>
         </div>
 
@@ -108,7 +113,7 @@
                     </div>
                     
                     <!-- 수정/삭제 버튼 (기본 상태) -->
-                    <div class="action-buttons" th:if="${comment.user.id == userId || isAdmin}">
+                    <div class="action-buttons" th:if="${comment.user.id == userId}">
                         <button class="btn btn-sm btn-outline-primary" th:onclick="'enterEditMode(' + ${comment.id} + ')'" th:attr="id='edit-button-' + ${comment.id}">수정</button>
                         <button class="btn btn-sm btn-outline-danger" th:onclick="'deleteComment(' + ${comment.id} + ')'" th:attr="id='delete-button-' + ${comment.id}">삭제</button>
                     </div>
@@ -123,12 +128,8 @@
                     onclick="loadMoreComments()">더보기</button>
             </div>
 
-            <div th:if="${userId == 0}">
-                <p>로그인 후 댓글을 작성할 수 있습니다.</p>
-            </div>
-
             <!-- 댓글 작성 -->
-            <div th:if="${userId > 0}" class="input-group mb-3">
+            <div class="input-group mb-3">
                 <input id="commentInput" type="text" class="form-control mt-1" placeholder="댓글을 입력하세요" aria-label="댓글 입력">
                 <div class="rating">
                     <span class="star" data-value="1">&#9733;</span>
