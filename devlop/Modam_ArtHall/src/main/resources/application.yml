@@ -28,21 +28,13 @@ spring:
     open-in-view: false
     show-sql: true
     hibernate: 
-<<<<<<< HEAD
        ddl-auto: update  
   web:
     resources:
-    
       static-locations: 
         - classpath:/static/     # 기존 정적 리소스 경로
         - file:./uploads/  
-# 파일 업로드 설정
-file:
-  upload-dir: ./uploads/
-=======
-       ddl-auto: update 
-
-  #oauth2 연동 설정(로그인 api)
+   #oauth2 연동 설정(로그인 api)
   security:
     oauth2:
       client:
@@ -92,7 +84,9 @@ file:
             token-uri: https://oauth2.googleapis.com/token
             user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
             user-name-attribute: sub
->>>>>>> feature-login
+# 파일 업로드 설정
+file:
+  upload-dir: ./uploads/
 
 # Spring Security 디버그 설정 추가
 logging:
