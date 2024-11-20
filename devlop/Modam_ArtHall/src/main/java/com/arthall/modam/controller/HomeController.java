@@ -77,13 +77,15 @@ public class HomeController {
     
         if (principal instanceof OAuth2User) {
             Map<String, Object> attributes = ((OAuth2User) principal).getAttributes();
-            loginId = (String) attributes.get("loginId"); // CustomOAuth2UserService에서 추가한 loginId
+            loginId = (String) attributes.get("loginId");
+        } else if (principal instanceof UserDetails) {
+            loginId = ((UserDetails) principal).getUsername();
         } else {
-            throw new RuntimeException("인증된 사용자가 OAuth2User가 아닙니다.");
+            throw new RuntimeException("인증된 사용자가 OAuth2User 또는 UserDetails가 아닙니다.");
         }
     
-        if (loginId == null || loginId.isEmpty()) {
-            throw new RuntimeException("사용자 인증 정보에서 loginId를 찾을 수 없습니다.");
+        if (loginId == null) {
+            throw new RuntimeException("loginId를 찾을 수 없습니다.");
         }
     
         // loginId로 사용자 조회

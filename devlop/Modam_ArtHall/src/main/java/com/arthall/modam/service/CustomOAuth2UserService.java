@@ -1,8 +1,12 @@
 package com.arthall.modam.service;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
@@ -57,6 +61,9 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         // 새로운 OAuth2User를 반환하며 loginId 포함
         Map<String, Object> customAttributes = new HashMap<>(attributes);
         customAttributes.put("loginId", loginId); // loginId를 추가
+
+        // ROLE_USER 권한 추가
+        Collection<GrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
 
         return new DefaultOAuth2User(oAuth2User.getAuthorities(), customAttributes, "loginId");
 

@@ -113,7 +113,7 @@
                     </div>
                     
                     <!-- 수정/삭제 버튼 (기본 상태) -->
-                    <div class="action-buttons" th:if="${comment.user.id == userId}">
+                    <div class="action-buttons" th:if="${comment.user.id == userId || isAdmin}">
                         <button class="btn btn-sm btn-outline-primary" th:onclick="'enterEditMode(' + ${comment.id} + ')'" th:attr="id='edit-button-' + ${comment.id}">수정</button>
                         <button class="btn btn-sm btn-outline-danger" th:onclick="'deleteComment(' + ${comment.id} + ')'" th:attr="id='delete-button-' + ${comment.id}">삭제</button>
                     </div>
@@ -128,8 +128,12 @@
                     onclick="loadMoreComments()">더보기</button>
             </div>
 
+            <div th:if="${userId == 0}">
+                <p>로그인 후 댓글을 작성할 수 있습니다.</p>
+            </div>
+
             <!-- 댓글 작성 -->
-            <div class="input-group mb-3">
+            <div th:if="${userId > 0}"  class="input-group mb-3">
                 <input id="commentInput" type="text" class="form-control mt-1" placeholder="댓글을 입력하세요" aria-label="댓글 입력">
                 <div class="rating">
                     <span class="star" data-value="1">&#9733;</span>
