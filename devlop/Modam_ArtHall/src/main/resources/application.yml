@@ -34,7 +34,21 @@ spring:
     
       static-locations: 
         - classpath:/static/     # 기존 정적 리소스 경로
-        - file:./uploads/  
+        - file:./uploads/
+  #spirng email 전송
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: modamarthall@gmail.com
+    password: 'vfro cmec embc tlri'
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    from-address: modamArthall@gmail.com
+
 # 파일 업로드 설정
 file:
   upload-dir: ./uploads/
