@@ -51,7 +51,8 @@ public class HomeController {
     public String home(Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (authentication != null && authentication.isAuthenticated() && !authentication.getPrincipal().equals("anonymousUser")) {
+        if (authentication != null && authentication.isAuthenticated()
+                && !authentication.getPrincipal().equals("anonymousUser")) {
             model.addAttribute("username", authentication.getName());
             // 사용자 역할 가져오기
             String userRole = getUserRole(authentication);
@@ -265,7 +266,8 @@ public class HomeController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         // 로그인되지 않은 경우
-        if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal().equals("anonymousUser")) {
+        if (authentication == null || !authentication.isAuthenticated()
+                || authentication.getPrincipal().equals("anonymousUser")) {
             model.addAttribute("alertMessage", "로그인 후 이용하세요.");
             return "redirect:/login"; // 로그인 페이지로 리다이렉트
         }
@@ -285,5 +287,9 @@ public class HomeController {
         return "ROLE_ANONYMOUS"; // 기본값
     }
 
-    
+    @GetMapping("/testmail")
+    public String testMail(Model model) {
+
+        return "testMail";
+    }
 }
