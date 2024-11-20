@@ -7,12 +7,23 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
+
+import com.arthall.modam.service.CustomOAuth2UserService;
 
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    private final OAuth2UserService<OAuth2UserRequest, OAuth2User> customOAuth2UserService;
+
+    public SecurityConfig(CustomOAuth2UserService customOAuth2UserService) {
+        this.customOAuth2UserService = customOAuth2UserService;
+    }
     
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -44,6 +55,13 @@ public class SecurityConfig {
                 .logoutSuccessUrl("/")  // 로그아웃 성공 시 메인 페이지로 이동
                 .invalidateHttpSession(true)  // 세션 무효화
                 .permitAll()
+            )
+            .oauth2Login(oauth2 -> oauth2
+                .loginPage("/login")
+                .defaultSuccessUrl("/", true)
+                .userInfoEndpoint(userInfo -> userInfo
+                .userService(customOAuth2UserService) // CustomOAuth2UserService 사용
+                )
             );
 
         return http.build();
