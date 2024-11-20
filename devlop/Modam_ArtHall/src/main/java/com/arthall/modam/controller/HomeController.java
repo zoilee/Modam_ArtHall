@@ -48,19 +48,7 @@ public class HomeController {
     private CommentService commentService;
 
     @GetMapping("/")
-    public String home(Model model) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication != null && authentication.isAuthenticated()
-                && !authentication.getPrincipal().equals("anonymousUser")) {
-            model.addAttribute("username", authentication.getName());
-            // 사용자 역할 가져오기
-            String userRole = getUserRole(authentication);
-            model.addAttribute("userRole", userRole); // 역할 정보를 Model에 추가
-        } else {
-            model.addAttribute("userRole", "ROLE_ANONYMOUS"); // 비로그인 사용자
-        }
-
+    public String home() {
         return "main";
     }
 
