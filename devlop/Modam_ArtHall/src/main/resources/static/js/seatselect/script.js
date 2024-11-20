@@ -1,6 +1,7 @@
 let selectedSeats = new Array();
 const seatWrapper = document.querySelector(".seat-wrapper");
-const seatPicked = document.querySelector("#seatPicked");
+const seatPicked1 = document.querySelector("#seatPicked1");
+const seatPicked2 = document.querySelector("#seatPicked2");
 let div = "";
 
 for (let i = 0; i < 12; i++) {
@@ -18,17 +19,27 @@ for (let i = 0; i < 12; i++) {
     $(document).on('click', '.seat', function () {
         var seatButton = $(this);
         var seatId = seatButton.data();
+        
+        // 이미 선택된 좌석이 2개 이상일 경우 추가 선택 막기
+        if (selectedSeats.length >= 2 && !seatButton.hasClass('selected')) {
+            alert("최대 2개의 좌석만 선택할 수 있습니다.");
+            return; // 2개 이상 선택했을 때는 아무 작업도 하지 않음
+        }
+        
         if (seatButton.hasClass('selected')) {
+            // 선택 해제
             seatButton.removeClass('selected');
             selectedSeats = selectedSeats.filter(function (id) {
                 return id !== seatId;
             });
         } else {
+            // 좌석 선택
             seatButton.addClass('selected');
             selectedSeats.push(seatId);
-            seatPicked.append(seatId);
+            // 선택된 좌석 표시
+            seatPicked1.innerText = selectedSeats[0] || ''; // 첫 번째 선택된 좌석
+            seatPicked2.innerText = selectedSeats[1] || ''; // 두 번째 선택된 좌석
         }
-        
     });
     
     }

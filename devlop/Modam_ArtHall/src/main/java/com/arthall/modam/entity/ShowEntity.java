@@ -36,4 +36,9 @@ public class ShowEntity {
     @SQLRestriction("reference_type = 'PERFORMANCE'")
     private PerformancesEntity performance;
 
+    public Object getShowId() {
+        throw new UnsupportedOperationException("올바르지 않은 접근입니다. 'getShowId'");
+    }
+
+
 }

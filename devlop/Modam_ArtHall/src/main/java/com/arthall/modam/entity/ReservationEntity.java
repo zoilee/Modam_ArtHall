@@ -2,6 +2,8 @@ package com.arthall.modam.entity;
 
 import java.sql.Timestamp;
 
+import org.hibernate.annotations.SQLRestriction;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -22,18 +24,27 @@ public class ReservationEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "user_id", nullable = false)
-    private int userId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @SQLRestriction("reference_type = 'users'")
+    private UserEntity userEntity;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "performance_id")
-    private PerformancesEntity performance; // 필드 확인
+    @JoinColumn(name = "show_id", referencedColumnName = "show_id")
+    @SQLRestriction("reference_type = 'show_entity'")
+    private ShowEntity showEntity; // 필드 확인
 
-    @Column(name = "seat_id")
-    private int seatId;
+    @Column(name = "seat_id1")
+    private String seatId1;
+
+    @Column(name = "seat_id2")
+    private String seatId2;
 
     @Column(name = "reservation_date", nullable = false)
     private Timestamp reservationDate;
+
+    @Column(name = "total_price")
+    private int totalPrice;
 
     @Column(name = "status", length = 20)
     private String status;

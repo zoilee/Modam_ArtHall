@@ -103,11 +103,11 @@ $(document).ready(function(){
 
     $('#confirm-reserv-button').click(function () {
         $.ajax({
-            url: '/modam/seatSelect',
+            url: '/modam/reservConfirm',
             method: 'POST',
             contentType: 'application/json',
             data: JSON.stringify({
-                musicalId: musicalId,
+                performanceId: performanceId,
                 selectedDate: selectedDate,
                 selectedTime: selectedTime,
                 numberOfPeople: numberOfPeople,

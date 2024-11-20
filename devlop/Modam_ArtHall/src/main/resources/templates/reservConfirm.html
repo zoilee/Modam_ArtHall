@@ -34,19 +34,24 @@
                 <div class="col-md-6 ">
                     <div class="mb-3">
                         <label class="form-label">공연제목</label>
-                        <input type="text" class="form-control" readonly>
+                        <p>${performancesEntity.Title}</p>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">관람일자</label>
-                        <input type="text" class="form-control" readonly>
+                        <p>${showEntity.showDate}</p>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">관람시간</label>
-                        <input type="text" class="form-control" readonly>
+                        <p>${showEntity.showTime}</p>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">티켓 수</label>
-                        <input type="text" class="form-control" readonly>
+                        <p>numberOfPeople</p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">예약좌석</label>
+                        <p>selectedSeats1</p>
+                        <p>selectedSeats2</p>
                     </div>
                 </div>
             </div>

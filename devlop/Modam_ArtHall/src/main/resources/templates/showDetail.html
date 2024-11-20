@@ -74,9 +74,9 @@
                 <!-- 비로그인 사용자 -->
                 <button th:if="${!#authentication.authenticated}" class="btn btn-primary btn-block mt-3" onclick="alert('로그인 후 이용하세요.');" id="toReservForm">예매하기</button>
                 <!--공연 id와 제목 보내기-->
-                <form action="/modam/reservConfirm" method="post">
-                    <input type="hidden" name="musicalId" class="musicalIdVal" value="${performance.id}">
-                    <input type="hidden" name="musicalTitle" class="musicalTitleVal" value="${performance.title}">
+                <form action="/modam/reservForm" method="post">
+                    <input type="hidden" name="performanceId" class="performanceIdVal" value="${performance.id}">
+                    <input type="hidden" name="performanceTitle" class="performanceTitleVal" value="${performance.title}">
                 </form>
             </div>
         </div>
