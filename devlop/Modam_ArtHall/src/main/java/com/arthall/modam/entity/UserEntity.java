@@ -15,9 +15,9 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY) // 자동 증가
     private Integer id;
 
-    @Column(name = "login_id", unique = true)
+    @Column(nullable = false, unique = true) // NOT NULL 추가
     private String loginId; // 로컬 사용자 로그인 ID
-
+    
     private String password; // 로컬 사용자 비밀번호 (카카오 사용자 NULL 가능)
 
     @Column(nullable = false)
@@ -38,9 +38,6 @@ public class UserEntity {
 
     @Column(name = "provider", nullable = false)
     private String provider = "LOCAL"; // 로그인 제공자 (LOCAL, KAKAO)
-
-    @Column(name = "platform_id", unique = true)
-    private String platformId; // sns별 상태
 
     @Column(name = "created_at", updatable = false)
     private Timestamp createdAt = new Timestamp(System.currentTimeMillis());

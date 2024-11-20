@@ -15,14 +15,14 @@ public KakaoUserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
-    public UserEntity registerUser(String platformId, String email, String name, String provider) {
-        Optional<UserEntity> existingUser = userRepository.findByPlatformId(platformId);
+    public UserEntity registerUser(String loginId, String email, String name, String provider) {
+        Optional<UserEntity> existingUser = userRepository.findByLoginId(loginId);
         if (existingUser.isPresent()) {
             return existingUser.get();
         }
 
         UserEntity user = new UserEntity();
-        user.setPlatformId(platformId); // 카카오 또는 네이버 ID 저장
+        user.setLoginId(loginId); // 카카오 또는 네이버 ID 저장
         user.setEmail(email);
         user.setName(name);
         user.setProvider(provider); // KAKAO 또는 NAVER

@@ -24,29 +24,29 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String registrationId = userRequest.getClientRegistration().getRegistrationId(); // 플랫폼 구분
         Map<String, Object> attributes = oAuth2User.getAttributes();
 
-        String platformId = null;
+        String loginId = null;
         String email = null;
         String name = null;
 
         if ("google".equals(registrationId)) {
-            platformId = (String) attributes.get("sub"); // 구글 고유 ID
+            loginId = (String) attributes.get("sub"); // 구글 고유 ID
             email = (String) attributes.get("email");
             name = (String) attributes.get("name");
         } else if ("kakao".equals(registrationId)) {
             Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
             Map<String, Object> properties = (Map<String, Object>) attributes.get("properties");
-            platformId = String.valueOf(attributes.get("id")); // 카카오 고유 ID
+            loginId = String.valueOf(attributes.get("id")); // 카카오 고유 ID
             email = (String) kakaoAccount.get("email");
             name = (String) properties.get("nickname");
         } else if ("naver".equals(registrationId)) {
             Map<String, Object> response = (Map<String, Object>) attributes.get("response");
-            platformId = (String) response.get("id"); // 네이버 고유 ID
+            loginId = (String) response.get("id"); // 네이버 고유 ID
             email = (String) response.get("email");
             name = (String) response.get("name");
         }
 
         // 사용자 정보 저장 또는 조회
-        kakaoUserService.registerUser(platformId, email, name, registrationId.toUpperCase());
+        kakaoUserService.registerUser(loginId, email, name, registrationId.toUpperCase());
 
         return oAuth2User;
     }
