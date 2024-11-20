@@ -1,9 +1,11 @@
 package com.arthall.modam.service;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
@@ -45,9 +47,18 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             name = (String) response.get("name");
         }
 
+        if (loginId == null) {
+            throw new RuntimeException("OAuth2 공급자로부터 loginId를 가져올 수 없습니다.");
+        }
+
         // 사용자 정보 저장 또는 조회
         kakaoUserService.registerUser(loginId, email, name, registrationId.toUpperCase());
 
-        return oAuth2User;
+        // 새로운 OAuth2User를 반환하며 loginId 포함
+        Map<String, Object> customAttributes = new HashMap<>(attributes);
+        customAttributes.put("loginId", loginId); // loginId를 추가
+
+        return new DefaultOAuth2User(oAuth2User.getAuthorities(), customAttributes, "loginId");
+
     }
 }

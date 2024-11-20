@@ -3,12 +3,8 @@ package com.arthall.modam.controller;
 
 
 
-
-import java.security.Principal;
-import java.util.Comparator;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,9 +13,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import com.arthall.modam.dto.UserDto;
-import com.arthall.modam.entity.ReservationEntity;
-import com.arthall.modam.entity.UserEntity;
-import com.arthall.modam.service.ReservationService;
+
 import com.arthall.modam.service.UserService;
 
 import jakarta.servlet.http.HttpSession;
@@ -29,9 +23,6 @@ import jakarta.validation.Valid;
 public class UserController {
     @Autowired
     private final UserService userService;
-
-    @Autowired
-    private ReservationService reservationService;
 
     // @Autowired
     // private ReservationService reservationService;
@@ -93,42 +84,5 @@ public class UserController {
         }
     }
 
-    @GetMapping("/mypage")
-    public String mypage(Model model, Principal principal) {
-        if (principal == null) {
-            return "redirect:/login"; // 인증되지 않은 경우 로그인 페이지로 리다이렉트
-        }
-    
-        String loginId = principal.getName();
-        UserEntity user = userService.getUserByLoginId(loginId);
-        int userId = user.getId();
-    
-        // 예: 예약 데이터 가져오기 (서비스 계층 메서드 필요)
-        List<ReservationEntity> upcomingReservations = reservationService.getUpcomingReservationsByUserId(userId);
-        List<ReservationEntity> pastReservations = reservationService.getPastReservationsByUserId(userId);
-
-        // 최신 날짜 순으로 정렬
-        upcomingReservations.sort(Comparator.comparing(ReservationEntity::getReservationDate).reversed());
-        pastReservations.sort(Comparator.comparing(ReservationEntity::getReservationDate).reversed());
-    
-        
-    
-        int points = userService.getUserPointsById(userId);
-    
-        model.addAttribute("user", user);
-        model.addAttribute("points", points);
-        model.addAttribute("upcomingReservations", upcomingReservations);
-        model.addAttribute("pastReservations", pastReservations);
-
-        // 예약 데이터가 없을 경우의 메시지 설정
-        if (upcomingReservations.isEmpty()) {
-            model.addAttribute("noUpcomingReservationsMessage", "현재 예약이 없습니다.");
-        }
-        if (pastReservations.isEmpty()) {
-            model.addAttribute("noPastReservationsMessage", "과거 예약이 없습니다.");
-        }
-    
-        return "mypage";
-    }
 
 }
