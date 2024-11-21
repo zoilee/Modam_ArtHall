@@ -21,32 +21,40 @@
                         <h5>회원정보입력</h5>
                     </div>
                     <div class="card-body">
-                        <form th:action="@{/register}" th:object="${userDto}" method="post">
+                        <form th:action="@{/register}" th:object="${userDto}" method="post" id="registerForm">
                             <div class="form-group">
                                 <label for="loginid">아이디</label>
-                                <input type="text" th:field="*{loginId}" class="form-control" id="loginid" placeholder="아이디">
-                            </div>
+                                <input type="text" th:field="*{loginId}" class="form-control" id="loginid" placeholder="아이디" 
+                                    required minlength="4" maxlength="20" pattern="^[A-Za-z0-9]{4,20}$" title="4~20자 영문, 숫자, 밑줄(_)만 사용 가능합니다.">
+                                    <div id="loginid-feedback" class="text-danger"></div>
+                                </div>
                             <div class="form-group">
                                 <label for="password">비밀번호</label>
-                                <input type="password" th:field="*{password}" class="form-control" id="password" placeholder="비밀번호">
-                            </div>
+                                <input type="password" th:field="*{password}" class="form-control" id="password" placeholder="비밀번호" 
+                                    required minlength="8" maxlength="20" pattern="^[A-Za-z\d]{8,20}$" title="비밀번호는 8~20자, 영문 대소문자와 숫자만 가능합니다.">
+                                    <div id="password-feedback" class="text-danger"></div>
+                                </div>
                             <div class="form-group">
                                 <label for="name">이름</label>
-                                <input type="text" th:field="*{name}" class="form-control" id="name" placeholder="이름">
+                                <input type="text" th:field="*{name}" class="form-control" id="name" placeholder="이름"
+                                required maxlength="50" pattern="^[가-힣a-zA-Z]+$" title="이름은 한글, 영어만 가능합니다.">
+                                <div id="name-feedback" class="text-danger"></div>
                             </div>
                             <div class="form-group">
                                 <label for="email">이메일</label>
-                                <input type="email" th:field="*{email}" class="form-control" id="email" placeholder="이메일">
+                                <input type="email" th:field="*{email}" class="form-control" id="email" placeholder="이메일"
+                                required maxlength="255" pattern="^[a-zA-Z0-9._]+@[a-zA-Z0-9.-]+\.[a-z]{2,}$" title="올바른 이메일 형식을 입력하세요. 예: example@domain.com">
+                                <div id="email-feedback" class="text-danger"></div>
                             </div>
                             <div class="form-group">
                                 <label for="phone">전화번호</label>
-                                <input type="tel" th:field="*{phoneNumber}" class="form-control" id="phone" placeholder="전화번호">
+                                <input type="tel" th:field="*{phoneNumber}" class="form-control" id="phone" placeholder="전화번호"
+                                required pattern="^\d{10,11}$" title="전화번호는 숫자 10~11자만 입력 가능합니다.">
+                                <div id="phone-feedback" class="text-danger"></div>
                             </div>
                             <button type="submit" class="btn btn-primary btn-block">제출하기</button>
                             <button type="reset" class="btn btn-secondary btn-block">취소</button>
                         </form>
-                        <!-- 에러 메시지 표시 -->
-                        <p th:if="${error}" th:text="${error}" class="text-danger"></p>
                     </div>
                 </div>
             </div>
@@ -57,5 +65,76 @@
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    // 아이디 중복 확인 (Ajax 요청)
+    document.getElementById('loginid').addEventListener('blur', function () {
+        const loginId = this.value;
+        const feedback = document.getElementById('loginid-feedback');
+
+        // 입력값이 비어 있는 경우 메시지 표시
+        if (loginId.trim() === '') {
+        feedback.textContent = "아이디를 입력해주세요.";
+        feedback.classList.add('text-danger');
+        return;
+    }
+
+    fetch(`/user/api/check-login-id?loginId=${loginId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.exists) {
+                feedback.textContent = "이미 사용 중인 아이디입니다.";
+                feedback.classList.add('text-danger');
+            } else {
+                feedback.textContent = "사용 가능한 아이디입니다.";
+                feedback.classList.remove('text-danger');
+                feedback.classList.add('text-success');
+            }
+        })
+        .catch(error => {
+            feedback.textContent = "서버와 통신 중 문제가 발생했습니다.";
+            feedback.classList.add('text-danger');
+        });
+    });
+    // // 폼 유효성 검증
+    // document.getElementById('registerForm').addEventListener('submit', function (event) {
+    //     event.preventDefault(); // 폼 기본 제출 막기
+    //     const loginId = document.getElementById('loginid').value.trim();
+    //     const password = document.getElementById('password').value.trim();
+    //     const name = document.getElementById('name').value.trim();
+    //     const email = document.getElementById('email').value.trim();
+    //     const phone = document.getElementById('phone').value.trim();
+
+    //     // 필수 입력값 검증
+    //     if (!loginId) showFeedback('loginid-feedback', '아이디: 필수 정보입니다.');
+    //     if (!password) showFeedback('password-feedback', '비밀번호: 필수 정보입니다.');
+    //     if (!name) showFeedback('name-feedback', '이름: 필수 정보입니다.');
+    //     if (!email) showFeedback('email-feedback', '이메일: 필수 정보입니다.');
+    //     if (!phone) showFeedback('phone-feedback', '전화번호: 필수 정보입니다.');
+
+    //     // 서버로 데이터 전송
+    //     fetch('/api/register', {
+    //         method: 'POST',
+    //         headers: { 'Content-Type': 'application/json' },
+    //         body: JSON.stringify({ loginId, password, name, email, phone }),
+    //     })
+    //         .then(response => response.json())
+    //         .then(data => {
+    //             if (data.success) {
+    //                 alert('회원가입 성공!');
+    //                 window.location.href = '/login';
+    //             } else {
+    //                 data.errors.forEach(error => {
+    //                     if (error.field === 'loginId') showFeedback('loginid-feedback', error.message);
+    //                     if (error.field === 'email') showFeedback('email-feedback', error.message);
+    //                 });
+    //             }
+    //         });
+    //     });
+
+    //     function showFeedback(id, message) {
+    //         const feedback = document.getElementById(id);
+    //         feedback.textContent = message;
+    //     }
+</script>
 </body>
 </html>

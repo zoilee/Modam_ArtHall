@@ -1,16 +1,15 @@
 package com.arthall.modam.controller;
 
-
-
-
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.arthall.modam.dto.UserDto;
 
@@ -38,30 +37,37 @@ public class UserController {
         return "register";
     }
 
-    // 회원가입 처리
+    // HTML 회원가입 처리
     @PostMapping("/register")
-    public String registerUser(@Valid UserDto userDto, BindingResult bindingResult, Model model) {
-        
-        // 입력 유효성 검사: BindingResult를 통해 @Valid 어노테이션 기반 유효성 검사
-        if(bindingResult.hasErrors()) {
-            return "/register";
+    public String registerUser(@Valid @ModelAttribute("userDto") UserDto userDto, BindingResult bindingResult, Model model) {
+        // 유효성 검증 실패 시
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("error", "유효성 검증에 실패했습니다.");
+            return "register"; // 에러 메시지와 함께 다시 폼 표시
         }
 
-        // 필수 필드 검증: 각 필드가 null 또는 빈 문자열인지 확인
-        if (userDto.getLoginId() == null || userDto.getLoginId().isEmpty() ||
-            userDto.getPassword() == null || userDto.getPassword().isEmpty() ||
-            userDto.getName() == null || userDto.getName().isEmpty() ||
-            userDto.getEmail() == null || userDto.getEmail().isEmpty() ||
-            userDto.getPhoneNumber() == null || userDto.getPhoneNumber().isEmpty()) {
-            
-            model.addAttribute("error", "모든 필수 항목을 입력해 주세요.");
+        // 중복 체크 (아이디 및 이메일)
+        if (userService.isLoginIdDuplicate(userDto.getLoginId())) {
+            model.addAttribute("error", "이미 사용 중인 아이디입니다.");
+            return "register";
+        }
+
+        if (userService.isEmailDuplicate(userDto.getEmail())) {
+            model.addAttribute("error", "이미 등록된 이메일입니다.");
             return "register";
         }
 
         // 회원가입 처리
         userService.registerUser(userDto);
-        return "redirect:/login";
+        return "redirect:/login"; // 성공 시 로그인 페이지로 이동
     }
+
+    @GetMapping("/user/api/check-login-id")
+    public ResponseEntity<Map<String, Boolean>> checkLoginId(@RequestParam(name = "loginId") String loginId) {
+    boolean exists = userService.isLoginIdDuplicate(loginId);
+    return ResponseEntity.ok(Map.of("exists", exists));
+    }
+
     // 로그인 폼 표시
     @GetMapping("/login")
     public String showLoginForm(Model model) {

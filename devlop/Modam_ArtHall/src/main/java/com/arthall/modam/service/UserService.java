@@ -31,22 +31,41 @@ public class UserService implements UserDetailsService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    // 회원가입 처리
+    // ===============회원가입 처리================
+    // 아이디 중복 체크
+    public boolean isLoginIdDuplicate(String loginId) {
+        return userRepository.findByLoginId(loginId).isPresent();
+    }
+
+    // 이메일 중복 체크
+    public boolean isEmailDuplicate(String email) {
+        return userRepository.findByEmail(email).isPresent();
+    }
+
     public void registerUser(UserDto userDto) {
-        if (userRepository.findByLoginId(userDto.getLoginId()).isPresent()) {
-            throw new IllegalArgumentException("이미 존재하는 사용자입니다.");
+        System.out.println("회원가입 요청 처리 중: " + userDto);
+    
+        // 아이디 중복 체크
+        if (isLoginIdDuplicate(userDto.getLoginId())) {
+            throw new IllegalArgumentException("이미 사용 중인 아이디입니다.");
         }
-
-        UserEntity userEntity = new UserEntity();
-        userEntity.setLoginId(userDto.getLoginId());
-        userEntity.setPassword(passwordEncoder.encode(userDto.getPassword())); // 비밀번호 암호화
-        userEntity.setName(userDto.getName());
-        userEntity.setEmail(userDto.getEmail());
-        userEntity.setPhoneNumber(userDto.getPhoneNumber());
-        userEntity.setRole(UserEntity.Role.USER);
-
+    
+        // 이메일 중복 체크
+        if (isEmailDuplicate(userDto.getEmail())) {
+            throw new IllegalArgumentException("이미 등록된 이메일입니다.");
+        }
+    
+        // 비밀번호 암호화
+        String encodedPassword = passwordEncoder.encode(userDto.getPassword());
+        userDto.setPassword(encodedPassword);
+    
+        // DTO -> Entity 변환
+        UserEntity userEntity = userDto.toEntity();
+    
+        // 저장
         userRepository.save(userEntity);
-        System.out.println("새 사용자 등록: " + userDto.getLoginId());
+    
+        System.out.println("회원가입 완료: " + userDto.getLoginId());
     }
 
     // loginId로 사용자 ID 가져오기
