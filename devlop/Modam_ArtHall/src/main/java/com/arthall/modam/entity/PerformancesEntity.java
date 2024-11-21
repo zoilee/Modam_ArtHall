@@ -15,6 +15,7 @@ import lombok.Data;
 @Table(name = "performances")
 @Data
 public class PerformancesEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -25,11 +26,11 @@ public class PerformancesEntity {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Column
-    private Date start_date;
+    @Column(name = "start_date") // 데이터베이스 컬럼과 매핑
+    private Date startdate;
 
-    @Column
-    private Date end_date;
+    @Column(name = "end_date") // 데이터베이스 컬럼과 매핑
+    private Date enddate;
 
     @Column
     private int time;
@@ -42,7 +43,7 @@ public class PerformancesEntity {
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
-    private Timestamp createdAt; // 생성 시간 자동 설정
+    private Timestamp createdAt;
 
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "reference_id", referencedColumnName = "id", foreignKey = @jakarta.persistence.ForeignKey(value = jakarta.persistence.ConstraintMode.NO_CONSTRAINT))
@@ -50,6 +51,5 @@ public class PerformancesEntity {
     private List<ImagesEntity> imagesEntities;
 
     @Transient
-    private String formattedAverageRating; // 평균 평점 형식
-
+    private String formattedAverageRating;
 }

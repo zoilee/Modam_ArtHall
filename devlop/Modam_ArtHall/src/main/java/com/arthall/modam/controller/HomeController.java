@@ -115,6 +115,22 @@ public class HomeController {
         return "registeruserEdit";
     }
 
+    @GetMapping("/showList")
+    public String showList(Model model) {
+        // 현재 진행 중인 공연
+        List<PerformancesEntity> currentPerformances = performanceService.getCurrentPerformances();
+        
+        // 지난 공연
+        List<PerformancesEntity> pastPerformances = performanceService.getPastPerformances();
+
+        // Thymeleaf 템플릿에 전달
+        model.addAttribute("currentPerformances", currentPerformances);
+        model.addAttribute("pastPerformances", pastPerformances);
+
+        return "showList";
+    }
+    
+
     @GetMapping("/showDetail/{performanceId}")
     public String showPerformanceDetails(@PathVariable("performanceId") int performanceId, Model model) {
         // 공연 정보 가져오기

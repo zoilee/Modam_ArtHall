@@ -54,7 +54,7 @@
             <!-- 공연 정보 -->
             <div class="col-md-8 my-4 sd_info-section">
                 <h4 class="my-4" th:text="${performance.title}">공연 제목</h4>
-                <p th:text="'공연기간: ' + ${performance.start_date} + ' ~ ' + ${performance.end_date}">공연 기간</p>
+                <p th:text="'공연기간: ' + ${performance.startdate} + ' ~ ' + ${performance.enddate}">공연 기간</p>
                 <p th:text="'공연시간: ' + ${performance.time} + '분'">공연 시간</p>
                 <p th:text="'관람연령: ' + ${performance.age} + '세 이상'">관람 연령</p>
                 <p th:text="'장소: ' + ${performance.location}">공연 장소</p>

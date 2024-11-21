@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>공연 목록</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/layout/style.css}">
+    <style>
+        .poster-container {
+            display: flex;
+            flex-direction: column;
+            gap: 100px; /* 포스터 그룹 간 간격 */
+            align-items: center;
+            margin-bottom: 100px; /* 지난 공연들과의 간격 */
+            max-width: 90%; /* 화면을 더 넓게 사용 */
+            margin: 0 auto;
+        }
+        .poster-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 800px; /* 그룹 크기 확대 */
+            gap: 25px; /* 포스터와 타이틀 간 간격 */
+        }
+        .poster-group.left {
+            align-self: flex-start; /* 왼쪽 정렬 */
+            margin-left: 150px; /* 왼쪽 여백 */
+        }
+        .poster-group.right {
+            align-self: flex-end; /* 오른쪽 정렬 */
+            margin-right: 150px; /* 오른쪽 여백 */
+        }
+        .poster {
+            background-color: #d6d6d6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 20px;
+            color: #555;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            height: 850px; /* 포스터 크기 */
+            overflow: hidden; /* 이미지 넘침 방지 */
+        }
+        .poster img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: cover; /* 이미지 비율 유지 */
+        }
+        .poster-title {
+            font-size: 20px; /* 글씨 크기 확대 */
+            text-align: center;
+        }
+        .past-shows {
+            margin-top: 100px; /* 포스터 섹션과의 간격 */
+        }
+        .past-shows table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .past-shows th, .past-shows td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        .top-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 50%;
+            box-shadow: 0px 4px 6px rgba(0,0,0,0.2);
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 헤더 -->
+    <th:block th:replace="~{fragments/header :: headerFragment}"></th:block>
+
+    <!-- Main Container -->
+    <div class="container-fluid mt-4" style="padding: 100px 0;">
+        <div class="poster-container">
+            <!-- 포스터 섹션 -->
+            <div th:each="performance, stat : ${currentPerformances}">
+                <div class="poster-group" th:classappend="${stat.index % 2 == 0} ? 'left' : 'right'">
+                    <div class="poster">
+                        <img th:src="${performance.imagesEntities.size() > 0 ? performance.imagesEntities[0].imageUrl : '/images/default-poster.jpg'}" alt="포스터 이미지">
+                    </div>
+                    <div class="poster-title">
+                        <h4 th:text="${performance.title}">공연 제목</h4>
+                        <p th:text="'공연 기간: ' + #dates.format(performance.startdate, 'yyyy.MM.dd') + ' ~ ' + #dates.format(performance.enddate, 'yyyy.MM.dd')"></p>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 지난 공연들 -->
+    <div class="container past-shows" style="padding-bottom: 100px;">
+        <h3 class="mb-3">지난 공연들</h3>
+        <table class="table table-bordered">
+            <thead class="thead-light">
+                <tr>
+                    <th>공연 제목</th>
+                    <th>공연 기간</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="performance : ${pastPerformances}">
+                    <td th:text="${performance.title}"></td>
+                    <td>
+                        <span th:text="${performance.startdate}"></span> ~ 
+                        <span th:text="${performance.enddate}"></span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 푸터 -->
+    <th:block th:replace="~{fragments/footer :: footerFragment}"></th:block>
+
+    <!-- Top Button -->
+    <button class="top-button" onclick="scrollToTop()">Top</button>
+
+    <!-- Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        // Top 버튼 클릭 시 페이지 상단으로 이동
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

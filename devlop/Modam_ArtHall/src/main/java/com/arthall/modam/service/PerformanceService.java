@@ -1,6 +1,7 @@
 package com.arthall.modam.service;
 
 import java.text.DecimalFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,6 +21,17 @@ public class PerformanceService {
     public PerformanceService(PerformancesRepository performanceRepository, CommentRepository commentRepository) {
         this.performancesRepository = performanceRepository;
         this.commentRepository = commentRepository;
+    }
+
+    public List<PerformancesEntity> getCurrentPerformances() {
+        Date currentDate = new Date(System.currentTimeMillis()); // 현재 날짜
+        return performancesRepository.findByEnddateAfter(currentDate);
+    }
+
+
+    public List<PerformancesEntity> getPastPerformances() {
+        Date currentDate = new Date(System.currentTimeMillis()); // 현재 날짜
+        return performancesRepository.findByEnddateBefore(currentDate);
     }
 
     // 전체 목록 검색
