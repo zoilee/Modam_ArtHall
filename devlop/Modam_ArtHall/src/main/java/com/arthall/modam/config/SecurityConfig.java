@@ -32,11 +32,10 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())  // Lambda DSL로 CSRF 보호 비활성화
             .authorizeHttpRequests(authorize -> authorize
-            .requestMatchers("/user/api/**").permitAll() // API 경로 접근 허용
             // 누구나 접근 가능한 경로
-            .requestMatchers("/", "/hallDetail", "/noticeList", "/showDetail/{performanceId}", "/register", "/login", "/css/**", "/js/**", "/imgs/**").permitAll()
+            .requestMatchers("/", "/hallDetail", "/user/api/**", "/noticeList", "/showDetail/{performanceId}", "/register", "/login", "/css/**", "/js/**", "/imgs/**").permitAll()
             // 로그인 사용자만 접근 가능한 경로
-            .requestMatchers("/mypage", "/reservForm", "/seatSelect", "/reservConfirm", "/registeruserEdit").authenticated()
+            .requestMatchers("/mypage", "/reservForm", "/seatSelect", "/reservConfirm", "/registeruserEdit").hasRole("USER")
             // 관리자만 접근 가능한 경로
             .requestMatchers("/admin/**").hasRole("ADMIN")
             // 나머지는 모두 인증 필요

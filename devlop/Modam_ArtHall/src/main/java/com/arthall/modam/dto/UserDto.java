@@ -40,6 +40,10 @@ public class UserDto {
     @Pattern(regexp = "^\\d{10,11}$", message = "전화번호는 10~11자리 숫자로 입력해주세요.")
     private String phoneNumber;
 
+    // 추가된 필드: 소셜 로그인 여부
+    private String provider;
+    private String currentPassword; // 현재 비밀번호
+    private String newPassword; // 새 비밀번호
     private Role role; // UserEntity.Role로 변경
     private String status;
     private LocalDateTime createdAt;
