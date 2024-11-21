@@ -10,12 +10,9 @@ import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,9 +26,6 @@ import com.arthall.modam.entity.PerformancesEntity;
 
 import com.arthall.modam.repository.ImagesRepository;
 import com.arthall.modam.repository.PerformancesRepository;
-
-import com.arthall.modam.dto.PerformancesDto;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
 @RequestMapping("/admin")
@@ -314,8 +308,8 @@ public class AdminController {
                     .orElseThrow(() -> new IllegalArgumentException("해당 공연 정보를 찾을 수 없습니다."));
 
             existingEntity.setTitle(performancesEntity.getTitle());
-            existingEntity.setStart_date(performancesEntity.getStart_date());
-            existingEntity.setEnd_date(performancesEntity.getEnd_date());
+            existingEntity.setStartdate(performancesEntity.getStartdate());
+            existingEntity.setEnddate(performancesEntity.getEnddate());
             existingEntity.setLocation(performancesEntity.getLocation());
             existingEntity.setTime(performancesEntity.getTime());
             existingEntity.setAge(performancesEntity.getAge());

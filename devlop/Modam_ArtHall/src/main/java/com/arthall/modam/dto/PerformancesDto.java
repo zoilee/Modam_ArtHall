@@ -23,8 +23,8 @@ public class PerformancesDto {
         dto.setId(performancesEntity.getId());
         dto.setTitle(performancesEntity.getTitle());
         dto.setDescription(performancesEntity.getDescription());
-        dto.setStartDate(performancesEntity.getStart_date());
-        dto.setEndDate(performancesEntity.getEnd_date());
+        dto.setStartDate(performancesEntity.getStartdate());
+        dto.setEndDate(performancesEntity.getEnddate());
         dto.setTime(performancesEntity.getTime());
         dto.setLocation(performancesEntity.getLocation());
         dto.setCreatedAt(performancesEntity.getCreatedAt());

@@ -25,11 +25,11 @@ public class PerformancesEntity {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Column
-    private Date start_date;
+    @Column(name = "start_date")
+    private Date startdate;
 
-    @Column
-    private Date end_date;
+    @Column(name = "end_date")
+    private Date enddate;
 
     @Column
     private int time;

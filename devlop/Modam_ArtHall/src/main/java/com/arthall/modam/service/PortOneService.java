@@ -1,22 +1,34 @@
 package com.arthall.modam.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.siot.IamportRestClient.IamportClient;
 import com.siot.IamportRestClient.response.IamportResponse;
-import com.siot.IamportRestClient.response.AccessToken;
+import com.siot.IamportRestClient.response.Payment;
 
-
+import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class PortOneService {
-    private IamportClient api;
-    private final String API_KEY ="3525653010711283";
-    private final String API_SECRET = "JPw7v6FxFDnmsWu9D65dg5kb6ffdjlNzG4h6Y5P2rNeBpxZH6Mmj4UfZcgWg44y9DcnpEZkwz9rbatGU";
+    private IamportClient iamportClient;
 
-    public PortOneService(){
-        this.api = new IamportClient(API_KEY, API_SECRET);
+    @Value("${api.key}")
+    private String apiKey;
+
+    @Value("${api.secret}")
+    private String secretKey;
+
+    @PostConstruct
+    public void init() {
+        this.iamportClient = new IamportClient(apiKey, secretKey);
     }
 
+    public IamportResponse<Payment> getPaymentByImpUid(String impUid) throws Exception {
+        log.info("포트원 결제 정보 조회 - imp_uid: {}", impUid);
+        return iamportClient.paymentByImpUid(impUid);
+    }
 
 }

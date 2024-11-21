@@ -1,5 +1,6 @@
 package com.arthall.modam.entity;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 import jakarta.persistence.CascadeType;
@@ -18,28 +19,33 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "reservations")
-public class ReservationEntity {
+public class ReservationsEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private int id; // 기본 키
 
     @Column(name = "user_id", nullable = false)
-    private int userId;
+    private int userId; // 사용자 ID
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "performance_id")
-    private PerformancesEntity performance; // 필드 확인
+    @Column(name = "show_id") //
+    private Integer showId; // 공연 정보
 
-    @Column(name = "seat_id")
-    private int seatId;
+    @Column(name = "seat_id1", length = 10) // 첫 번째 좌석 ID
+    private String seatId1;
+
+    @Column(name = "seat_id2", length = 10) // 두 번째 좌석 ID
+    private String seatId2;
 
     @Column(name = "reservation_date", nullable = false)
-    private Timestamp reservationDate;
+    private Timestamp reservationDate; // 예약 날짜
+
+    @Column(name = "total_price", nullable = false, precision = 10, scale = 2)
+    private BigDecimal totalPrice; // 총 금액
 
     @Column(name = "status", length = 20)
-    private String status;
+    private String status; // 예약 상태
 
     @OneToOne(mappedBy = "reservation", cascade = CascadeType.ALL)
-    private PaymentsEntity payment; // 결제 엔티티와 1:1
+    private PaymentsEntity payment;
 }
