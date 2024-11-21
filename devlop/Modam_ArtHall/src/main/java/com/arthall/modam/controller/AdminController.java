@@ -4,6 +4,7 @@ import com.arthall.modam.entity.NoticesEntity;
 import com.arthall.modam.entity.ImagesEntity;
 import com.arthall.modam.service.BbsService;
 import com.arthall.modam.service.FileService;
+import com.arthall.modam.service.UserService;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,12 +27,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.arthall.modam.entity.PerformancesEntity;
-
+import com.arthall.modam.entity.UserEntity;
 import com.arthall.modam.repository.ImagesRepository;
 import com.arthall.modam.repository.PerformancesRepository;
-
-import com.arthall.modam.dto.PerformancesDto;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
 @RequestMapping("/admin")
@@ -48,6 +46,9 @@ public class AdminController {
 
     @Autowired
     private FileService fileService;
+
+     @Autowired
+    private UserService userService;
 
     // 공지사항 목록 조회 (페이지네이션 적용)
     @GetMapping("/noticeList")
@@ -349,6 +350,7 @@ public String updateAdminNotice(
         return "admin/adminShowCommitEdit";
     }
 
+    @SuppressWarnings("null")
     @PostMapping("/showCommitEdit")
     public String adminCommitEdit(PerformancesEntity performancesEntity,
             @RequestParam(value = "file", required = false) MultipartFile file,
@@ -414,9 +416,32 @@ public String updateAdminNotice(
         return "redirect:showCommitList";
     }
 
+
+
     @GetMapping("/userCommit")
-    public String showAdminUserCommit() {
-        return "admin/adminUserCommit";
-    }
+public String showAdminUserCommit(
+        @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
+        @RequestParam(value = "page", defaultValue = "0") int page,
+        Model model) {
+
+    System.out.println("검색 키워드: " + keyword); // 요청받은 키워드 출력
+
+    int pageSize = 5; // 페이지당 회원 수
+    Pageable pageable = PageRequest.of(page, pageSize, Sort.by("createdAt").descending());
+
+    Page<UserEntity> users = userService.searchUsers(keyword, pageable);
+
+    System.out.println("검색 결과 수: " + users.getContent().size()); // 검색 결과 수 출력
+    model.addAttribute("users", users);
+    model.addAttribute("keyword", keyword);
+    model.addAttribute("currentPage", page);
+    model.addAttribute("totalPages", users.getTotalPages());
+
+    return "admin/adminUserCommit";
+}
+
+    
+    
+    
 
 }
