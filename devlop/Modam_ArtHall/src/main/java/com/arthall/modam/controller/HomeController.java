@@ -2,8 +2,10 @@ package com.arthall.modam.controller;
 
 import java.util.List;
 import java.util.Map;
+import java.security.Principal;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -216,14 +218,34 @@ public class HomeController {
         return "success";
     }
 
+    // 더보기 댓글 로드
     @GetMapping("/showDetail/loadComments")
     @ResponseBody
-    public List<CommentEntity> loadMoreComments(
+    public Map<String, Object> loadMoreComments(
             @RequestParam("performanceId") int performanceId,
-            @RequestParam("offset") int offset) {
+            @RequestParam("offset") int offset,
+            Principal principal) {
+
         PerformancesEntity performance = new PerformancesEntity();
         performance.setId(performanceId);
-        return commentService.getComments(performance, offset, 5);
+        List<CommentEntity> comments = commentService.getComments(performance, offset, 5);
+
+        // 현재 사용자 정보 가져오기
+        int userId = 0;
+        boolean isAdmin = false;
+        if (principal != null) {
+            String loginId = principal.getName();
+            UserEntity user = userService.getUserByLoginId(loginId);
+            userId = user.getId();
+            isAdmin = user.getRole() == UserEntity.Role.ADMIN; // 관리자 여부 확인
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("comments", comments);
+        response.put("userId", userId);
+        response.put("isAdmin", isAdmin);
+
+        return response;
     }
 
     @GetMapping("/hallDetail")

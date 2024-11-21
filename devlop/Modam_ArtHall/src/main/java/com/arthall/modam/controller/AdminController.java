@@ -314,8 +314,8 @@ public class AdminController {
                     .orElseThrow(() -> new IllegalArgumentException("해당 공연 정보를 찾을 수 없습니다."));
 
             existingEntity.setTitle(performancesEntity.getTitle());
-            existingEntity.setStart_date(performancesEntity.getStart_date());
-            existingEntity.setEnd_date(performancesEntity.getEnd_date());
+            existingEntity.setStartdate(performancesEntity.getStartdate());
+            existingEntity.setEnddate(performancesEntity.getEnddate());
             existingEntity.setLocation(performancesEntity.getLocation());
             existingEntity.setTime(performancesEntity.getTime());
             existingEntity.setAge(performancesEntity.getAge());

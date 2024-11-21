@@ -54,7 +54,7 @@
             <!-- 공연 정보 -->
             <div class="col-md-8 my-4 sd_info-section">
                 <h4 class="my-4" th:text="${performance.title}">공연 제목</h4>
-                <p th:text="'공연기간: ' + ${performance.start_date} + ' ~ ' + ${performance.end_date}">공연 기간</p>
+                <p th:text="'공연기간: ' + ${performance.startdate} + ' ~ ' + ${performance.enddate}">공연 기간</p>
                 <p th:text="'공연시간: ' + ${performance.time} + '분'">공연 시간</p>
                 <p th:text="'관람연령: ' + ${performance.age} + '세 이상'">관람 연령</p>
                 <p th:text="'장소: ' + ${performance.location}">공연 장소</p>
@@ -321,11 +321,12 @@
     }
 
 
-    //더보기 버튼 기능구현
+    // 더보기 버튼 기능구현
     function loadMoreComments() {
         fetch(`/showDetail/loadComments?performanceId=${performanceId}&offset=${offset}`)
             .then(response => response.json())
-            .then(comments => {
+            .then(responseData => {
+                const { comments, userId, isAdmin } = responseData; // 사용자 ID와 관리자 여부를 서버에서 함께 전달
                 const commentSection = document.getElementById('comment-section');
                 if (!commentSection) {
                     console.error("comment-section element not found.");
@@ -333,6 +334,8 @@
                 }
 
                 comments.forEach(comment => {
+                    const isEditable = isAdmin || comment.user.id === userId; // 수정/삭제 가능 여부
+
                     const commentHtml = `
                         <div class="card mb-2 position-relative" id="comment-${comment.id}">
                             <div class="card-body d-flex justify-content-between">
@@ -347,8 +350,10 @@
                                     </div>
                                 </div>
                                 <div class="action-buttons">
-                                    <button class="btn btn-sm btn-outline-primary" onclick="enterEditMode(${comment.id})" id="edit-button-${comment.id}">수정</button>
-                                    <button class="btn btn-sm btn-outline-danger" onclick="deleteComment(${comment.id})" id="delete-button-${comment.id}">삭제</button>
+                                    ${isEditable ? `
+                                        <button class="btn btn-sm btn-outline-primary" onclick="enterEditMode(${comment.id})" id="edit-button-${comment.id}">수정</button>
+                                        <button class="btn btn-sm btn-outline-danger" onclick="deleteComment(${comment.id})" id="delete-button-${comment.id}">삭제</button>
+                                    ` : ''}
                                 </div>
                             </div>
                         </div>`;
