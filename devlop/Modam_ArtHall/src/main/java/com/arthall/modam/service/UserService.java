@@ -42,6 +42,11 @@ public class UserService implements UserDetailsService {
         return userRepository.findByEmail(email).isPresent();
     }
 
+    // 전화번호 중복 체크
+    public boolean isPhoneNumberDuplicate(String phoneNumber) {
+    return userRepository.findByPhoneNumber(phoneNumber).isPresent();
+    }
+
     public void registerUser(UserDto userDto) {
         System.out.println("회원가입 요청 처리 중: " + userDto);
     

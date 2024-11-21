@@ -68,6 +68,17 @@ public class UserController {
     return ResponseEntity.ok(Map.of("exists", exists));
     }
 
+    @GetMapping("/user/api/check-email")
+    public ResponseEntity<Map<String, Boolean>> checkEmail(@RequestParam(name = "email") String email) {
+    boolean exists = userService.isEmailDuplicate(email);
+    return ResponseEntity.ok(Map.of("exists", exists));
+    }
+
+    @GetMapping("/user/api/check-phone")
+    public ResponseEntity<Map<String, Boolean>> checkPhoneNumber(@RequestParam(name = "phone") String phoneNumber) {
+    boolean exists = userService.isPhoneNumberDuplicate(phoneNumber);
+    return ResponseEntity.ok(Map.of("exists", exists));
+    }
     // 로그인 폼 표시
     @GetMapping("/login")
     public String showLoginForm(Model model) {
