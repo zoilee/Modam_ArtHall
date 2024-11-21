@@ -2,10 +2,10 @@ package com.arthall.modam.entity;
 
 import java.sql.Date;
 
-import org.hibernate.annotations.SQLRestriction;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -15,6 +15,7 @@ import jakarta.persistence.ManyToOne;
 @Entity
 public class ShowEntity {
     @Id
+    @Column(name = "show_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int showId;
 
@@ -31,10 +32,9 @@ public class ShowEntity {
     private int seatAvailable;
 
     // 외래 키
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "performance_id", referencedColumnName = "id")
-    @SQLRestriction("reference_type = 'PERFORMANCE'")
-    private PerformancesEntity performance;
+    private PerformancesEntity performancesEntity;
 
     public Object getShowId() {
         throw new UnsupportedOperationException("올바르지 않은 접근입니다. 'getShowId'");

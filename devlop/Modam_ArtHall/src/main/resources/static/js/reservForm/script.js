@@ -1,15 +1,15 @@
  // 페이지가 로드될 때 현재 날짜를 'today' 값을 기반으로 초기화
  document.addEventListener('DOMContentLoaded', function() {
     const calendarInput = document.getElementById('calendarInput');
-    const hiddenDate = document.getElementById('hiddenDate');
+    const selectDate = document.getElementById('showDate');
     
     // 기본값을 서버에서 전달된 오늘 날짜로 설정 (예: "2024-11-20")
     const today = calendarInput.value;
-    hiddenDate.value = today; // 'hiddenDate' input에 기본 오늘 날짜 설정
+    selectDate.value = today; // 'hiddenDate' input에 기본 오늘 날짜 설정
     
     // 날짜가 선택될 때마다 hidden input에 선택된 날짜 반영
     calendarInput.addEventListener('change', function() {
-        hiddenDate.value = calendarInput.value;
+        selectDate.value = calendarInput.value;
     });
 });
 
@@ -17,8 +17,8 @@
 document.addEventListener('DOMContentLoaded', function() {
     const showIdField = document.getElementById('showId');
     const calendarInput = document.getElementById('calendarInput');
-    const showTimeSelect = document.getElementById('selectedTime');
-    const performanceIdField = document.getElementById('selectedPerformanceId')
+    const showTimeSelect = document.getElementById('showTime');
+    const performanceIdField = document.getElementById('PerformanceId')
     
     // 초기값을 서버에서 전달된 값으로 설정
     const performanceId = performanceIdField.value;
@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         alert('해당 회차의 공연 정보를 찾을 수 없습니다.');
                     }
                 })
-                .catch(error => console.error('Error fetching showId:', error));
+                .catch(error => console.error('showId를 가져오는 도중 문제가 발생했습니다 :', error));
         }
     }
 
@@ -75,12 +75,10 @@ $(document).ready(function () {
     //폼 지정
     const form = document.querySelector("#formToReservConfirm");
 
-    // 선택한 날짜, 회차, 인원, 좌석 정보를 폼에 추가
-    const selectedDateInput = $('<input>').attr('type', 'hidden').attr('name', 'selectedDate').val(selectedDate);
-    const selectedTimeInput = $('<input>').attr('type', 'hidden').attr('name', 'selectedTime').val(selectedTime);
+    // 선택한 회차, 인원 정보를 폼에 추가
+    const selectedTimeInput = $('<input>').attr('type', 'hidden').attr('name', 'showTime').val(selectedTime);
     const numberOfPeopleInput = $('<input>').attr('type', 'hidden').attr('name', 'numberOfPeople').val(numberOfPeople);
 
-    form.append(selectedDateInput);
     form.append(selectedTimeInput);
     form.append(numberOfPeopleInput);
     

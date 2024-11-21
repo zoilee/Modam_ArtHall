@@ -26,12 +26,10 @@ public class ReservationEntity {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
-    @SQLRestriction("reference_type = 'users'")
     private UserEntity userEntity;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "show_id", referencedColumnName = "show_id")
-    @SQLRestriction("reference_type = 'show_entity'")
+    @JoinColumn(name = "show_id", referencedColumnName = "show_id") // show_id 컬럼을 참조
     private ShowEntity showEntity; // 필드 확인
 
     @Column(name = "seat_id1")
@@ -44,7 +42,7 @@ public class ReservationEntity {
     private Timestamp reservationDate;
 
     @Column(name = "total_price")
-    private int totalPrice;
+    private double totalPrice;
 
     @Column(name = "status", length = 20)
     private String status;

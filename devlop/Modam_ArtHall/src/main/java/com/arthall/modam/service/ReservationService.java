@@ -17,13 +17,20 @@ public class ReservationService {
 
     public List<ReservationEntity> getUpcomingReservationsByUserId(int userId) {
         Timestamp now = new Timestamp(System.currentTimeMillis());
-        return reservationRepository.findByUserIdAndReservationDateAfter(userId, now);
+        return reservationRepository.findByUserEntity_IdAndReservationDateAfter(userId, now);
     }
 
     public List<ReservationEntity> getPastReservationsByUserId(int userId) {
         Timestamp now = new Timestamp(System.currentTimeMillis());
-        return reservationRepository.findByUserIdAndReservationDateBefore(userId, now);
+        return reservationRepository.findByUserEntity_IdAndReservationDateBefore(userId, now);
     }
 
+    public ReservationEntity createReservation(ReservationEntity reservationEntity) {
+        // 예약을 DB에 저장
+        reservationEntity.setReservationDate(new Timestamp(System.currentTimeMillis())); // 예약 날짜 설정
+        reservationEntity.setStatus("CONFIRMED"); // 기본 상태 설정
+
+        return reservationRepository.save(reservationEntity); // 저장 후 반환
+    }
 
 }

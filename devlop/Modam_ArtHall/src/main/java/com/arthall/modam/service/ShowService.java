@@ -1,7 +1,7 @@
 package com.arthall.modam.service;
 
 import java.sql.Date;
-import java.time.LocalDate;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ public class ShowService {
 
     // performanceId로 검색
     public List<ShowEntity> findByPerformanceId(int performanceId) {
-        return showRepository.findByPerformanceId(performanceId);
+        return showRepository.findByPerformancesEntity_Id(performanceId);
     }
 
     // showDate로 검색
@@ -32,7 +32,7 @@ public class ShowService {
     }
 
     // performanceId, showDate, showTime으로 검색
-    public List<ShowEntity> findByPerformanceIdAndShowDateAndShowTime(int performanceId, LocalDate showDate, int showTime) {
-        return showRepository.findByPerformanceIdAndShowDateAndShowTime(performanceId, showDate, showTime);
+    public List<ShowEntity> findByPerformanceIdAndShowDateAndShowTime(int performanceId, Date showDate, int showTime) {
+        return showRepository.findByPerformancesEntity_IdAndShowDateAndShowTime(performanceId, showDate, showTime);
     }
 }

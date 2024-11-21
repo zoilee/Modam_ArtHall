@@ -29,7 +29,7 @@ public class PerformanceService {
 
     // title로 검색
     public List<PerformancesEntity> findByTitle(String title) {
-        return performancesRepository.findByTitleContaining(title);
+        return performancesRepository.findByTitle(title);
     }
 
     // ID로 공연 정보 가져오기

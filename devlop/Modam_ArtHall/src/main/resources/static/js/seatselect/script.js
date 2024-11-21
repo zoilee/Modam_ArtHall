@@ -4,6 +4,34 @@ const seatPicked1 = document.querySelector("#seatPicked1");
 const seatPicked2 = document.querySelector("#seatPicked2");
 let div = "";
 
+function mapping(input, i, j) {
+    if (i === 0) {
+        input.value = "A" + j;
+    } else if (i === 1) {
+        input.value = "B" + j;
+    } else if (i === 2) {
+        input.value = "C" + j;
+    } else if (i === 3) {
+        input.value = "D" + j;
+    } else if (i === 4) {
+        input.value = "E" + j;
+    } else if (i === 5) {
+        input.value = "F" + j;
+    } else if (i === 6) {
+        input.value = "G" + j;
+    } else if (i === 7) {
+        input.value = "H" + j;
+    } else if (i === 8) {
+        input.value = "I" + j;
+    } else if (i === 9) {
+        input.value = "J" + j;
+    } else if (i === 10) {
+        input.value = "K" + j;
+    } else if (i === 11) {
+        input.value = "L" + j;
+    }
+}
+
 for (let i = 0; i < 12; i++) {
     div = document.createElement("div");
     seatWrapper.append(div);
@@ -12,7 +40,7 @@ for (let i = 0; i < 12; i++) {
         input.type = "button";
         input.name = "seats"
         input.classList = "seat";
-        //3중포문을 사용하지 않기위해 
+        div.append(input);
    
     mapping(input, i, j);
     div.append(input);
@@ -45,33 +73,6 @@ for (let i = 0; i < 12; i++) {
     }
 }
 
-function mapping(input, i, j) {
-    if (i === 0) {
-        input.value = "A" + j;
-    } else if (i === 1) {
-        input.value = "B" + j;
-    } else if (i === 2) {
-        input.value = "C" + j;
-    } else if (i === 3) {
-        input.value = "D" + j;
-    } else if (i === 4) {
-        input.value = "E" + j;
-    } else if (i === 5) {
-        input.value = "F" + j;
-    } else if (i === 6) {
-        input.value = "G" + j;
-    } else if (i === 7) {
-        input.value = "H" + j;
-    } else if (i === 8) {
-        input.value = "I" + j;
-    } else if (i === 9) {
-        input.value = "J" + j;
-    } else if (i === 10) {
-        input.value = "K" + j;
-    } else if (i === 11) {
-        input.value = "L" + j;
-    }
-}
 
 // 입력값을 기준으로 class를 추가하는 함수
 function setClassBasedOnValue(input) {
@@ -131,8 +132,8 @@ form.attr('action', '/modam/reservConfirm');  // 정보를 전달할 서버 경�
 
 
 // 선택한 좌석 정보를 폼에 추가
-const selectedSeatsInput1 = $('<input>').attr('type', 'hidden').attr('name', 'selectedSeats1').val(selectedSeats[0]);
-const selectedSeatsInput2 = $('<input>').attr('type', 'hidden').attr('name', 'selectedSeats2').val(selectedSeats[1]);
+const selectedSeatsInput1 = $('<input>').attr('type', 'hidden').attr('name', 'seatId1').val(selectedSeats[0]);
+const selectedSeatsInput2 = $('<input>').attr('type', 'hidden').attr('name', 'seatId2').val(selectedSeats[1]);
 
 form.append(selectedSeatsInput1);
 form.append(selectedSeatsInput2);

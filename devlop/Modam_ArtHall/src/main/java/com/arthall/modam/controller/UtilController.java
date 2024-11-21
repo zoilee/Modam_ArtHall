@@ -27,26 +27,12 @@ public class UtilController {
     @Autowired
     private ShowRepository showRepository;
 
-    //캘린더 만들기
-    @RequestMapping("/reservForm")
-    public String showCalendarPage(Model model) {
-        // 오늘 날짜를 Calendar 객체로 가져오기
-        Calendar calendar = Calendar.getInstance();
-        Date today = calendar.getTime();
-        
-        // 오늘 날짜를 문자열로 변환하여 모델에 추가 (예: "2024-11-20")
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        String todayString = dateFormat.format(today);
-        
-        model.addAttribute("today", todayString); // 오늘 날짜를 모델에 추가
-        return "/reservForm";
-    }
-
+    
     @GetMapping("/getShowId")
     public ResponseEntity<Map<String, Object>> getShowId(@RequestParam("performanceId") int performanceId,
-                                                          @RequestParam("showDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate showDate,
+                                                          @RequestParam("showDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date showDate,
                                                           @RequestParam("showTime") int showTime) {
-        List<ShowEntity> shows = showRepository.findByPerformanceIdAndShowDateAndShowTime(performanceId, showDate, showTime);
+        List<ShowEntity> shows = showRepository.findByPerformancesEntity_IdAndShowDateAndShowTime(performanceId, showDate, showTime);
         
         Map<String, Object> response = new HashMap<>();
         if (!shows.isEmpty()) {

@@ -1,10 +1,13 @@
 $(document).ready(function(){
-    const musicalId = $('musicalIdInput').val();
-    const selectedDate = $("selectedDateInput").val();
-    const selectedTime = $("selectedTimeInput").val();
-    const numberOfPeople = $("numberOfPeopleInput").val();
-    const selectedSeat1 = $("selectedSeatsInput1").val();
-    const selectedSeat2 = $("selectedSeatsInput2").val();
+    // 예약 정보 가져오기
+    const selectedSeats1 = $("input[name='seatId1']").val();
+    const selectedSeats2 = $("input[name='seatId2']").val();
+    const selectedDate = $("input[name='showDate']").val();
+    const selectedTime = $("input[name='showTime']").val();
+    const numberOfPeople = $("input[name='numberOfPeople']").val();
+    const performanceTitle = $("input[name='performanceTitle']").val();
+    const showId = $("input[name='showId']").val();
+    //좌석가격지정
     const seat1price = '';
     const seat2Price = '';
     const totalSeatPrice = seat1price + seat2Price;
@@ -15,7 +18,7 @@ $(document).ready(function(){
 
     //selectedTime 시간으로 변환해서 출력
     function transformToTime(selectedTime){
-        const timeShow = document.querySelector("#showConfirmTime");
+        const timeShow = document.querySelector(".selectedTimeConfirm");
         if(selectedTime == 1){
             timeShow.append("13:00");
         }else{
@@ -23,6 +26,16 @@ $(document).ready(function(){
         }
     };
     transformToTime(selectedTime);
+
+    //최종확인 form에 값 출력
+    function updateReservationDetails() {
+        $('.performanceTitleConfirm').text(performanceTitle);
+        $('.selectedDateConfirm').text(selectedDate);
+        $('.numberOfPeopleConfirm').text(numberOfPeople);
+        $('.selectedSeats1Confirm').text(selectedSeats1);
+        $('.selectedSeats2Confirm').text(selectedSeats2);
+    }
+    updateReservationDetails();
 
     //좌석 위치별 가격 설정
     if ((selectedSeat1 >= "A4" && selectedSeat1 <= "A15") ||
@@ -101,27 +114,34 @@ $(document).ready(function(){
         seat2Price = aValue;
     }
 
-    $('#confirm-reserv-button').click(function () {
-        $.ajax({
-            url: '/modam/reservConfirm',
-            method: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({
-                performanceId: performanceId,
-                selectedDate: selectedDate,
-                selectedTime: selectedTime,
-                numberOfPeople: numberOfPeople,
-                reservedSeat1: selectedSeat1,
-                reservedSeat2: selectedSeat2,
-                totalSeatPrice: totalSeatPrice
-            }),
-            success: function () {
-                alert('예약이 완료되었습니다.');
-                location.reload(); // 예약 후 페이지 리로드
-            },
-            error: function () {
-                alert('예약에 실패했습니다.');
-            }
+
+    $('#confirm-reserv-button').on('click', function() {
+            const reservationData = {
+                showId: showId,
+                seatId1: selectedSeats1,
+                seatId2: selectedSeats2,
+                totalPrice: totalSeatPrice,
+                status: 'CONFIRMED',
+                userId: getSessionUserId()
+            };
+        
+            $.ajax({
+                url: '/modam/reservConfirm',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(reservationData),
+                success: function(response) {
+                    if (response.success) {
+                        alert('예약이 완료되었습니다.');
+                    } else {
+                        alert('예약 실패: ' + response.message);
+                    }
+                },
+                error: function(error) {
+                    console.error('예약 처리 중 오류 발생:', error);
+                    alert('예약 처리 중 오류가 발생했습니다.');
+                }
+            });
         });
-    });
+    
 });
