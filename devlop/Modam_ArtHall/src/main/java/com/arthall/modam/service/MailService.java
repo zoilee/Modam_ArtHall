@@ -35,7 +35,7 @@ public class MailService {
             // 이메일 본문 동적 구성
             StringBuilder content = new StringBuilder();
             content.append("<h1>안녕하세요</h1>")
-                    .append("<p>고객님의 예약번호는 XX입니다.</p>");
+                    .append(mailDto.getMessage());
 
             // 첨부파일 추가
             MultipartFile file = mailDto.getFile();

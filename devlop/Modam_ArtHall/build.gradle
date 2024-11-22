@@ -21,6 +21,7 @@ configurations {
 
 repositories {
 	mavenCentral()
+	maven { url 'https://jitpack.io' }  // JitPack 레포지토리 추가
 }
 
 dependencies {
@@ -43,6 +44,12 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	//email발송
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
+	// 아임포트 관련 //
+	implementation 'com.github.iamport:iamport-rest-client-java:0.2.23'
+	
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+    implementation 'org.springframework.boot:spring-boot-starter-json'
+
 
 }
 

@@ -59,5 +59,4 @@ public class PerformancesEntity {
     @Transient
     private String formattedEndDate;
 
-    
 }

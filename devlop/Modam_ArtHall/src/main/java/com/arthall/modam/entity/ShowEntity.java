@@ -11,8 +11,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+
+import lombok.Data;
 
 @Entity
+@Table(name = "shows")
+@Data
 public class ShowEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,13 +25,13 @@ public class ShowEntity {
 
     @Column(name = "show_date")
     private Date showDate;
-    
+
     @Column(name = "show_time")
     private int showTime; // 회차 (1은 13시, 2는 17시 회차)
-    
+
     @Column(name = "seat_limit")
     private int seatLimit;
-    
+
     @Column(name = "seat_available")
     private int seatAvailable;
 
