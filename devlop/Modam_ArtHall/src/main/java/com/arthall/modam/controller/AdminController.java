@@ -442,6 +442,37 @@ public String showAdminUserCommit(
 
     
     
+@GetMapping("/users/edit")
+public String editUserForm(@RequestParam("id") int userId, Model model) {
+    // 데이터베이스에서 사용자 정보를 가져오기
+    UserEntity user = userService.getUserById(userId);
+
+    // 가져온 사용자 데이터를 모델에 추가
+    model.addAttribute("user", user);
+
+    // "adminUserEditForm" 템플릿으로 이동
+    return "admin/adminUserEditForm";
+}
+
+@PostMapping("/users/update")
+public String updateUser(
+        @RequestParam("id") int userId,
+        @RequestParam("loginId") String loginId,
+        @RequestParam("name") String name,
+        @RequestParam("email") String email,
+        @RequestParam("phoneNumber") String phoneNumber,
+        @RequestParam("role") String role,
+        RedirectAttributes redirectAttributes) {
+
+    userService.updateUser(userId, loginId, name, email, phoneNumber, role);
+    redirectAttributes.addFlashAttribute("message", "회원 정보가 수정되었습니다.");
+    return "redirect:/admin/userCommit"; // 수정 후 회원 목록 페이지로 이동
+}
+
+
+
+
+
     
 
 }
