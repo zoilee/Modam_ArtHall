@@ -48,71 +48,6 @@
         <div class="col-md-12 justify-content-center">
             <div class="col-lg-10 seat-wrapper">
                 <!--좌석 자동 출력-->
-            <!--
-            <div class="seat-row justify-content-center">
-                <div class="row-label">A</div>
-                <div class="seat r"></div>
-                <div class="seat r"></div>
-                <div class="seat r"></div>
-                <div class="seat vip"></div>
-                <div class="seat vip"></div>
-                <div class="seat vip"></div>
-                <div class="seat vip"></div>
-                <div class="seat vip"></div>
-                <div class="seat vip"></div>
-                <div class="seat vip"></div>
-                <div class="seat vip"></div>
-                <div class="seat vip"></div>
-                <div class="seat vip"></div>
-                <div class="seat vip"></div>
-                <div class="seat vip"></div>
-                <div class="seat r"></div>
-                <div class="seat r"></div>
-                <div class="seat r"></div>
-            </div>
-            <div class="seat-row">
-                <div class="row-label">B</div>
-                <div class="seat r"></div>
-                <div class="seat r"></div>
-                <div class="seat r"></div>
-                <div class="seat vip"></div>
-                <div class="seat vip"></div>
-                <div class="seat vip"></div>
-                <div class="seat vip"></div>
-                <div class="seat vip"></div>
-                <div class="seat vip"></div>
-                <div class="seat vip"></div>
-                <div class="seat vip"></div>
-                <div class="seat vip"></div>
-                <div class="seat vip"></div>
-                <div class="seat vip"></div>
-                <div class="seat vip"></div>
-                <div class="seat r"></div>
-                <div class="seat r"></div>
-                <div class="seat r"></div>
-            </div>
-            <div class="seat-row">
-                <div class="row-label">C</div>
-                <div class="seat r"></div>
-                <div class="seat r"></div>
-                <div class="seat r"></div>
-                <div class="seat vip"></div>
-                <div class="seat vip"></div>
-                <div class="seat vip"></div>
-                <div class="seat vip"></div>
-                <div class="seat vip"></div>
-                <div class="seat vip"></div>
-                <div class="seat vip"></div>
-                <div class="seat vip"></div>
-                <div class="seat vip"></div>
-                <div class="seat vip"></div>
-                <div class="seat vip"></div>
-                <div class="seat vip"></div>
-                <div class="seat r"></div>
-                <div class="seat r"></div>
-                <div class="seat r"></div>
-            </div>-->
-            <!-- Additional rows (E, F, G, ...) structured similarly following the pattern and colors -->
             </div>
         </div>
     </div>
@@ -156,6 +91,8 @@
 <script>
 let selectedSeats = new Array();
 const seatWrapper = document.querySelector(".seat-wrapper");
+// 서버에서 전달받은 예약된 좌석들
+const unavailableSeats = /*[[${unavailableSeats}]]*/ [];
 
 // 좌석 번호를 매핑하는 함수
 function mapping(input, i, j) {
@@ -169,37 +106,34 @@ function setClassBasedOnValue(input) {
     const row = value[0];  // 행 (예: A, B, C...)
     const col = parseInt(value.substring(1));  // 열 (숫자 부분)
 
-    // vip 클래스 조건
-    if (
-        (row === 'A' || row === 'B' || row === 'C') && col >= 4 && col <= 15
-    ) {
-        input.classList.add("vip");
-    }
-    // r 클래스 조건
-    else if (
-        (row === 'A' && col >= 1 && col <= 3) || (row === 'A' && col >= 16 && col <= 18) ||
-        (row === 'B' && col >= 1 && col <= 3) || (row === 'B' && col >= 16 && col <= 18) ||
-        (row === 'C' && col >= 1 && col <= 3) || (row === 'C' && col >= 16 && col <= 18) ||
-        row === 'D' ||
-        (row === 'E' || row === 'F' || row === 'G' || row === 'H') && col >= 4 && col <= 15
-    ) {
-        input.classList.add("r");
-    }
-    // s 클래스 조건
-    else if (
-        (row === 'E' && col >= 1 && col <= 3) || (row === 'E' && col >= 16 && col <= 18) ||
-        (row === 'F' && col >= 1 && col <= 3) || (row === 'F' && col >= 16 && col <= 18) ||
-        (row === 'G' && col >= 1 && col <= 3) || (row === 'G' && col >= 16 && col <= 18) ||
-        (row === 'H' && col >= 1 && col <= 3) || (row === 'H' && col >= 16 && col <= 18) ||
-        row === 'I' ||
-        (row === 'J' && col >= 4 && col <= 15)
-    ) {
-        input.classList.add("s");
-    }
-    // 그 외 a 클래스
-    else {
-        input.classList.add("a");
-    }
+    // 좌석이 이미 예약된 경우 unavailable 클래스 추가
+    if (unavailableSeats.includes(value)) {
+            input.classList.add("unavailable");
+            input.disabled = true; // 클릭 불가능
+        } else {
+            // vip 클래스 추가
+            if ((row === 'A' || row === 'B' || row === 'C') && col >= 4 && col <= 15) {
+                input.classList.add("vip");
+                // r 클래스 추가
+            } else if ((row === 'A' && col >= 1 && col <= 3) || (row === 'A' && col >= 16 && col <= 18) ||
+                    (row === 'B' && col >= 1 && col <= 3) || (row === 'B' && col >= 16 && col <= 18) ||
+                    (row === 'C' && col >= 1 && col <= 3) || (row === 'C' && col >= 16 && col <= 18) ||
+                    row === 'D' ||
+                    (row === 'E' || row === 'F' || row === 'G' || row === 'H') && col >= 4 && col <= 15) {
+                input.classList.add("r");
+                // s 클래스 추가
+            } else if ((row === 'E' && col >= 1 && col <= 3) || (row === 'E' && col >= 16 && col <= 18) ||
+                    (row === 'F' && col >= 1 && col <= 3) || (row === 'F' && col >= 16 && col <= 18) ||
+                    (row === 'G' && col >= 1 && col <= 3) || (row === 'G' && col >= 16 && col <= 18) ||
+                    (row === 'H' && col >= 1 && col <= 3) || (row === 'H' && col >= 16 && col <= 18) ||
+                    row === 'I' ||
+                    (row === 'J' && col >= 4 && col <= 15)) {
+                input.classList.add("s");
+                // 그 외 a 클래스
+            } else {
+                input.classList.add("a");
+            }
+        }
 }
 
 // 좌석을 생성하는 함수

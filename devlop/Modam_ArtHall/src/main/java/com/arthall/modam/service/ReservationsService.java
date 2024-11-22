@@ -1,6 +1,7 @@
 package com.arthall.modam.service;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,22 @@ public class ReservationsService {
         reservationEntity.setStatus("CONFIRMED"); // 기본 상태 설정
 
         return reservationRepository.save(reservationEntity); // 저장 후 반환
+    }
+
+    //예약이 완료된 좌석 가져오기
+    public List<String> getUnavailableSeats(int showId) {
+        List<ReservationsEntity> reservations = reservationRepository.findByShowEntity_Id(showId);
+        
+        List<String> unavailableSeats = new ArrayList<>();
+        for (ReservationsEntity reservation : reservations) {
+            if (reservation.getSeatId1() != null) {
+                unavailableSeats.add(reservation.getSeatId1());
+            }
+            if (reservation.getSeatId2() != null) {
+                unavailableSeats.add(reservation.getSeatId2());
+            }
+        }
+        return unavailableSeats;
     }
 
 }

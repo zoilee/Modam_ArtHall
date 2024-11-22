@@ -301,7 +301,16 @@ public class HomeController {
     }
 
     @GetMapping("/seatSelect")
-    public String seatSelect() {
+    public String showSeatSelection(@RequestParam("showId") int showId, Model model) {
+        // showId에 해당하는 예약된 좌석을 조회
+        List<String> unavailableSeats = reservationService.getUnavailableSeats(showId);
+        
+        // unavailableSeats 리스트를 모델에 담아 JSP나 Thymeleaf 템플릿으로 전달
+        model.addAttribute("unavailableSeats", unavailableSeats);
+        
+        // showId를 폼에 hidden으로 전달할 수 있도록
+        model.addAttribute("showId", showId);
+        
         return "seatSelect";
     }
 
