@@ -16,9 +16,6 @@ public interface PerformancesRepository extends JpaRepository<PerformancesEntity
 
     List<PerformancesEntity> findByTitleContaining(String title);
 
-    // 현재 공연 (endDate가 오늘 이후)
-    List<PerformancesEntity> findByEnddateAfter(Date currentDate);
-
-    // 지난 공연 (endDate가 오늘 이전)
-    List<PerformancesEntity> findByEnddateBefore(Date currentDate);
+    List<PerformancesEntity> findByEnddateAfter(Date date);
+    List<PerformancesEntity> findByEnddateBefore(Date date);
 }

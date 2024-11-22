@@ -2,6 +2,11 @@ package com.arthall.modam.controller;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.Comparator;
 
@@ -17,13 +22,16 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.arthall.modam.entity.CommentEntity;
 import com.arthall.modam.entity.PerformancesEntity;
 import com.arthall.modam.entity.ReservationEntity;
 import com.arthall.modam.entity.UserEntity;
+import com.arthall.modam.repository.PerformancesRepository;
 import com.arthall.modam.service.CommentService;
 import com.arthall.modam.service.PerformanceService;
 import com.arthall.modam.service.ReservationService;
@@ -40,6 +48,9 @@ public class HomeController {
 
     @Autowired
     private PerformanceService performanceService;
+
+    @Autowired
+    private PerformancesRepository performancesRepository;
 
     @Autowired
     private ReservationService reservationService;
@@ -115,20 +126,26 @@ public class HomeController {
         return "registeruserEdit";
     }
 
+
+    // /showList 매핑
     @GetMapping("/showList")
     public String showList(Model model) {
-        // 현재 진행 중인 공연
-        List<PerformancesEntity> currentPerformances = performanceService.getCurrentPerformances();
-        
-        // 지난 공연
-        List<PerformancesEntity> pastPerformances = performanceService.getPastPerformances();
-
-        // Thymeleaf 템플릿에 전달
+        Date currentDate = Date.valueOf(LocalDate.now());
+    
+        List<PerformancesEntity> currentPerformances = performanceService.getUpcomingPerformances(currentDate);
+        List<PerformancesEntity> pastPerformances = performanceService.getFinishedPerformances(currentDate);
+    
+        // 디버깅용 로그 추가
+        System.out.println("Current Performances: " + currentPerformances);
+        System.out.println("Past Performances: " + pastPerformances);
+    
         model.addAttribute("currentPerformances", currentPerformances);
         model.addAttribute("pastPerformances", pastPerformances);
-
+    
         return "showList";
     }
+
+
     
 
     @GetMapping("/showDetail/{performanceId}")

@@ -52,4 +52,12 @@ public class PerformancesEntity {
 
     @Transient
     private String formattedAverageRating;
+
+    @Transient
+    private String formattedStartDate;
+
+    @Transient
+    private String formattedEndDate;
+
+    
 }
