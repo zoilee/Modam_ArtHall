@@ -54,18 +54,20 @@
                 <div class="calendar-box">
                     <input type="date" id="calendarInput" name="selectedDate" value="${today}" />
                     <!-- 사용자가 날짜를 선택할 수 있는 input 필드 -->
-                    <form action="/modam/reservConfirm" method="post" id="formToReservConfirm">
+                    <form action="/reservConfirm" method="post" id="formToReservConfirm">
                         <input type="hidden" id="PerformanceId" name="PerformanceId" value="${performancesEntity.id}">
                         <input type="hidden" id="PerformanceTitle" name="PerformanceTitle" value="${performancesEntity.title}">
-                        <input type="hidden" id="showId" name="showId" value="${showId}" />
                         <input type="hidden" id="showDate" name="showDate" value="${today}" />
+                    </form>
+                    <form action="/seatSelect" method="post" id="formToseatSelect">
                     </form>
                 </div>
                 <h6>회차</h6>
-                <div class="d-flex justify-content-start mb-3">
-                    <button class="btn btn-light me-2 timePicked" value="1">13:00</button>
-                    <button class="btn btn-light timePicked" value="2">17:00</button>
-                </div>
+                <select id="showTime" name="showTime">
+                    <option value="1">13:00</option>
+                    <option value="2">17:00</option>
+                </select>
+                <p>잔여석 : <span id="seatAvailableInput"></span></p>
                 <h6>인원</h6>
                 <select class="form-select" name="numberOfPeople" id="numberOfPeople">
                     <option value="1">1명</option>

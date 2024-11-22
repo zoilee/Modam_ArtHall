@@ -1,5 +1,6 @@
 package com.arthall.modam.entity;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 import org.hibernate.annotations.SQLRestriction;
@@ -42,7 +43,7 @@ public class ReservationEntity {
     private Timestamp reservationDate;
 
     @Column(name = "total_price")
-    private double totalPrice;
+    private BigDecimal totalPrice;
 
     @Column(name = "status", length = 20)
     private String status;

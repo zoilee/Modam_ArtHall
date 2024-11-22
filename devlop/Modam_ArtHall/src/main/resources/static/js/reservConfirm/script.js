@@ -1,20 +1,69 @@
 $(document).ready(function(){
-    // 예약 정보 가져오기
-    const selectedSeats1 = $("input[name='seatId1']").val();
-    const selectedSeats2 = $("input[name='seatId2']").val();
-    const selectedDate = $("input[name='showDate']").val();
-    const selectedTime = $("input[name='showTime']").val();
-    const numberOfPeople = $("input[name='numberOfPeople']").val();
-    const performanceTitle = $("input[name='performanceTitle']").val();
-    const showId = $("input[name='showId']").val();
     //좌석가격지정
-    const seat1price = '';
-    const seat2Price = '';
-    const totalSeatPrice = seat1price + seat2Price;
     const vipValue = 200000;
     const rValue = 100000;
     const sValue = 80000;
     const aValue = 60000;
+
+
+// 좌석 ID에 따라 가격을 설정하는 함수
+function getSeatPrice(seatId) {
+    // VIP 좌석 (200000원)
+    const vipSeats = [
+        'a4', 'a5', 'a6', 'a7', 'a8', 'a9', 'a10', 'a11', 'a12', 'a13', 'a14', 'a15', 
+        'b4', 'b5', 'b6', 'b7', 'b8', 'b9', 'b10', 'b11', 'b12', 'b13', 'b14', 'b15', 
+        'c4', 'c5', 'c6', 'c7', 'c8', 'c9', 'c10', 'c11', 'c12', 'c13', 'c14', 'c15'
+    ];
+    
+    // R 좌석 (100000원)
+    const rSeats = [
+        'a1', 'a2', 'a3', 'a16', 'a17', 'a18', 'b1', 'b2', 'b3', 'b16', 'b17', 'b18',
+        'c1', 'c2', 'c3', 'c16', 'c17', 'c18', 'd1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7',
+        'd8', 'd9', 'd10', 'd11', 'd12', 'd13', 'd14', 'd15', 'd16', 'd17', 'd18',
+        'e4', 'e5', 'e6', 'e7', 'e8', 'e9', 'e10', 'e11', 'e12', 'e13', 'e14', 'e15',
+        'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'f10', 'f11', 'f12', 'f13', 'f14', 'f15',
+        'g4', 'g5', 'g6', 'g7', 'g8', 'g9', 'g10', 'g11', 'g12', 'g13', 'g14', 'g15',
+        'h4', 'h5', 'h6', 'h7', 'h8', 'h9', 'h10', 'h11', 'h12', 'h13', 'h14', 'h15'
+    ];
+
+    // S 좌석 (80000원)
+    const sSeats = [
+        'e1', 'e2', 'e3', 'e16', 'e17', 'e18', 'f1', 'f2', 'f3', 'f16', 'f17', 'f18', 
+        'g1', 'g2', 'g3', 'g16', 'g17', 'g18', 'h1', 'h2', 'h3', 'h16', 'h17', 'h18',
+        'i1', 'i2', 'i3', 'i4', 'i5', 'i6', 'i7', 'i8', 'i9', 'i10', 'i11', 'i12', 
+        'i13', 'i14', 'i15', 'i16', 'i17', 'i18', 'j4', 'j5', 'j6', 'j7', 'j8', 
+        'j9', 'j10', 'j11', 'j12', 'j13', 'j14', 'j15'
+    ];
+
+    // 각 좌석 ID에 따른 가격을 반환
+    if (vipSeats.includes(seatId)) {
+        return vipValue;
+    } else if (rSeats.includes(seatId)) {
+        return rValue;
+    } else if (sSeats.includes(seatId)) {
+        return sValue;
+    } else {
+        return aValue;
+    }
+}
+
+// 좌석을 선택하고 가격을 설정하는 함수
+function setPriceAndSubmit() {
+    const seatId1 = document.querySelector('input[name="seatId1"]').value;
+    const seatId2 = document.querySelector('input[name="seatId2"]').value;
+    const seatPrice1 = getSeatPrice(seatId1);
+    const seatPrice2 = getSeatPrice(seatId2);
+
+    // 선택된 좌석 가격을 해당 input에 할당
+    document.querySelector('input[name="seatPrice1"]').value = seatPrice1;
+    document.querySelector('input[name="seatPrice2"]').value = seatPrice2;
+
+    // 전체 금액 계산 및 표시
+    const totalPrice = seatPrice1 + seatPrice2;
+    document.querySelector('#totalPrice').textContent = totalPrice.toLocaleString();
+}
+// 페이지 로드 후 가격 설정
+window.onload = setPriceAndSubmit
 
     //selectedTime 시간으로 변환해서 출력
     function transformToTime(selectedTime){
@@ -27,100 +76,15 @@ $(document).ready(function(){
     };
     transformToTime(selectedTime);
 
-    //최종확인 form에 값 출력
-    function updateReservationDetails() {
-        $('.performanceTitleConfirm').text(performanceTitle);
-        $('.selectedDateConfirm').text(selectedDate);
-        $('.numberOfPeopleConfirm').text(numberOfPeople);
-        $('.selectedSeats1Confirm').text(selectedSeats1);
-        $('.selectedSeats2Confirm').text(selectedSeats2);
-    }
-    updateReservationDetails();
-
-    //좌석 위치별 가격 설정
-    if ((selectedSeat1 >= "A4" && selectedSeat1 <= "A15") ||
-    (selectedSeat1 >= "B4" && selectedSeat1 <= "B15") ||
-    (selectedSeat1 >= "C4" && selectedSeat1 <= "C15")) {
-        seat1price = vipValue;
-    }
-    else if (
-        (selectedSeat1 >= "A1" && selectedSeat1 <= "A3") ||
-        (selectedSeat1 >= "A16" && selectedSeat1 <= "A18") ||
-        (selectedSeat1 >= "B1" && selectedSeat1 <= "B3") ||
-        (selectedSeat1 >= "B16" && selectedSeat1 <= "B18") ||
-        (selectedSeat1 >= "C1" && selectedSeat1 <= "C3") ||
-        (selectedSeat1 >= "C16" && selectedSeat1 <= "C18") ||
-        (selectedSeat1 >= "D1" && selectedSeat1 <= "D18") ||
-        (selectedSeat1 >= "E4" && selectedSeat1 <= "E15") ||
-        (selectedSeat1 >= "F4" && selectedSeat1 <= "F15") ||
-        (selectedSeat1 >= "G4" && selectedSeat1 <= "G15") ||
-        (selectedSeat1 >= "H4" && selectedSeat1 <= "H15")
-    ) {
-       seat1price = rValue;
-    }
-    else if (
-        (selectedSeat1 >= "E1" && selectedSeat1 <= "E3") ||
-        (selectedSeat1 >= "E16" && selectedSeat1 <= "E18") ||
-        (selectedSeat1 >= "F1" && selectedSeat1 <= "F3") ||
-        (selectedSeat1 >= "F16" && selectedSeat1 <= "F18") ||
-        (selectedSeat1 >= "G1" && selectedSeat1 <= "G3") ||
-        (selectedSeat1 >= "G16" && selectedSeat1 <= "G18") ||
-        (selectedSeat1 >= "H1" && selectedSeat1 <= "H3") ||
-        (selectedSeat1 >= "H16" && selectedSeat1 <= "H18") ||
-        (selectedSeat1 >= "I1" && selectedSeat1 <= "I18") ||
-        (selectedSeat1 >= "J4" && selectedSeat1 <= "J15")
-    ) {
-        seat1price = sValue;
-    }
-    else{
-        seat1price = aValue;
-    }
-
-    if ((selectedSeat2 >= "A4" && selectedSeat2 <= "A15") ||
-    (selectedSeat2 >= "B4" && selectedSeat2 <= "B15") ||
-    (selectedSeat2 >= "C4" && selectedSeat2 <= "C15")) {
-        seat2Price = vipValue;
-    }
-    else if (
-        (selectedSeat2 >= "A1" && selectedSeat2 <= "A3") ||
-        (selectedSeat2 >= "A16" && selectedSeat2 <= "A18") ||
-        (selectedSeat2 >= "B1" && selectedSeat2 <= "B3") ||
-        (selectedSeat2 >= "B16" && selectedSeat2 <= "B18") ||
-        (selectedSeat2 >= "C1" && selectedSeat2 <= "C3") ||
-        (selectedSeat2 >= "C16" && selectedSeat2 <= "C18") ||
-        (selectedSeat2 >= "D1" && selectedSeat2 <= "D18") ||
-        (selectedSeat2 >= "E4" && selectedSeat2 <= "E15") ||
-        (selectedSeat2 >= "F4" && selectedSeat2 <= "F15") ||
-        (selectedSeat2 >= "G4" && selectedSeat2 <= "G15") ||
-        (selectedSeat2 >= "H4" && selectedSeat2 <= "H15")
-    ) {
-        seat2Price = rValue;
-    }
-    else if (
-        (selectedSeat2 >= "E1" && selectedSeat2 <= "E3") ||
-        (selectedSeat2 >= "E16" && selectedSeat2 <= "E18") ||
-        (selectedSeat2 >= "F1" && selectedSeat2 <= "F3") ||
-        (selectedSeat2 >= "F16" && selectedSeat2 <= "F18") ||
-        (selectedSeat2 >= "G1" && selectedSeat2 <= "G3") ||
-        (selectedSeat2 >= "G16" && selectedSeat2 <= "G18") ||
-        (selectedSeat2 >= "H1" && selectedSeat2 <= "H3") ||
-        (selectedSeat2 >= "H16" && selectedSeat2 <= "H18") ||
-        (selectedSeat2 >= "I1" && selectedSeat2 <= "I18") ||
-        (selectedSeat2 >= "J4" && selectedSeat2 <= "J15")
-    ) {
-        seat2Price = sValue;
-    }
-    else{
-        seat2Price = aValue;
-    }
+   
 
 
     $('#confirm-reserv-button').on('click', function() {
             const reservationData = {
                 showId: showId,
-                seatId1: selectedSeats1,
-                seatId2: selectedSeats2,
-                totalPrice: totalSeatPrice,
+                seatId1: seatId1,
+                seatId2: seatId2,
+                totalPrice: totalPrice,
                 status: 'CONFIRMED',
                 userId: getSessionUserId()
             };

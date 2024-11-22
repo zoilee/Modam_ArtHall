@@ -1,87 +1,64 @@
- // 페이지가 로드될 때 현재 날짜를 'today' 값을 기반으로 초기화
- document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {
     const calendarInput = document.getElementById('calendarInput');
     const selectDate = document.getElementById('showDate');
-    
-    // 기본값을 서버에서 전달된 오늘 날짜로 설정 (예: "2024-11-20")
+    const showTimeSelect = document.getElementById('showTime');
+    const performanceIdField = document.getElementById('PerformanceId');
     const today = calendarInput.value;
-    selectDate.value = today; // 'hiddenDate' input에 기본 오늘 날짜 설정
-    
+    selectDate.value = today;
+
     // 날짜가 선택될 때마다 hidden input에 선택된 날짜 반영
     calendarInput.addEventListener('change', function() {
         selectDate.value = calendarInput.value;
     });
-});
 
-//선택값으로 show id 추출하기
-document.addEventListener('DOMContentLoaded', function() {
-    const showIdField = document.getElementById('showId');
-    const calendarInput = document.getElementById('calendarInput');
-    const showTimeSelect = document.getElementById('showTime');
-    const performanceIdField = document.getElementById('PerformanceId')
-    
-    // 초기값을 서버에서 전달된 값으로 설정
-    const performanceId = performanceIdField.value;
-    const today = calendarInput.value; // 기본값을 오늘 날짜로 설정
-    
-    // 날짜와 회차가 변경될 때마다 showId를 업데이트
+    // 선택된 날짜와 회차를 기반으로 showId를 가져오는 함수
+    let gettedshowId = '';
     function fetchShowId() {
         const selectedDate = calendarInput.value;
         const selectedTime = showTimeSelect.value;
         
         if (selectedDate && selectedTime) {
-            // 선택된 날짜와 회차를 서버에 요청
-            fetch(`/getShowId?performanceId=${performanceId}&showDate=${selectedDate}&showTime=${selectedTime}`)
+            fetch(`/getShowId?performanceId=${performanceIdField.value}&showDate=${selectedDate}&showTime=${selectedTime}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.showId) {
-                        showIdField.value = data.showId; // showId를 hidden input에 업데이트
+                        gettedshowId = data.showId;
                     } else {
                         alert('해당 회차의 공연 정보를 찾을 수 없습니다.');
                     }
                 })
-                .catch(error => console.error('showId를 가져오는 도중 문제가 발생했습니다 :', error));
+                .catch(error => console.error('showId를 가져오는 도중 문제가 발생했습니다:', error));
         }
     }
 
-    // 날짜 또는 회차가 변경될 때마다 showId 업데이트
     calendarInput.addEventListener('change', fetchShowId);
     showTimeSelect.addEventListener('change', fetchShowId);
-    
-    // 초기 값에 대한 showId 가져오기
     fetchShowId();
 });
 
 $(document).ready(function () {
 
-    //회차선택 버튼 누르면 표시,hidden에 값 주기
-    $(".timeselect-btn").click(function(){
-        const timeButton = $(this);
-        const selectedTime = document.querySelector("#selectedTime");
-        if (timeButton.hasClass('selected')) {
-            timeButton.removeClass('selected');
-            selectedTime.value = '';
-        } else {
-            timeButton.addClass('selected');
-            selectedTime.value = timeButton.val();
-        }
-    });
-
-    //
-
     //인원수
     const numberOfPeople = $("#numberOfPeople").val();
+    const selectedTime = $("#showTime").val();
 
     //폼 지정
-    const form = document.querySelector("#formToReservConfirm");
+    const form1 = document.querySelector("#formToReservConfirm");
+    const form2 = document.querySelector("#formToseatSelect");
 
     // 선택한 회차, 인원 정보를 폼에 추가
     const selectedTimeInput = $('<input>').attr('type', 'hidden').attr('name', 'showTime').val(selectedTime);
     const numberOfPeopleInput = $('<input>').attr('type', 'hidden').attr('name', 'numberOfPeople').val(numberOfPeople);
+    const showIdInput = $('<input>').attr('type', 'hidden').attr('name', 'showId').val(gettedshowId);
 
-    form.append(selectedTimeInput);
-    form.append(numberOfPeopleInput);
+    form1.append(selectedTimeInput);
+    form1.append(numberOfPeopleInput);
+    form1.append(showIdInput);
+
+    form2.append(showIdInput.clone());
     
-    form.submit();
-    
+    $('#toSeatSelect').on('click', function() {
+        form1.submit();
+        form2.submit();
+    });
 });
