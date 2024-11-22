@@ -81,6 +81,26 @@
         .table-responsive {
             overflow-x: auto;
         }
+
+        /* Top 버튼 스타일 */
+        #topButton {
+            position: fixed;
+            bottom: 300px;
+            right: 20px;
+            display: none;
+            z-index: 1000;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        #topButton:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 
@@ -90,25 +110,45 @@
 
     <!-- 현재 공연 섹션 -->
     <div class="container mt-4" style="padding: 100px 0;">
-        <div class="poster-container">
-            <div th:each="performance, stat : ${currentPerformances}">
-                <div class="poster-group" th:classappend="${stat.index % 2 == 0} ? 'left' : 'right'">
-                    <!-- 포스터에 링크 추가 -->
-                    <a th:href="@{'/showDetail/' + ${performance.id}}" class="poster">
-                        <img th:src="${performance.imagesEntities.size() > 0 ? performance.imagesEntities[0].imageUrl : '/images/default-poster.jpg'}"
-                             th:alt="${performance.title ?: '기본 포스터'}">
-                    </a>
-                    <div class="poster-title">
-                        <h4 th:text="${performance.title}">공연 제목</h4>
-                        <p th:text="${performance.formattedStartDate} + ' ~ ' + ${performance.formattedEndDate}"></p>
-                    </div>
+         <!-- 첫 4개 공연 -->
+    <div class="poster-container">
+        <div th:each="performance, stat : ${top4Performances}">
+            <div class="poster-group" th:classappend="${stat.index % 2 == 0} ? 'left' : 'right'">
+                <a th:href="@{'/showDetail/' + ${performance.id}}" class="poster">
+                    <img th:src="${performance.imagesEntities.size() > 0 ? performance.imagesEntities[0].imageUrl : '/images/default-poster.jpg'}"
+                         th:alt="${performance.title ?: '기본 포스터'}">
+                </a>
+                <div class="poster-title">
+                    <h4 th:text="${performance.title}">공연 제목</h4>
+                    <p th:text="${performance.formattedStartDate} + ' ~ ' + ${performance.formattedEndDate}"></p>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- 나머지 공연: 카드 형식 -->
+    <div class="row mt-5">
+        <div th:each="performance : ${remainingPerformances}" class="col-md-3 mb-4">
+            <div class="card" style="width: 100%;">
+                <a th:href="@{'/showDetail/' + ${performance.id}}">
+                    <img class="card-img-top" th:src="${performance.imagesEntities.size() > 0 ? performance.imagesEntities[0].imageUrl : '/images/default-poster.jpg'}"
+                         th:alt="${performance.title ?: '기본 포스터'}">
+                </a>
+                <div class="card-body text-center">
+                    <h5 class="card-title" th:text="${performance.title}">공연 제목</h5>
+                    <p class="card-text">
+                        <span th:text="${performance.formattedStartDate}"></span> ~ 
+                        <span th:text="${performance.formattedEndDate}"></span>
+                    </p>
+                    <a th:href="@{'/showDetail/' + ${performance.id}}" class="btn btn-primary">자세히 보기</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
     <!-- 지난 공연 섹션 -->
-    <div class="container mt-5 past-shows" style="padding-bottom: 100px;">
+    <div id="pastPerformances" class="container mt-5 past-shows" style="padding-bottom: 100px;">
         <h3>지난 공연들</h3>
         <div class="table-responsive">
             <table class="table table-bordered">
@@ -118,28 +158,129 @@
                         <th>공연 기간</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr th:each="performance : ${pastPerformances}">
-                        <td>
-                            <a th:href="@{'/showDetail/' + ${performance.id}}" th:text="${performance.title}"></a>
-                        </td>
-                        <td>
-                            <span th:text="${performance.formattedStartDate}"></span> ~ 
-                            <span th:text="${performance.formattedEndDate}"></span>
-                        </td>
-                    </tr>
+                <tbody id="tableBody">
+                    <!-- 데이터가 여기에 동적으로 삽입됩니다 -->
                 </tbody>
             </table>
         </div>
+        
+        <div id="pagination" class="pagination-container text-center mt-4">
+            <ul class="pagination justify-content-center">
+                <li id="prevButton" class="page-item">
+                    <button class="page-link">이전</button>
+                </li>
+                <ul id="pageNumbers"></ul>
+                <li id="nextButton" class="page-item">
+                    <button class="page-link">다음</button>
+                </li>
+            </ul>
+        </div>
+        
     </div>
 
     <!-- 푸터 -->
     <th:block th:replace="~{fragments/footer :: footerFragment}"></th:block>
 
-    <!-- Bootstrap JS -->
+    <!-- Top 버튼 -->
+    <button id="topButton" onclick="scrollToTop()">▲</button>
+
+
+
+    <!-- JavaScript -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body>
 
+    <script>
+        let currentPage = 0; // 현재 페이지
+let totalPages = 0; // 총 페이지 수
+
+// 서버에서 데이터를 가져오는 함수
+function fetchData(page) {
+    // 서버에서 페이지 데이터 가져오기
+    fetch(`/showListFragment?page=${page}&size=5`)
+        .then(response => {
+            if (!response.ok) throw new Error("데이터를 가져오는 중 오류 발생!");
+            return response.json();
+        })
+        .then(data => {
+            renderTable(data.content); // 테이블에 데이터 렌더링
+            totalPages = data.totalPages; // 총 페이지 수 업데이트
+            currentPage = data.page; // 현재 페이지 업데이트
+            updatePagination(data); // 페이징 업데이트
+        })
+        .catch(error => console.error("Fetch error:", error));
+}
+
+// 테이블 데이터 렌더링 함수
+function renderTable(data) {
+    const container = document.querySelector("#pastPerformances tbody");
+    container.innerHTML = data
+        .map(
+            item => `
+            <tr>
+                <td><a href="/showDetail/${item.id}">${item.title}</a></td>
+                <td>${item.formattedStartDate} ~ ${item.formattedEndDate}</td>
+            </tr>
+        `
+        )
+        .join("");
+}
+
+// 페이징 업데이트 함수
+function updatePagination(data) {
+    const pageNumbersContainer = document.getElementById("pageNumbers");
+    const prevButton = document.getElementById("prevButton");
+    const nextButton = document.getElementById("nextButton");
+
+    // 기존 번호 초기화
+    pageNumbersContainer.innerHTML = "";
+
+    // 이전 버튼 활성화/비활성화
+    prevButton.classList.toggle("disabled", currentPage === 0);
+    prevButton.querySelector("button").disabled = currentPage === 0;
+    prevButton.querySelector("button").onclick = () => {
+        if (currentPage > 0) fetchData(currentPage - 1);
+    };
+
+    // 다음 버튼 활성화/비활성화
+    nextButton.classList.toggle("disabled", currentPage === totalPages - 1);
+    nextButton.querySelector("button").disabled = currentPage === totalPages - 1;
+    nextButton.querySelector("button").onclick = () => {
+        if (currentPage < totalPages - 1) fetchData(currentPage + 1);
+    };
+
+    // 페이지 번호 생성
+    for (let i = 0; i < totalPages; i++) {
+        const pageButton = document.createElement("li");
+        pageButton.className = `page-item ${i === currentPage ? "active" : ""}`;
+        pageButton.innerHTML = `
+            <button class="page-link">${i + 1}</button>
+        `;
+        pageButton.querySelector("button").onclick = () => fetchData(i);
+        pageNumbersContainer.appendChild(pageButton);
+    }
+}
+
+        // Top 버튼 표시/숨김 처리
+        window.addEventListener("scroll", function () {
+            const topButton = document.getElementById("topButton");
+            if (window.scrollY > 200) {
+                topButton.style.display = "block"; // 표시
+            } else {
+                topButton.style.display = "none"; // 숨김
+            }
+        });
+
+        // Top 버튼 클릭 시 상단 이동
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+
+        // 초기화
+        document.addEventListener("DOMContentLoaded", () => {
+            fetchData(0); // 첫 페이지 로드
+        });
+    </script>
+</body>
 </html>

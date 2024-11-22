@@ -2,7 +2,13 @@ package com.arthall.modam.controller;
 
 import java.util.List;
 import java.util.Map;
+<<<<<<< Updated upstream
 import java.util.Optional;
+=======
+import java.util.stream.Collectors;
+import java.security.Principal;
+
+>>>>>>> Stashed changes
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -11,6 +17,10 @@ import java.util.Collection;
 import java.util.Comparator;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -36,6 +46,7 @@ import com.arthall.modam.service.CommentService;
 import com.arthall.modam.service.PerformanceService;
 import com.arthall.modam.service.ReservationService;
 import com.arthall.modam.service.UserService;
+import com.arthall.modam.service.BbsService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -57,6 +68,9 @@ public class HomeController {
 
     @Autowired
     private CommentService commentService;
+
+    @Autowired
+    private BbsService BbsService;
 
     @GetMapping("/")
     public String home() {
@@ -129,8 +143,12 @@ public class HomeController {
 
     // /showList 매핑
     @GetMapping("/showList")
-    public String showList(Model model) {
+    public String showList(@RequestParam(value = "page", defaultValue = "0") int page,
+                           @RequestParam(value = "size", defaultValue = "5") int size,
+                           Model model) {
+    
         Date currentDate = Date.valueOf(LocalDate.now());
+<<<<<<< Updated upstream
     
         List<PerformancesEntity> currentPerformances = performanceService.getUpcomingPerformances(currentDate);
         List<PerformancesEntity> pastPerformances = performanceService.getFinishedPerformances(currentDate);
@@ -141,6 +159,31 @@ public class HomeController {
     
         model.addAttribute("currentPerformances", currentPerformances);
         model.addAttribute("pastPerformances", pastPerformances);
+=======
+        Pageable pageable = PageRequest.of(page, size);
+    
+        List<PerformancesEntity> allCurrentPerformances = performanceService.getUpcomingPerformances(currentDate);
+        Page<PerformancesEntity> pastPerformances = performanceService.getPastPerformances(pageable);
+
+        // 서비스에서 공연 데이터 가져오기
+        Map<String, Object> performancesData = BbsService.getPerformances(page, size);
+    
+        // 현재 공연을 첫 4개와 나머지로 나누기
+        List<PerformancesEntity> top4Performances = allCurrentPerformances.stream().limit(4).toList();
+        List<PerformancesEntity> remainingPerformances = allCurrentPerformances.stream().skip(4).toList();
+    
+        model.addAttribute("top4Performances", top4Performances);
+        model.addAttribute("remainingPerformances", remainingPerformances);
+        model.addAttribute("pastPerformances", pastPerformances);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", pastPerformances.getTotalPages());
+        // 모델에 데이터 추가
+        model.addAttribute("content", performancesData.get("content")); // 공연 데이터
+        model.addAttribute("currentPage", performancesData.get("currentPage")); // 현재 페이지 번호
+        model.addAttribute("totalPages", performancesData.get("totalPages")); // 총 페이지 수
+        model.addAttribute("totalElements", performancesData.get("totalElements")); // 총 데이터 개수
+        model.addAttribute("size", performancesData.get("size")); // 페이지 크기
+>>>>>>> Stashed changes
     
         return "showList";
     }

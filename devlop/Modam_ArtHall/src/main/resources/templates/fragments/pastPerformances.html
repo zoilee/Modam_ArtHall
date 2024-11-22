@@ -1,0 +1,11 @@
+<tbody th:fragment="pastPerformancesTable">
+    <tr th:each="performance : ${pastPerformances.content}">
+        <td>
+            <a th:href="@{'/showDetail/' + ${performance.id}}" th:text="${performance.title}"></a>
+        </td>
+        <td>
+            <span th:text="${performance.formattedStartDate}"></span> ~ 
+            <span th:text="${performance.formattedEndDate}"></span>
+        </td>
+    </tr>
+</tbody>

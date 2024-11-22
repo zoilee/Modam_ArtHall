@@ -14,6 +14,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -49,12 +51,22 @@ public class BbsService {
         adminNoticeListRepository.deleteById(id);
     }
 
-    // 공연정보 목록 조회 (페이징)
-    public Page<PerformancesEntity> getPerformances(int page, int size){
-        int validatedSize = (size > 0) ? size : 5; // 기본값을 5로 지정
+    // 공연 목록 조회 (Custom 페이징)
+    public Map<String, Object> getPerformances(int page, int size) {
+        int validatedSize = Math.max(size, 5); // 기본값을 5로 설정
         Pageable pageable = PageRequest.of(page, validatedSize, Sort.by(Sort.Direction.DESC, "id"));
-        return performancesRepository.findAll(pageable);
-    } 
+        Page<PerformancesEntity> performancesPage = performancesRepository.findAll(pageable);
+
+        // Custom 데이터 구조 반환
+        Map<String, Object> response = new HashMap<>();
+        response.put("content", performancesPage.getContent());
+        response.put("currentPage", performancesPage.getNumber());
+        response.put("totalPages", performancesPage.getTotalPages());
+        response.put("totalElements", performancesPage.getTotalElements());
+        response.put("size", performancesPage.getSize());
+
+        return response;
+    }
 
      // 공지사항 상세 조회 (수정 시 필요)
      public Optional<PerformancesEntity> getPerformancesById(int id) {
@@ -71,6 +83,8 @@ public class BbsService {
     public void deletePerformances(int id) {
         performancesRepository.deleteById(id);
     }
+
+
 
 
 

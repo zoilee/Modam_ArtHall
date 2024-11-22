@@ -1,12 +1,13 @@
 package com.arthall.modam.service;
 
 import java.text.DecimalFormat;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 import java.time.format.DateTimeFormatter;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.arthall.modam.entity.PerformancesEntity;
@@ -15,6 +16,8 @@ import com.arthall.modam.repository.PerformancesRepository;
 
 @Service
 public class PerformanceService {
+
+    private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
 
     private final PerformancesRepository performancesRepository;
     private final CommentRepository commentRepository;
@@ -25,39 +28,56 @@ public class PerformanceService {
         this.commentRepository = commentRepository;
     }
 
-    // 스레드-안전한 DateTimeFormatter
-    private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
-
-    public List<PerformancesEntity> getUpcomingPerformances(java.sql.Date currentDate) {
-        List<PerformancesEntity> performances = performancesRepository.findByEnddateAfter(currentDate);
-        formatPerformanceDates(performances);
-        return performances;
-    }
-
-    public List<PerformancesEntity> getFinishedPerformances(java.sql.Date currentDate) {
-        List<PerformancesEntity> performances = performancesRepository.findByEnddateBefore(currentDate);
-        formatPerformanceDates(performances);
-        return performances;
-    }
-
-    private void formatPerformanceDates(List<PerformancesEntity> performances) {
-        for (PerformancesEntity performance : performances) {
+    // 지난 공연 페이징 처리
+    public Page<PerformancesEntity> getPastPerformances(Pageable pageable) {
+        // Repository에서 데이터 가져오기
+        Page<PerformancesEntity> pastPerformances = performancesRepository.findByEnddateBefore(
+            new java.sql.Date(System.currentTimeMillis()), pageable
+        );
+    
+        // 디버깅 로그
+        System.out.println("Fetched Performances: " + pastPerformances.getContent().size());
+    
+        // 날짜 포맷팅
+        pastPerformances.getContent().forEach(performance -> {
             if (performance.getStartdate() != null) {
-                performance.setFormattedStartDate(formatDate(performance.getStartdate()));
+                performance.setFormattedStartDate(
+                    dateFormatter.format(performance.getStartdate().toLocalDate())
+                );
             }
             if (performance.getEnddate() != null) {
-                performance.setFormattedEndDate(formatDate(performance.getEnddate()));
+                performance.setFormattedEndDate(
+                    dateFormatter.format(performance.getEnddate().toLocalDate())
+                );
             }
+        });
+    
+        return pastPerformances;
+    }
+
+    // 다가오는 공연 목록
+    public List<PerformancesEntity> getUpcomingPerformances(java.sql.Date currentDate) {
+        // Fetch upcoming performances
+        List<PerformancesEntity> performances = performancesRepository.findByEnddateAfter(currentDate);
+
+        // Apply date formatting
+        performances.forEach(this::formatPerformanceDates);
+
+        return performances;
+    }
+
+    private void formatPerformanceDates(PerformancesEntity performance) {
+        if (performance.getStartdate() != null) {
+            performance.setFormattedStartDate(
+                dateFormatter.format(performance.getStartdate().toLocalDate())
+            );
+        }
+        if (performance.getEnddate() != null) {
+            performance.setFormattedEndDate(
+                dateFormatter.format(performance.getEnddate().toLocalDate())
+            );
         }
     }
-
-    private String formatDate(java.sql.Date sqlDate) {
-        // java.sql.Date -> java.time.LocalDate 변환
-        LocalDate localDate = sqlDate.toLocalDate();
-        // LocalDate를 DateTimeFormatter로 포맷팅
-        return dateFormatter.format(localDate);
-    }
-
 
     // 전체 목록 검색
     public List<PerformancesEntity> findAll() {
