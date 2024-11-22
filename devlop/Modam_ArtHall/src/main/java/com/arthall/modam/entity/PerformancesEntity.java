@@ -5,8 +5,6 @@ import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SQLRestriction;
-import org.hibernate.annotations.Where;
-
 import java.sql.Date;
 
 import jakarta.persistence.*;

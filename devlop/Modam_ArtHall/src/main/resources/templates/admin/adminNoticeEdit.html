@@ -54,12 +54,18 @@
             </div>
         </div>
 
-
         <!-- 파일 첨부 -->
         <div class="mb-3 row">
             <label for="fileInput" class="col-sm-2 col-form-label">새 파일 추가</label>
             <div class="col-sm-10">
-                <input type="file" class="form-control" id="fileInput" name="file">
+                <input type="file" class="form-control" id="fileInput" name="file" multiple onchange="previewImages(event)">
+            </div>
+        </div>
+
+        <!-- 파일 미리보기 -->
+        <div class="mb-3 row">
+            <div class="col-sm-10 offset-sm-2" id="previewContainer" style="margin-top: 10px;">
+                <!-- 미리보기 이미지가 이곳에 추가됩니다 -->
             </div>
         </div>
 
@@ -101,5 +107,33 @@
         });
     });
 </script>
+
+<!-- 파일 미리보기 스크립트 -->
+<script>
+    function previewImages(event) {
+        const previewContainer = document.getElementById('previewContainer');
+        previewContainer.innerHTML = ''; // 기존 미리보기 이미지 초기화
+
+        const files = event.target.files;
+        if (files) {
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.maxWidth = '100%';
+                    img.style.maxHeight = '200px';
+                    img.style.marginTop = '10px';
+                    img.style.marginRight = '10px';
+                    previewContainer.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+    }
+</script>
+
 </body>
 </html>
