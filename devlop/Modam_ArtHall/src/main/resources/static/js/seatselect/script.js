@@ -2,8 +2,8 @@ let selectedSeats = new Array();
 const seatWrapper = document.querySelector(".seat-wrapper");
 const seatPicked1 = document.querySelector("#seatPicked1");
 const seatPicked2 = document.querySelector("#seatPicked2");
-let div = "";
 
+//seat에 열행값 주기
 function mapping(input, i, j) {
     if (i === 0) {
         input.value = "A" + j;
@@ -32,18 +32,31 @@ function mapping(input, i, j) {
     }
 }
 
-for (let i = 0; i < 12; i++) {
-    div = document.createElement("div");
-    seatWrapper.append(div);
-    for (let j = 0; j < 18; j++) {
-        const input = document.createElement('input');
-        input.type = "button";
-        input.name = "seats"
-        input.classList = "seat";
-        div.append(input);
-   
-    mapping(input, i, j);
-    div.append(input);
+// 좌석을 생성하는 함수
+function createSeats() {
+    const rows = 12;  // 세로 12줄
+    const columns = 18;  // 가로 18줄
+
+    // 좌석을 12줄 x 18열로 생성
+    for (let i = 0; i < rows; i++) {
+        for (let j = 0; j < columns; j++) {
+            // input 요소 생성
+            const seat = document.createElement('input');
+            seat.type = 'button';
+            seat.classList.add('seat');  // 'seat' 클래스 추가
+
+            // 좌석 번호 매핑
+            mapping(seat, i, j);
+
+            // 생성된 좌석을 seat-wrapper에 추가
+            seatWrapper.appendChild(seat);
+        }
+    }
+}
+// 페이지가 로드되면 좌석 생성 함수 호출
+window.onload = createSeats;
+
+
     $(document).on('click', '.seat', function () {
         var seatButton = $(this);
         var seatId = seatButton.data();
@@ -69,9 +82,6 @@ for (let i = 0; i < 12; i++) {
             seatPicked2.innerText = selectedSeats[1] || ''; // 두 번째 선택된 좌석
         }
     });
-    
-    }
-}
 
 
 // 입력값을 기준으로 class를 추가하는 함수

@@ -8,6 +8,14 @@
     <!-- 스타일 시트 -->
     <link rel="stylesheet" th:href="@{/css/layout/style.css}">
     <style>
+        .seat-wrapper {
+            display: grid;
+            grid-template-columns: repeat(18, 1fr); /* 18개의 열로 구성 */
+            grid-template-rows: repeat(12, 1fr); /* 12개의 줄로 구성 */
+            gap: 10px; /* 좌석 간격 */
+            margin: 20px auto;
+            width: 100%; /* 부모 div의 너비에 맞게 */
+        }
         /* Seat styles */
         .seat { width: 40px; height: 40px; margin: 3px; border-radius: 10px; }
         .seat.vip { background-color: #FFD1DC; } /* VIP seat - pink */
@@ -24,6 +32,10 @@
         .legend-item { display: flex; align-items: center; }
         .legend-item .seat { margin-right: 5px; }
     </style>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!--<script src="../static/js/seatselect/script.js"></script>-->
 </head>
 <body class="bg-light">
     <!-- 헤더 -->
@@ -140,9 +152,163 @@
 </div>
 <!-- 푸터 가져오기 -->
 <th:block th:replace="~{fragments/footer :: footerFragment}"></th:block>
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<script src="../static/js/seatselect/script.js"></script>
+<script>
+    let selectedSeats = new Array();
+const seatWrapper = document.querySelector(".seat-wrapper");
+const seatPicked1 = document.querySelector("#seatPicked1");
+const seatPicked2 = document.querySelector("#seatPicked2");
+
+//seat에 열행값 주기
+function mapping(input, i, j) {
+    if (i === 0) {
+        input.value = "A" + (j+1);
+    } else if (i === 1) {
+        input.value = "B" + (j+1);
+    } else if (i === 2) {
+        input.value = "C" + (j+1);
+    } else if (i === 3) {
+        input.value = "D" + (j+1);
+    } else if (i === 4) {
+        input.value = "E" + (j+1);
+    } else if (i === 5) {
+        input.value = "F" + (j+1);
+    } else if (i === 6) {
+        input.value = "G" + (j+1);
+    } else if (i === 7) {
+        input.value = "H" + (j+1);
+    } else if (i === 8) {
+        input.value = "I" + (j+1);
+    } else if (i === 9) {
+        input.value = "J" + (j+1);
+    } else if (i === 10) {
+        input.value = "K" + (j+1);
+    } else if (i === 11) {
+        input.value = "L" + (j+1);
+    }
+}
+
+// 좌석을 생성하는 함수
+function createSeats() {
+    const rows = 12;  // 세로 12줄
+    const columns = 18;  // 가로 18줄
+
+    // 좌석을 12줄 x 18열로 생성
+    for (let i = 0; i < rows; i++) {
+        for (let j = 0; j < columns; j++) {
+            // input 요소 생성
+            const seat = document.createElement('input');
+            seat.type = 'button';
+            seat.classList.add('seat');  // 'seat' 클래스 추가
+
+            // 좌석 번호 매핑
+            mapping(seat, i, j);
+
+            // 생성된 좌석을 seat-wrapper에 추가
+            seatWrapper.appendChild(seat);
+        }
+    }
+}
+// 페이지가 로드되면 좌석 생성 함수 호출
+window.onload = createSeats;
+
+// 입력값을 기준으로 class를 추가하는 함수
+function setClassBasedOnValue(input) {
+    // vip 클래스 조건
+    if ((input.value >= "A4" && input.value <= "A15") ||
+        (input.value >= "B4" && input.value <= "B15") ||
+        (input.value >= "C4" && input.value <= "C15")) {
+        input.classList.add("vip");
+    }
+    // r 클래스 조건
+    else if (
+        (input.value >= "A1" && input.value <= "A3") ||
+        (input.value >= "A16" && input.value <= "A18") ||
+        (input.value >= "B1" && input.value <= "B3") ||
+        (input.value >= "B16" && input.value <= "B18") ||
+        (input.value >= "C1" && input.value <= "C3") ||
+        (input.value >= "C16" && input.value <= "C18") ||
+        (input.value >= "D1" && input.value <= "D18") ||
+        (input.value >= "E4" && input.value <= "E15") ||
+        (input.value >= "F4" && input.value <= "F15") ||
+        (input.value >= "G4" && input.value <= "G15") ||
+        (input.value >= "H4" && input.value <= "H15")
+    ) {
+        input.classList.add("r");
+    }
+    // s 클래스 조건
+    else if (
+        (input.value >= "E1" && input.value <= "E3") ||
+        (input.value >= "E16" && input.value <= "E18") ||
+        (input.value >= "F1" && input.value <= "F3") ||
+        (input.value >= "F16" && input.value <= "F18") ||
+        (input.value >= "G1" && input.value <= "G3") ||
+        (input.value >= "G16" && input.value <= "G18") ||
+        (input.value >= "H1" && input.value <= "H3") ||
+        (input.value >= "H16" && input.value <= "H18") ||
+        (input.value >= "I1" && input.value <= "I18") ||
+        (input.value >= "J4" && input.value <= "J15")
+    ) {
+        input.classList.add("s");
+    }
+    // 그 외 a 클래스
+    else{
+        input.classList.add("a")
+    }
+}
+let input = document.querySelector('input');
+setClassBasedOnValue(input);
+
+//좌석선택 이벤트
+    $(document).on('click', '.seat', function () {
+        var seatButton = $(this);
+        var seatId = seatButton.data();
+        
+        // 이미 선택된 좌석이 2개 이상일 경우 추가 선택 막기
+        if (selectedSeats.length >= 2 && !seatButton.hasClass('selected')) {
+            alert("최대 2개의 좌석만 선택할 수 있습니다.");
+            return; // 2개 이상 선택했을 때는 아무 작업도 하지 않음
+        }
+        
+        if (seatButton.hasClass('selected')) {
+            // 선택 해제
+            seatButton.removeClass('selected');
+            selectedSeats = selectedSeats.filter(function (id) {
+                return id !== seatId;
+            });
+        } else {
+            // 좌석 선택
+            seatButton.addClass('selected');
+            selectedSeats.push(seatId);
+            // 선택된 좌석 표시
+            seatPicked1.innerText = selectedSeats[0] || ''; // 첫 번째 선택된 좌석
+            seatPicked2.innerText = selectedSeats[1] || ''; // 두 번째 선택된 좌석
+        }
+    });
+
+
+
+
+
+
+$(document).ready(function(){
+
+// 선택된 정보를 서버로 POST 요청
+const form = $('<form></form>');
+form.attr('method', 'POST');
+form.attr('action', '/modam/reservConfirm');  // 정보를 전달할 서버 경로
+
+
+// 선택한 좌석 정보를 폼에 추가
+const selectedSeatsInput1 = $('<input>').attr('type', 'hidden').attr('name', 'seatId1').val(selectedSeats[0]);
+const selectedSeatsInput2 = $('<input>').attr('type', 'hidden').attr('name', 'seatId2').val(selectedSeats[1]);
+
+form.append(selectedSeatsInput1);
+form.append(selectedSeatsInput2);
+
+// 폼을 body에 추가하고 제출
+$('body').append(form);
+form.submit();
+});
+</script>
 </body>
 </html>
