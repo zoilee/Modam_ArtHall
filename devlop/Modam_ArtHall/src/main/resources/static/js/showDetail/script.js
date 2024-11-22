@@ -26,3 +26,9 @@ function toggleScrollToTopBtn() {
 function scrollToTop() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+$(document).ready(function () {
+    //폼 지정 및 제출
+    const form = document.querySelector("#formToReservForm");
+    form.submit();
+});            
+

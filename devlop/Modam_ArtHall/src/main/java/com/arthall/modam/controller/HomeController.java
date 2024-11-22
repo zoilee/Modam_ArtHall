@@ -1,6 +1,7 @@
 package com.arthall.modam.controller;
 
 import java.util.List;
+
 import java.util.Map;
 import java.security.Principal;
 
@@ -11,6 +12,14 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+
+import java.util.Optional;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
+import java.util.Date;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -24,6 +33,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -300,8 +311,9 @@ public class HomeController {
         return "reservConfirm";
     }
 
-    @GetMapping("/reservForm")
-    public String reservForm(Model model) {
+    @RequestMapping(value = "/reservForm", method = {RequestMethod.GET, RequestMethod.POST})
+    public String showReservationForm(@RequestParam("performanceId") int performanceId,
+                                    Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         // 로그인되지 않은 경우
@@ -311,10 +323,28 @@ public class HomeController {
             return "redirect:/login"; // 로그인 페이지로 리다이렉트
         }
 
-        // 로그인된 경우 예약 폼 페이지로 이동
+        // performanceId 사용하여 공연 정보 조회
+        Optional<PerformancesEntity> performance = performanceService.getPerformanceById(performanceId);
+
+        if (performance.isPresent()) { // Optional에서 값 꺼내기
+            model.addAttribute("performance", performance.get()); // 공연 정보를 모델에 추가
+        } else {
+            // 공연 정보가 없으면 오류 메시지 처리
+            model.addAttribute("errorMessage", "해당 공연 정보를 찾을 수 없습니다.");
+        }
+
+        // 오늘 날짜를 Calendar 객체로 가져오기
+        Calendar calendar = Calendar.getInstance();
+        Date today = calendar.getTime();
+        
+        // 오늘 날짜를 문자열로 변환하여 모델에 추가
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String todayString = dateFormat.format(today);
+        
+        model.addAttribute("today", todayString); // 오늘 날짜를 모델에 추가
         return "reservForm";
     }
-
+    
     // 사용자 역할을 반환하는 유틸리티 메서드
     private String getUserRole(Authentication authentication) {
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();

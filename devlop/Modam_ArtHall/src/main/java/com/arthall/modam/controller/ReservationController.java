@@ -1,32 +1,63 @@
 package com.arthall.modam.controller;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.arthall.modam.entity.PerformancesEntity;
+import com.arthall.modam.entity.ReservationEntity;
+import com.arthall.modam.entity.ShowEntity;
+import com.arthall.modam.repository.ShowRepository;
+import com.arthall.modam.service.PerformanceService;
+import com.arthall.modam.service.ReservationService;
 
 @Controller
 public class ReservationController {
-    @PostMapping("/modam/reservConfirm")
-    public String handleReservation(
-            @RequestParam("musicalId") int musicalId,
-            @RequestParam("selectedDate") String selectedDate,
-            @RequestParam("selectedTime") int selectedTime,
-            @RequestParam("numberOfPeople") int numberOfPeople,
-            @RequestParam("selectedSeats1") String selectedSeats1,
-            @RequestParam("selectedSeats2") String selectedSeats2) {
-        
-        // 받은 값들을 사용하여 필요한 처리 (예: 예약 정보 저장)
-        
-        // 예시로 받은 값들을 출력
-        System.out.println("Musical ID: " + musicalId);
-        System.out.println("Selected Date: " + selectedDate);
-        System.out.println("Selected Time: " + selectedTime);
-        System.out.println("Number of People: " + numberOfPeople);
-        System.out.println("Selected Seats 1: " + selectedSeats1);
-        System.out.println("Selected Seats 2: " + selectedSeats2);
+    @Autowired
+    private PerformanceService performanceService; // 서비스 클래스에서 공연 정보를 조회
 
-        // 처리 후, 예약 완료 페이지나 다른 페이지로 리다이렉트하거나 화면을 반환
-        return "reservationConfirmationPage";
+    @Autowired
+    private ShowRepository showRepository;
+
+    @Autowired
+    private ReservationService reservationService;
+
+     // 예약 정보 저장
+    @PostMapping("/reservConfirm")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> confirmReservation(@RequestBody ReservationEntity reservationEntity) {
+
+        // 예약 처리 로직
+        ReservationEntity savedReservation = reservationService.createReservation(reservationEntity);
+
+        Map<String, Object> response = new HashMap<>();
+        if (savedReservation != null) {
+            response.put("success", true);
+            response.put("data", savedReservation);
+        } else {
+            response.put("success", false);
+            response.put("message", "예약 처리에 실패했습니다.");
+        }
+
+        return ResponseEntity.ok(response);
     }
 }
 
