@@ -25,7 +25,7 @@
                             <div class="form-group">
                                 <label for="loginid">아이디</label>
                                 <input type="text" th:field="*{loginId}" class="form-control" id="loginid" placeholder="아이디" 
-                                    required minlength="4" maxlength="20" pattern="^[A-Za-z0-9]{4,20}$" title="4~20자 영문, 숫자, 밑줄(_)만 사용 가능합니다.">
+                                    required minlength="4" maxlength="20" pattern="^[A-Za-z0-9]{4,20}$" title="4~20자 영문, 숫자만 사용 가능합니다.">
                                     <div id="loginid-feedback" class="text-danger"></div>
                                 </div>
                             <div class="form-group">
@@ -75,6 +75,16 @@
         if (loginId.trim() === '') {
         feedback.textContent = "아이디를 입력해주세요.";
         feedback.classList.add('text-danger');
+        feedback.classList.remove('text-success');
+        return;
+    }
+
+    // 아이디 유효성 검사: 영문, 숫자만 허용
+    const loginIdRegex = /^[A-Za-z0-9]{4,20}$/;
+    if (!loginIdRegex.test(loginId)) {
+        feedback.textContent = "유효한 아이디 값이 아닙니다. (4~20자 영문, 숫자만 가능)";
+        feedback.classList.add('text-danger');
+        feedback.classList.remove('text-success');
         return;
     }
 
@@ -84,6 +94,7 @@
             if (data.exists) {
                 feedback.textContent = "이미 사용 중인 아이디입니다.";
                 feedback.classList.add('text-danger');
+                feedback.classList.remove('text-success');
             } else {
                 feedback.textContent = "사용 가능한 아이디입니다.";
                 feedback.classList.remove('text-danger');
@@ -93,6 +104,7 @@
         .catch(error => {
             feedback.textContent = "서버와 통신 중 문제가 발생했습니다.";
             feedback.classList.add('text-danger');
+            feedback.classList.remove('text-success');
         });
     });
     // 비밀번호 입력 확인

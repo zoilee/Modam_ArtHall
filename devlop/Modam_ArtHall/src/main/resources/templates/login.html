@@ -52,6 +52,15 @@
         </div>
 <!-- 푸터 가져오기 -->
 <th:block th:replace="~{fragments/footer :: footerFragment}"></th:block>
+<script>
+    // URLSearchParams를 사용하여 쿼리 파라미터 확인
+    const urlParams = new URLSearchParams(window.location.search);
+
+    // error=true가 URL에 포함되어 있으면 alert 메시지를 띄움
+    if (urlParams.has('error') && urlParams.get('error') === 'true') {
+        alert('아이디 또는 비밀번호가 맞지 않습니다. 다시 입력해 주세요.');
+    }
+</script>
 <!-- Bootstrap JS, Popper.js, and jQuery -->
 <!-- <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>

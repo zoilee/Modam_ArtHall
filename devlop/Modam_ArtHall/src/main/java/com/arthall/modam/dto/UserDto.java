@@ -25,6 +25,9 @@ public class UserDto {
     @Pattern(regexp = "^[A-Za-z\\d]{8,20}$", message = "비밀번호는 8~20자, 영문 대소문자 또는 숫자로만 입력 가능합니다.")
     private String password;
 
+    private String newPassword; // 새 비밀번호
+    private String confirmPassword; // 새 비밀번호 확인
+
     @NotBlank(message = "이름은 필수 입력값입니다.")
     @Size(max = 50, message = "이름은 최대 50자까지 입력 가능합니다.")
     @Pattern(regexp = "^[가-힣a-zA-Z]+$", message = "이름은 한글과 영문만 입력 가능합니다.")
@@ -42,8 +45,6 @@ public class UserDto {
 
     // 추가된 필드: 소셜 로그인 여부
     private String provider;
-    private String currentPassword; // 현재 비밀번호
-    private String newPassword; // 새 비밀번호
     private Role role; // UserEntity.Role로 변경
     private String status;
     private LocalDateTime createdAt;

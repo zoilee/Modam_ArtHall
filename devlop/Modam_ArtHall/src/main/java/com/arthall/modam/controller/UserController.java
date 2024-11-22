@@ -2,10 +2,10 @@ package com.arthall.modam.controller;
 
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.arthall.modam.dto.UserDto;
 import com.arthall.modam.entity.UserEntity;
@@ -23,10 +24,13 @@ import jakarta.validation.Valid;
 
 @Controller
 public class UserController {
-    
+
+    private final PasswordEncoder passwordEncoder;
     private final UserService userService;
-    @Autowired
-    public UserController(UserService userService) {
+
+    // 생성자 주입
+    public UserController(PasswordEncoder passwordEncoder, UserService userService) {
+        this.passwordEncoder = passwordEncoder;
         this.userService = userService;
     }
 
@@ -106,27 +110,42 @@ public class UserController {
 
     // 개인정보 수정 처리
     @PostMapping("/registeruserEdit")
-    public String updateUserInfo(@Valid @ModelAttribute("user") UserDto userDto, BindingResult bindingResult, HttpSession session, Model model) {
-        String loginId = (String) session.getAttribute("loginId");
-        if (loginId == null) {
-            return "redirect:/login"; // 로그인하지 않은 사용자는 로그인 페이지로 리다이렉트
+    public String updateUserInfo(@ModelAttribute UserDto userDto, Authentication authentication, RedirectAttributes redirectAttributes) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            // 인증되지 않은 사용자는 로그인 페이지로 리다이렉트
+            return "redirect:/login";
         }
 
-        // 현재 로그인된 아이디를 설정
-        userDto.setLoginId(loginId);
+        // 로그인된 사용자 정보 가져오기
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String loginId = userDetails.getUsername();
 
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("error", "유효성 검증에 실패했습니다. 입력값을 확인해주세요.");
-            return "registeruserEdit"; // 유효성 검증 실패 시 수정 페이지로 다시 이동
+        // 기존 사용자 정보 가져오기
+        UserEntity existingUser = userService.getUserByLoginId(loginId);
+
+        // 변경할 값이 있는 경우만 업데이트
+        if (userDto.getNewPassword() != null && !userDto.getNewPassword().isEmpty()) {
+            if (!userDto.getNewPassword().equals(userDto.getConfirmPassword())) {
+                redirectAttributes.addFlashAttribute("errorMessage", "새로운 비밀번호가 일치하지 않습니다.");
+                return "redirect:/registeruserEdit";
+            }
+            existingUser.setPassword(passwordEncoder.encode(userDto.getNewPassword())); // 비밀번호 암호화
+        }
+        if (userDto.getName() != null && !userDto.getName().isEmpty()) {
+            existingUser.setName(userDto.getName());
+        }
+        if (userDto.getEmail() != null && !userDto.getEmail().isEmpty()) {
+            existingUser.setEmail(userDto.getEmail());
+        }
+        if (userDto.getPhoneNumber() != null && !userDto.getPhoneNumber().isEmpty()) {
+            existingUser.setPhoneNumber(userDto.getPhoneNumber());
         }
 
-        try {
-            userService.updateUserInfo(userDto); // 사용자 정보 업데이트
-            model.addAttribute("success", "개인정보가 성공적으로 수정되었습니다.");
-        } catch (IllegalArgumentException e) {
-            model.addAttribute("error", e.getMessage());
-            return "registeruserEdit";
-        }
+        // 업데이트 저장
+        userService.updateUser(existingUser);
+
+        // 성공 메시지 추가
+        redirectAttributes.addFlashAttribute("successMessage", "개인정보가 성공적으로 수정되었습니다.");
 
         return "redirect:/"; // 수정 성공 후 메인 페이지로 이동
     }

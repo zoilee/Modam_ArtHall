@@ -31,7 +31,7 @@ public class UserService implements UserDetailsService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    // ===============회원가입 처리================
+    // ==================================회원가입 처리====================================
     // 아이디 중복 체크
     public boolean isLoginIdDuplicate(String loginId) {
         return userRepository.findByLoginId(loginId).isPresent();
@@ -136,44 +136,11 @@ public class UserService implements UserDetailsService {
 
     //=================================개인정보 수정 ======================================
     // UserService 내 추가
-    public void updateUserInfo(UserDto userDto) {
-        // 현재 사용자 정보를 DB에서 가져오기
-        UserEntity userEntity = userRepository.findByLoginId(userDto.getLoginId())
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-
-        // 현재 비밀번호 확인 (옵션)
-        if (userDto.getCurrentPassword() != null && !userDto.getCurrentPassword().isEmpty()) {
-            if (!passwordEncoder.matches(userDto.getCurrentPassword(), userEntity.getPassword())) {
-                throw new IllegalArgumentException("현재 비밀번호가 올바르지 않습니다.");
-            }
-        }
-
-        // 새로운 비밀번호 설정 (사용자가 입력한 경우에만)
-        if (userDto.getNewPassword() != null && !userDto.getNewPassword().isEmpty()) {
-            String encodedPassword = passwordEncoder.encode(userDto.getNewPassword());
-            userEntity.setPassword(encodedPassword);
-        }
-
-        // 이름 업데이트 (이름은 바로 수정 가능)
-        userEntity.setName(userDto.getName());
-
-        // 이메일 업데이트 (기존 유효성 검사 활용)
-        if (isEmailDuplicate(userDto.getEmail()) && !userEntity.getEmail().equals(userDto.getEmail())) {
-            throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
-        }
-        userEntity.setEmail(userDto.getEmail());
-
-        // 전화번호 업데이트 (기존 유효성 검사 활용)
-        if (isPhoneNumberDuplicate(userDto.getPhoneNumber()) && !userEntity.getPhoneNumber().equals(userDto.getPhoneNumber())) {
-            throw new IllegalArgumentException("이미 사용 중인 전화번호입니다.");
-        }
-        userEntity.setPhoneNumber(userDto.getPhoneNumber());
-
-        // 변경된 정보 저장
+    public void updateUser(UserEntity userEntity) {
         userRepository.save(userEntity);
     }
     
-    // ===================관리자 계정 자동 생성=========================
+    // ============================관리자 계정 자동 생성===================================
     @PostConstruct
     public void createAdminUser() {
         if (userRepository.findByLoginId("admin").isEmpty()) {

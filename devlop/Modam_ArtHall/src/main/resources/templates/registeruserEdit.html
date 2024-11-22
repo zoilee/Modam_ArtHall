@@ -22,16 +22,9 @@
                    style="cursor: not-allowed;" title="아이디는 수정할 수 없습니다.">
         </div>
 
-        <!-- 현재 비밀번호 -->
-        <div class="form-group">
-            <label for="current-password">현재 비밀번호</label>
-            <input type="password" class="form-control" id="current-password" name="currentPassword" placeholder="현재 비밀번호를 입력하세요"
-                   required minlength="8" maxlength="20" pattern="^[A-Za-z\d]{8,20}$" title="8~20자, 영문 대소문자와 숫자만 가능합니다.">
-        </div>
-
         <!-- 새로운 비밀번호 -->
         <div class="form-group">
-            <label for="new-password">새로운 비밀번호</label>
+            <label for="new-password">새로운 비밀번호(선택)</label>
             <input type="password" class="form-control" id="new-password" name="newPassword" placeholder="새로운 비밀번호를 입력하세요"
                    required minlength="8" maxlength="20" pattern="^[A-Za-z\d]{8,20}$" title="8~20자, 영문 대소문자와 숫자만 가능합니다.">
         </div>
@@ -48,21 +41,21 @@
 
         <!-- 이름 -->
         <div class="form-group">
-            <label for="name">이름</label>
+            <label for="name">이름(선택)</label>
             <input type="text" class="form-control" id="name" name="name" th:value="${user.name}" required
                    pattern="^[가-힣a-zA-Z]+$" title="이름은 한글, 영어만 가능합니다.">
         </div>
 
         <!-- 이메일 -->
         <div class="form-group">
-            <label for="email">이메일</label>
+            <label for="email">이메일(선택)</label>
             <input type="email" class="form-control" id="email" name="email" th:value="${user.email}" required
                    pattern="^[a-zA-Z0-9._]+@[a-zA-Z0-9.-]+\.[a-z]{2,}$" title="올바른 이메일 형식을 입력하세요. 예: example@domain.com">
         </div>
 
         <!-- 전화번호 -->
         <div class="form-group">
-            <label for="phone">연락처</label>
+            <label for="phone">연락처(선택)</label>
             <input type="tel" class="form-control" id="phone" name="phoneNumber" th:value="${user.phoneNumber}" required
                    pattern="^\d{10,11}$" title="전화번호는 숫자 10~11자만 입력 가능합니다.">
         </div>
