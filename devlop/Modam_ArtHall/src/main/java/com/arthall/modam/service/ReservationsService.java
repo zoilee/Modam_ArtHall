@@ -10,7 +10,7 @@ import com.arthall.modam.entity.ReservationsEntity;
 import com.arthall.modam.repository.ReservationsRepository;
 
 @Service
-public class ReservationService {
+public class ReservationsService {
     @Autowired
     private ReservationsRepository reservationRepository;
 

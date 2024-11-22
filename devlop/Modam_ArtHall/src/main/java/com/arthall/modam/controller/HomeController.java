@@ -22,11 +22,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.arthall.modam.entity.CommentEntity;
 import com.arthall.modam.entity.PerformancesEntity;
-import com.arthall.modam.entity.ReservationEntity;
+import com.arthall.modam.entity.ReservationsEntity;
 import com.arthall.modam.entity.UserEntity;
 import com.arthall.modam.service.CommentService;
 import com.arthall.modam.service.PerformanceService;
-import com.arthall.modam.service.ReservationService;
+import com.arthall.modam.service.ReservationsService;
 import com.arthall.modam.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -42,7 +42,7 @@ public class HomeController {
     private PerformanceService performanceService;
 
     @Autowired
-    private ReservationService reservationService;
+    private ReservationsService reservationService;
 
     @Autowired
     private CommentService commentService;
@@ -59,10 +59,10 @@ public class HomeController {
         if (authentication == null || !authentication.isAuthenticated()) {
             return "redirect:/login"; // 인증되지 않은 경우 로그인 페이지로 리다이렉트
         }
-    
+
         Object principal = authentication.getPrincipal();
         String loginId = null;
-    
+
         if (principal instanceof OAuth2User) {
             Map<String, Object> attributes = ((OAuth2User) principal).getAttributes();
             loginId = (String) attributes.get("loginId");
@@ -71,44 +71,43 @@ public class HomeController {
         } else {
             throw new RuntimeException("인증된 사용자가 OAuth2User 또는 UserDetails가 아닙니다.");
         }
-    
+
         if (loginId == null) {
             throw new RuntimeException("loginId를 찾을 수 없습니다.");
         }
-    
+
         // loginId로 사용자 조회
         UserEntity user = userService.getUserByLoginId(loginId);
         if (user == null) {
             throw new RuntimeException("사용자를 찾을 수 없습니다: loginId = " + loginId);
         }
-    
+
         int userId = user.getId();
-    
+
         // 예약 데이터 가져오기
-        List<ReservationEntity> upcomingReservations = reservationService.getUpcomingReservationsByUserId(userId);
-        List<ReservationEntity> pastReservations = reservationService.getPastReservationsByUserId(userId);
-    
+        List<ReservationsEntity> upcomingReservations = reservationService.getUpcomingReservationsByUserId(userId);
+        List<ReservationsEntity> pastReservations = reservationService.getPastReservationsByUserId(userId);
+
         // 최신 날짜 순으로 정렬
-        upcomingReservations.sort(Comparator.comparing(ReservationEntity::getReservationDate).reversed());
-        pastReservations.sort(Comparator.comparing(ReservationEntity::getReservationDate).reversed());
-    
+        upcomingReservations.sort(Comparator.comparing(ReservationsEntity::getReservationDate).reversed());
+        pastReservations.sort(Comparator.comparing(ReservationsEntity::getReservationDate).reversed());
+
         int points = userService.getUserPointsById(userId);
-    
+
         model.addAttribute("user", user);
         model.addAttribute("points", points);
         model.addAttribute("upcomingReservations", upcomingReservations);
         model.addAttribute("pastReservations", pastReservations);
-    
+
         if (upcomingReservations.isEmpty()) {
             model.addAttribute("noUpcomingReservationsMessage", "현재 예약이 없습니다.");
         }
         if (pastReservations.isEmpty()) {
             model.addAttribute("noPastReservationsMessage", "과거 예약이 없습니다.");
         }
-    
+
         return "mypage";
     }
-
 
     @GetMapping("/registeruserEdit")
     public String registeruserEdit() {
@@ -127,7 +126,8 @@ public class HomeController {
 
         // 로그인 정보 가져오기
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
+        if (authentication != null && authentication.isAuthenticated()
+                && !(authentication instanceof AnonymousAuthenticationToken)) {
             Object principal = authentication.getPrincipal();
             if (principal instanceof OAuth2User) {
                 Map<String, Object> attributes = ((OAuth2User) principal).getAttributes();
@@ -174,7 +174,8 @@ public class HomeController {
             @RequestParam("rating") int rating) {
         // 로그인 사용자 정보 가져오기
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken) {
+        if (authentication == null || !authentication.isAuthenticated()
+                || authentication instanceof AnonymousAuthenticationToken) {
             return "error: 로그인 후 이용 가능합니다."; // 비로그인 사용자 처리
         }
 
@@ -195,7 +196,8 @@ public class HomeController {
             @RequestParam("commentText") String commentText) {
         // 로그인 사용자 정보 가져오기
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken) {
+        if (authentication == null || !authentication.isAuthenticated()
+                || authentication instanceof AnonymousAuthenticationToken) {
             return "error: 로그인 후 이용 가능합니다."; // 비로그인 사용자 처리
         }
 
@@ -208,7 +210,8 @@ public class HomeController {
     public String deleteComment(@RequestParam("commentId") int commentId) {
         // 로그인 사용자 정보 가져오기
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken) {
+        if (authentication == null || !authentication.isAuthenticated()
+                || authentication instanceof AnonymousAuthenticationToken) {
             return "error: 로그인 후 이용 가능합니다."; // 비로그인 사용자 처리
         }
 

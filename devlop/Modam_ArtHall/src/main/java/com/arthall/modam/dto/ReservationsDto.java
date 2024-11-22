@@ -4,12 +4,12 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 import com.arthall.modam.entity.PerformancesEntity;
-import com.arthall.modam.entity.ReservationEntity;
+import com.arthall.modam.entity.ReservationsEntity;
 
 import lombok.Data;
 
 @Data
-public class ReservationDto {
+public class ReservationsDto {
 
     private int id;
     private int userId;
@@ -21,8 +21,8 @@ public class ReservationDto {
     private BigDecimal totalPrice;
     private String status;
 
-    public static ReservationDto toReservationDto(ReservationEntity reservationEntity) {
-        ReservationDto dto = new ReservationDto();
+    public static ReservationsDto toReservationDto(ReservationsEntity reservationEntity) {
+        ReservationsDto dto = new ReservationsDto();
         dto.setId(reservationEntity.getId());
         dto.setUserId(reservationEntity.getUserId());
         dto.setShowId(reservationEntity.getShowId());

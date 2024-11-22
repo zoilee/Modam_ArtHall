@@ -3,6 +3,8 @@ package com.arthall.modam.entity;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -37,7 +39,8 @@ public class ReservationsEntity {
     @Column(name = "seat_id2", length = 10) // 두 번째 좌석 ID
     private String seatId2;
 
-    @Column(name = "reservation_date", nullable = false)
+    @CreationTimestamp
+    @Column(name = "reservation_date", nullable = false, updatable = false)
     private Timestamp reservationDate; // 예약 날짜
 
     @Column(name = "total_price", nullable = false, precision = 10, scale = 2)
@@ -46,6 +49,10 @@ public class ReservationsEntity {
     @Column(name = "status", length = 20)
     private String status; // 예약 상태
 
+    @Column(name = "ticket", length = 100)
+    private String ticket; // 티켓
+
     @OneToOne(mappedBy = "reservation", cascade = CascadeType.ALL)
     private PaymentsEntity payment;
+
 }
