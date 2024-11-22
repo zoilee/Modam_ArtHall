@@ -3,6 +3,11 @@ package com.arthall.modam.controller;
 import java.util.List;
 import java.util.Map;
 import java.security.Principal;
+
+import java.sql.Date;
+
+import java.time.LocalDate;
+
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -26,6 +31,7 @@ import com.arthall.modam.entity.CommentEntity;
 import com.arthall.modam.entity.PerformancesEntity;
 import com.arthall.modam.entity.ReservationEntity;
 import com.arthall.modam.entity.UserEntity;
+import com.arthall.modam.repository.PerformancesRepository;
 import com.arthall.modam.service.CommentService;
 import com.arthall.modam.service.PerformanceService;
 import com.arthall.modam.service.ReservationService;
@@ -42,6 +48,9 @@ public class HomeController {
 
     @Autowired
     private PerformanceService performanceService;
+
+    @Autowired
+    private PerformancesRepository performancesRepository;
 
     @Autowired
     private ReservationService reservationService;
@@ -116,6 +125,28 @@ public class HomeController {
     public String registeruserEdit() {
         return "registeruserEdit";
     }
+
+
+    // /showList 매핑
+    @GetMapping("/showList")
+    public String showList(Model model) {
+        Date currentDate = Date.valueOf(LocalDate.now());
+    
+        List<PerformancesEntity> currentPerformances = performanceService.getUpcomingPerformances(currentDate);
+        List<PerformancesEntity> pastPerformances = performanceService.getFinishedPerformances(currentDate);
+    
+        // 디버깅용 로그 추가
+        System.out.println("Current Performances: " + currentPerformances);
+        System.out.println("Past Performances: " + pastPerformances);
+    
+        model.addAttribute("currentPerformances", currentPerformances);
+        model.addAttribute("pastPerformances", pastPerformances);
+    
+        return "showList";
+    }
+
+
+    
 
     @GetMapping("/showDetail/{performanceId}")
     public String showPerformanceDetails(@PathVariable("performanceId") int performanceId, Model model) {

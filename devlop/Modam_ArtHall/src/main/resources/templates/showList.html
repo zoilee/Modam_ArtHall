@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modam Art Hall - 공연 목록</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/layout/style.css}">
+    <style>
+        .poster-container {
+            display: flex;
+            flex-direction: column;
+            gap: 50px;
+            align-items: center;
+            margin-bottom: 100px;
+        }
+
+        .poster-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            width: 700px;
+        }
+
+        .poster-group.left {
+            align-self: flex-start;
+            margin-right: 670px;
+        }
+
+        .poster-group.right {
+            align-self: flex-end;
+            margin-left: 670px;
+        }
+
+        .poster {
+            background-color: #d6d6d6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 20px;
+            color: #555;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            height: 1000px;
+            overflow: hidden;
+        }
+
+        .poster img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: cover;
+        }
+
+        .poster-title {
+            font-size: 18px;
+            text-align: center;
+        }
+
+        /* 반응형 스타일 */
+        @media screen and (max-width: 768px) {
+            .poster-group.left,
+            .poster-group.right {
+                align-self: center;
+                margin-right: 0;
+                margin-left: 0;
+            }
+
+            .poster {
+                height: 500px;
+            }
+
+            .poster-title {
+                font-size: 16px;
+            }
+        }
+
+        /* 테이블 반응형 스타일 */
+        .table-responsive {
+            overflow-x: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 헤더 -->
+    <th:block th:replace="~{fragments/header :: headerFragment}"></th:block>
+
+    <!-- 현재 공연 섹션 -->
+    <div class="container mt-4" style="padding: 100px 0;">
+        <div class="poster-container">
+            <div th:each="performance, stat : ${currentPerformances}">
+                <div class="poster-group" th:classappend="${stat.index % 2 == 0} ? 'left' : 'right'">
+                    <!-- 포스터에 링크 추가 -->
+                    <a th:href="@{'/showDetail/' + ${performance.id}}" class="poster">
+                        <img th:src="${performance.imagesEntities.size() > 0 ? performance.imagesEntities[0].imageUrl : '/images/default-poster.jpg'}"
+                             th:alt="${performance.title ?: '기본 포스터'}">
+                    </a>
+                    <div class="poster-title">
+                        <h4 th:text="${performance.title}">공연 제목</h4>
+                        <p th:text="${performance.formattedStartDate} + ' ~ ' + ${performance.formattedEndDate}"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 지난 공연 섹션 -->
+    <div class="container mt-5 past-shows" style="padding-bottom: 100px;">
+        <h3>지난 공연들</h3>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>공연 제목</th>
+                        <th>공연 기간</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="performance : ${pastPerformances}">
+                        <td>
+                            <a th:href="@{'/showDetail/' + ${performance.id}}" th:text="${performance.title}"></a>
+                        </td>
+                        <td>
+                            <span th:text="${performance.formattedStartDate}"></span> ~ 
+                            <span th:text="${performance.formattedEndDate}"></span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 푸터 -->
+    <th:block th:replace="~{fragments/footer :: footerFragment}"></th:block>
+
+    <!-- Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>
