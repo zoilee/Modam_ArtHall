@@ -18,7 +18,6 @@ import java.util.Optional;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-import java.util.Date;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -335,7 +334,7 @@ public class HomeController {
 
         // 오늘 날짜를 Calendar 객체로 가져오기
         Calendar calendar = Calendar.getInstance();
-        Date today = calendar.getTime();
+        Date today = (Date) calendar.getTime();
         
         // 오늘 날짜를 문자열로 변환하여 모델에 추가
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");

@@ -24,9 +24,7 @@ public class ReservationsService {
         return reservationRepository.findByUserEntity_IdAndReservationDateBefore(userId, now);
     }
 
-<<<<<<< HEAD:devlop/Modam_ArtHall/src/main/java/com/arthall/modam/service/ReservationsService.java
-=======
-    public ReservationEntity createReservation(ReservationEntity reservationEntity) {
+    public ReservationsEntity createReservation(ReservationsEntity reservationEntity) {
         // 예약을 DB에 저장
         reservationEntity.setReservationDate(new Timestamp(System.currentTimeMillis())); // 예약 날짜 설정
         reservationEntity.setStatus("CONFIRMED"); // 기본 상태 설정
@@ -34,5 +32,4 @@ public class ReservationsService {
         return reservationRepository.save(reservationEntity); // 저장 후 반환
     }
 
->>>>>>> feature-reservationSelect:devlop/Modam_ArtHall/src/main/java/com/arthall/modam/service/ReservationService.java
 }

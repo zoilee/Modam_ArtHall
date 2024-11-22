@@ -27,11 +27,13 @@ public class ReservationsEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id; // 기본 키
 
-    @Column(name = "user_id", nullable = false)
-    private int userId; // 사용자 ID
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private UserEntity userEntity;
 
-    @Column(name = "show_id") //
-    private Integer showId; // 공연 정보
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "show_id", referencedColumnName = "show_id") // show_id 컬럼을 참조
+    private ShowEntity showEntity;
 
     @Column(name = "seat_id1", length = 10) // 첫 번째 좌석 ID
     private String seatId1;

@@ -23,11 +23,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.arthall.modam.entity.PerformancesEntity;
-import com.arthall.modam.entity.ReservationEntity;
+import com.arthall.modam.entity.ReservationsEntity;
 import com.arthall.modam.entity.ShowEntity;
 import com.arthall.modam.repository.ShowRepository;
 import com.arthall.modam.service.PerformanceService;
-import com.arthall.modam.service.ReservationService;
+import com.arthall.modam.service.ReservationsService;
 
 @Controller
 public class ReservationController {
@@ -38,15 +38,15 @@ public class ReservationController {
     private ShowRepository showRepository;
 
     @Autowired
-    private ReservationService reservationService;
+    private ReservationsService reservationService;
 
      // 예약 정보 저장
     @PostMapping("/reservConfirm")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> confirmReservation(@RequestBody ReservationEntity reservationEntity) {
+    public ResponseEntity<Map<String, Object>> confirmReservation(@RequestBody ReservationsEntity reservationEntity) {
 
         // 예약 처리 로직
-        ReservationEntity savedReservation = reservationService.createReservation(reservationEntity);
+        ReservationsEntity savedReservation = reservationService.createReservation(reservationEntity);
 
         Map<String, Object> response = new HashMap<>();
         if (savedReservation != null) {
