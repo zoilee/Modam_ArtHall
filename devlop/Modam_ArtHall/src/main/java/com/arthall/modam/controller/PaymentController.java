@@ -82,8 +82,8 @@ public class PaymentController {
                 // 이메일로 티켓번호 보내주기
                 MailDto mailDto = new MailDto();
                 mailDto.setAddress(email);
-                mailDto.setMessage("<p>고객님의 티켓번호는 " + ticket + " 입니다</p>");
-                mailDto.setTitle("예약해주셔서 감사합니다.");
+                mailDto.setMessage("<p>고객님의 티켓번호는 <strong>" + ticket + "</strong> 입니다</p>");
+                mailDto.setTitle("ModamArtHall : 예약해주셔서 감사합니다.");
 
                 mailService.mailSend(mailDto);
                 System.out.println("메일 전송 성공");

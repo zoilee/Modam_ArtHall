@@ -22,6 +22,10 @@ public class MailService {
     @Value("${spring.mail.from-address}")
     private String fromAddress;
 
+    String header = "<h1>안녕하세요 ModamArtHall 입니다 </h1>";
+
+    String footer = "<p>모담아트홀 | MODAM Art Hall</p><br><p>서울시 ○○구 ○○○로 ○○번길 123</p><br><p>전화: 02-1234-5678 | 이메일: info@modamarthall.com</p> ";
+
     public void mailSend(MailDto mailDto) throws Exception {
         try {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
@@ -34,8 +38,9 @@ public class MailService {
 
             // 이메일 본문 동적 구성
             StringBuilder content = new StringBuilder();
-            content.append("<h1>안녕하세요</h1>")
-                    .append(mailDto.getMessage());
+            content.append(header)
+                    .append(mailDto.getMessage())
+                    .append(footer);
 
             // 첨부파일 추가
             MultipartFile file = mailDto.getFile();
