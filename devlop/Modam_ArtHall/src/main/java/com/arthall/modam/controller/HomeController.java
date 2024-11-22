@@ -109,6 +109,11 @@ public class HomeController {
         return "mypage";
     }
 
+    @GetMapping("/showDetail")
+    public String showDetail(Model model){
+        return "showDetail";
+    }
+    
     @GetMapping("/showDetail/{performanceId}")
     public String showPerformanceDetails(@PathVariable("performanceId") int performanceId, Model model) {
         // 공연 정보 가져오기
