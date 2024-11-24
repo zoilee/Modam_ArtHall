@@ -1,9 +1,11 @@
 package com.arthall.modam.controller;
 
 import com.arthall.modam.entity.NoticesEntity;
+import com.arthall.modam.dto.PerformancesDto;
 import com.arthall.modam.entity.ImagesEntity;
 import com.arthall.modam.service.BbsService;
 import com.arthall.modam.service.FileService;
+import com.arthall.modam.service.PerformanceService;
 import com.arthall.modam.service.UserService;
 
 import java.io.File;
@@ -49,6 +51,11 @@ public class AdminController {
 
      @Autowired
     private UserService userService;
+
+    @Autowired
+    private PerformanceService performanceService;
+
+    
 
     // 공지사항 목록 조회 (페이지네이션 적용)
     @GetMapping("/noticeList")
@@ -236,9 +243,13 @@ public String updateAdminNotice(
     }
 
     @GetMapping("/redservView")
-    public String showAdminRedservView() {
+    public String reservationStatus(Model model) {
+        
+        List<PerformancesDto> performances = performanceService.getPerformancesWithReservationRate();
+        model.addAttribute("performances", performances);
         return "admin/adminRedservView";
     }
+    
 
     @GetMapping("/showCommitList")
     public String showAdminCommitList(
@@ -474,5 +485,7 @@ public String updateUser(
 
 
     
+
+
 
 }

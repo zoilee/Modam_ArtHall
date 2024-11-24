@@ -17,6 +17,8 @@ public class PerformancesDto {
     private String location; // 장소
     private Timestamp createdAt; // 생성 날짜 및 시간
     private int age; // 관람 연령
+    private String imageUrl; // 이미지 URL
+    private double reservationRate; // 예매율
 
     public static PerformancesDto toPerformancesDto(PerformancesEntity performancesEntity) {
         PerformancesDto dto = new PerformancesDto();
@@ -28,8 +30,8 @@ public class PerformancesDto {
         dto.setTime(performancesEntity.getTime());
         dto.setLocation(performancesEntity.getLocation());
         dto.setCreatedAt(performancesEntity.getCreatedAt());
+        dto.setAge(performancesEntity.getAge());
 
         return dto;
     }
-
 }
