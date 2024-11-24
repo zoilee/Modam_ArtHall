@@ -1,6 +1,5 @@
 package com.arthall.modam.service;
 
-
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -139,7 +138,6 @@ public class UserService implements UserDetailsService {
     public void updateUser(UserEntity userEntity) {
         userRepository.save(userEntity);
     }
-    
     // ============================관리자 계정 자동 생성===================================
     @PostConstruct
     public void createAdminUser() {
@@ -165,6 +163,16 @@ public class UserService implements UserDetailsService {
 
     public boolean isAdmin(UserEntity user) {
         return user.getRole() == UserEntity.Role.ADMIN;
+    }
+
+    public UserEntity findByLoginIdAndEmail(String loginId, String email) {
+
+        throw new UnsupportedOperationException("Unimplemented method 'findByLoginIdAndEmail'");
+    }
+
+    public UserEntity findByNameAndEmail(String name, String email) {
+        
+        return userRepository.findByNameAndEmail(name, email);
     }
 }
 

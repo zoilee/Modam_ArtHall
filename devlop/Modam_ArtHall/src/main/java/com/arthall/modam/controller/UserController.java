@@ -2,6 +2,7 @@ package com.arthall.modam.controller;
 
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,10 +17,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.arthall.modam.dto.UserDto;
 import com.arthall.modam.entity.UserEntity;
+import com.arthall.modam.service.MailService;
 import com.arthall.modam.service.UserService;
 
 @Controller
 public class UserController {
+    @Autowired
+    private MailService mailService;
 
     private final PasswordEncoder passwordEncoder;
     private final UserService userService;
@@ -51,7 +55,7 @@ public class UserController {
         return "login";
     }
 
-    // 개인정보 수정 폼 표시
+    // =================================개인정보 수정 폼 표시====================================
     @GetMapping("/registeruserEdit")
     public String showRegisterUserEditPage(Model model, Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
@@ -149,8 +153,41 @@ public class UserController {
     return ResponseEntity.ok(Map.of("exists", exists));
     }
 
+
+// ================================아이디&비밀번호 찾기===============================
     @GetMapping("/findAccount")
     public String findAccount(Model model){
         return("findAccount");
+    }
+    
+    @PostMapping("/find-id")
+    public String findId(@RequestParam("name") String name, @RequestParam("email") String email, Model model) {
+        UserEntity user = userService.findByNameAndEmail(name, email); // 이름과 이메일로 사용자 검색
+        if (user != null) {
+            // 사용자 이름과 아이디를 모델에 추가
+            model.addAttribute("successMessage", user.getName() + "님의 아이디는 '" + user.getLoginId() + "' 입니다.");
+        } else {
+            model.addAttribute("errorMessage", "입력한 정보와 일치하는 계정을 찾을 수 없습니다.");
+        }
+        return "findAccount"; // 다시 아이디/비밀번호 찾기 화면으로 이동
+    }
+
+    @PostMapping("/find-password")
+    public String findPassword(@RequestParam("loginId") String loginId, @RequestParam("email") String email, Model model) {
+        UserEntity user = userService.findByLoginIdAndEmail(loginId, email);
+        if (user != null) {
+            // 임시 비밀번호 생성 및 설정
+            String temporaryPassword = MailService.generateTemporaryPassword();
+            user.setPassword(passwordEncoder.encode(temporaryPassword));
+            userService.updateUser(user);
+    
+            // 이메일로 임시 비밀번호 전송
+            mailService.sendTemporaryPassword(email, temporaryPassword);
+    
+            model.addAttribute("message", "임시 비밀번호가 이메일로 발송되었습니다.");
+        } else {
+            model.addAttribute("error", "입력한 정보와 일치하는 계정이 없습니다.");
+        }
+        return "findAccount";
     }
 }
