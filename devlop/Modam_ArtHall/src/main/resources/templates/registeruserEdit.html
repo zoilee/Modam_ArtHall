@@ -11,7 +11,7 @@
 
 <!-- 헤더 -->
 <th:block th:replace="~{fragments/header :: headerFragment}"></th:block>
-    
+
 <div class="container my-5" style="padding-top: 100px;">
     <h2 class="text-center mb-4">개인정보 수정</h2>
     <form th:action="@{/registeruserEdit}" method="post" id="edit-user-form">
@@ -34,9 +34,7 @@
             <label for="confirm-password">새로운 비밀번호 확인</label>
             <input type="password" class="form-control" id="confirm-password" name="confirmPassword" placeholder="새로운 비밀번호를 다시 입력하세요"
                    minlength="8" maxlength="20" pattern="^[A-Za-z\d]{8,20}$" title="8~20자, 영문 대소문자와 숫자만 가능합니다.">
-            <small id="password-match-feedback" class="form-text text-danger" style="display: none;">
-                비밀번호가 일치하지 않습니다.
-            </small>
+                   <small id="password-match-feedback" class="form-text" style="display: none;"></small>
         </div>
 
         <!-- 이름 -->
@@ -62,7 +60,6 @@
             <small class="text-danger" th:text="${phoneError}" th:if="${phoneError != null}"></small>
         </div>
 
-        <!-- 수정 버튼 -->
         <button type="submit" class="btn btn-primary mt-3">수정하기</button>
     </form>
 </div>
@@ -75,53 +72,51 @@
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script>
-    // 비밀번호 일치 여부 확인
-    document.getElementById('confirm-password').addEventListener('input', function () {
-        const newPassword = document.getElementById('new-password').value;
-        const confirmPassword = this.value;
-        const feedback = document.getElementById('password-match-feedback');
+    document.addEventListener('DOMContentLoaded', function () {
+        // 비밀번호 확인
+        document.getElementById('confirm-password').addEventListener('input', function () {
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = this.value;
+            const feedback = document.getElementById('password-match-feedback');
 
-        if (newPassword !== confirmPassword) {
+            if (newPassword !== confirmPassword) {
+            feedback.textContent = "비밀번호가 일치하지 않습니다.";
+            feedback.style.color = "red";
             feedback.style.display = 'block';
-        } else {
-            feedback.style.display = 'none';
-        }
-    });
+            } else if (newPassword && confirmPassword) { // 둘 다 값이 있어야 메시지 표시
+            feedback.textContent = "비밀번호가 일치합니다.";
+            feedback.style.color = "green";
+            feedback.style.display = 'block';
+            } else {
+            feedback.style.display = 'none'; // 비밀번호 입력이 없을 때 메시지 숨김
+            }
+        });
 
-    // 이메일 중복 확인
-    document.getElementById('email').addEventListener('blur', function () {
-        const email = this.value;
-        const feedback = document.getElementById('email-feedback');
+        // 이메일 중복 확인
+        const emailInput = document.getElementById('email');
+        emailInput.addEventListener('blur', function () {
+            fetch(`/user/api/check-email?email=${emailInput.value}`)
+                .then(response => response.json())
+                .then(data => {
+                    const feedback = document.getElementById('email-feedback');
+                    feedback.textContent = data.exists ? "이미 사용 중인 이메일입니다." : "";
+                });
+        });
 
-        fetch(`/user/api/check-email?email=${email}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.exists) {
-                    feedback.textContent = "이미 사용 중인 이메일입니다.";
-                    feedback.classList.add('text-danger');
-                } else {
-                    feedback.textContent = "";
-                    feedback.classList.remove('text-danger');
-                }
-            });
-    });
+        // 전화번호 중복 확인
+        const phoneInput = document.getElementById('phone');
+        phoneInput.addEventListener('blur', function () {
+            fetch(`/user/api/check-phone?phone=${phoneInput.value}`)
+                .then(response => response.json())
+                .then(data => {
+                    const feedback = document.getElementById('phone-feedback');
+                    feedback.textContent = data.exists ? "이미 사용 중인 전화번호입니다." : "";
+                });
+        });
 
-    // 전화번호 중복 확인
-    document.getElementById('phone').addEventListener('blur', function () {
-        const phone = this.value;
-        const feedback = document.getElementById('phone-feedback');
-
-        fetch(`/user/api/check-phone?phone=${phone}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.exists) {
-                    feedback.textContent = "이미 사용 중인 전화번호입니다.";
-                    feedback.classList.add('text-danger');
-                } else {
-                    feedback.textContent = "";
-                    feedback.classList.remove('text-danger');
-                }
-            });
+        // 에러 메시지 초기화
+        emailInput.addEventListener('input', () => document.getElementById('email-feedback').textContent = '');
+        phoneInput.addEventListener('input', () => document.getElementById('phone-feedback').textContent = '');
     });
 </script>
 </script>

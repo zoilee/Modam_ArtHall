@@ -128,7 +128,7 @@ public class UserController {
 
     userService.updateUser(existingUser);
     redirectAttributes.addFlashAttribute("successMessage", "개인정보가 성공적으로 수정되었습니다.");
-    return "redirect:/";
+    return "redirect:/registeruserEdit";
 }
 
     @GetMapping("/user/api/check-login-id")
@@ -147,5 +147,10 @@ public class UserController {
     public ResponseEntity<Map<String, Boolean>> checkPhoneNumber(@RequestParam(name = "phone") String phoneNumber) {
     boolean exists = userService.isPhoneNumberDuplicate(phoneNumber);
     return ResponseEntity.ok(Map.of("exists", exists));
+    }
+
+    @GetMapping("/findAccount")
+    public String findAccount(Model model){
+        return("findAccount");
     }
 }
