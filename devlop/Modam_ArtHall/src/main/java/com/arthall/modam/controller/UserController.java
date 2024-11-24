@@ -88,7 +88,7 @@ public class UserController {
         return "registeruserEdit";
     }
 
-    // 개인정보 수정 처리
+    // ===============================개인정보 수정 처리=============================
     @PostMapping("/registeruserEdit")
     public String updateUserInfo(@ModelAttribute UserDto userDto, Authentication authentication, RedirectAttributes redirectAttributes, Model model
     ) {
@@ -125,6 +125,9 @@ public class UserController {
                 && userService.isEmailDuplicate(userDto.getEmail())) {
                 model.addAttribute("emailError", "이미 사용 중인 이메일입니다.");
                 hasError = true;
+            } if (!userDto.getEmail().matches("^[a-zA-Z0-9._]+@[a-zA-Z0-9.-]+\\.[a-z]{2,}$")) {
+                model.addAttribute("emailError", "이메일 형식이 올바르지 않습니다.");
+                hasError = true;
             } else {
                 existingUser.setEmail(userDto.getEmail());
             }
@@ -135,6 +138,9 @@ public class UserController {
             if (!userDto.getPhoneNumber().equals(existingUser.getPhoneNumber()) // 본인의 전화번호는 중복으로 간주하지 않음
                 && userService.isPhoneNumberDuplicate(userDto.getPhoneNumber())) {
                 model.addAttribute("phoneError", "이미 사용 중인 전화번호입니다.");
+                hasError = true;
+            } else if (!userDto.getPhoneNumber().matches("^\\d{10,11}$")) {
+                model.addAttribute("phoneError", "전화번호 형식이 올바르지 않습니다.");
                 hasError = true;
             } else {
                 existingUser.setPhoneNumber(userDto.getPhoneNumber());

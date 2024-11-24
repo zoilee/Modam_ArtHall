@@ -11,7 +11,7 @@
 
 <!-- 헤더 -->
 <th:block th:replace="~{fragments/header :: headerFragment}"></th:block>
-
+<p th:if="${successMessage}" th:text="${successMessage}"></p>
 <div class="container my-5" style="padding-top: 100px;">
     <h2 class="text-center mb-4">개인정보 수정</h2>
     <form th:action="@{/registeruserEdit}" method="post" id="edit-user-form">
@@ -49,7 +49,8 @@
             <label for="email">이메일(선택)</label>
             <input type="email" class="form-control" id="email" name="email" th:value="${user.email}" required
                    pattern="^[a-zA-Z0-9._]+@[a-zA-Z0-9.-]+\.[a-z]{2,}$" title="올바른 이메일 형식을 입력하세요. 예: example@domain.com">
-            <small class="text-danger" th:text="${emailError}" th:if="${emailError != null}"></small>
+            <!-- 이메일 피드백 메시지 -->
+            <small id="email-feedback" class="form-text"></small>
         </div>
 
         <!-- 전화번호 -->
@@ -57,7 +58,8 @@
             <label for="phone">연락처(선택)</label>
             <input type="tel" class="form-control" id="phone" name="phoneNumber" th:value="${user.phoneNumber}" required
                    pattern="^\d{10,11}$" title="전화번호는 숫자 10~11자만 입력 가능합니다.">
-            <small class="text-danger" th:text="${phoneError}" th:if="${phoneError != null}"></small>
+            <!-- 전화번호 피드백 메시지 -->
+            <small id="phone-feedback" class="form-text"></small>
         </div>
 
         <button type="submit" class="btn btn-primary mt-3">수정하기</button>
@@ -95,29 +97,68 @@
         // 이메일 중복 확인
         const emailInput = document.getElementById('email');
         emailInput.addEventListener('blur', function () {
-            fetch(`/user/api/check-email?email=${emailInput.value}`)
+            const emailValue = emailInput.value;
+
+            // 이메일 유효성 검사
+            const emailRegex = /^[a-zA-Z0-9._]+@[a-zA-Z0-9.-]+\.[a-z]{2,}$/;
+            const emailFeedback = document.getElementById('email-feedback');
+            if (!emailRegex.test(emailValue)) {
+                emailFeedback.textContent = "올바른 이메일 형식을 입력하세요.";
+                emailFeedback.classList.add('text-danger');
+                return;
+            }
+
+            // 이메일 중복 확인
+            fetch(`/user/api/check-email?email=${emailValue}`)
                 .then(response => response.json())
                 .then(data => {
-                    const feedback = document.getElementById('email-feedback');
-                    feedback.textContent = data.exists ? "이미 사용 중인 이메일입니다." : "";
+                    emailFeedback.textContent = data.exists ? "이미 사용 중인 이메일입니다." : "사용 가능한 이메일입니다.";
+                    emailFeedback.classList.toggle('text-danger', data.exists);
+                    emailFeedback.classList.toggle('text-success', !data.exists);
                 });
         });
 
         // 전화번호 중복 확인
         const phoneInput = document.getElementById('phone');
         phoneInput.addEventListener('blur', function () {
-            fetch(`/user/api/check-phone?phone=${phoneInput.value}`)
+            const phoneValue = phoneInput.value;
+
+            // 전화번호 유효성 검사
+            const phoneRegex = /^\d{10,11}$/;
+            const phoneFeedback = document.getElementById('phone-feedback');
+            if (!phoneRegex.test(phoneValue)) {
+                phoneFeedback.textContent = "올바른 전화번호 형식을 입력하세요.";
+                phoneFeedback.classList.add('text-danger');
+                return;
+            }
+
+            // 전화번호 중복 확인
+            fetch(`/user/api/check-phone?phone=${phoneValue}`)
                 .then(response => response.json())
                 .then(data => {
-                    const feedback = document.getElementById('phone-feedback');
-                    feedback.textContent = data.exists ? "이미 사용 중인 전화번호입니다." : "";
+                    phoneFeedback.textContent = data.exists ? "이미 사용 중인 전화번호입니다." : "사용 가능한 전화번호입니다.";
+                    phoneFeedback.classList.toggle('text-danger', data.exists);
+                    phoneFeedback.classList.toggle('text-success', !data.exists);
                 });
         });
 
         // 에러 메시지 초기화
-        emailInput.addEventListener('input', () => document.getElementById('email-feedback').textContent = '');
-        phoneInput.addEventListener('input', () => document.getElementById('phone-feedback').textContent = '');
-    });
+        emailInput.addEventListener('input', () => {
+            const emailFeedback = document.getElementById('email-feedback');
+            emailFeedback.textContent = '';
+            emailFeedback.classList.remove('text-danger', 'text-success');
+        });
+
+        phoneInput.addEventListener('input', () => {
+            const phoneFeedback = document.getElementById('phone-feedback');
+            phoneFeedback.textContent = '';
+            phoneFeedback.classList.remove('text-danger', 'text-success');
+        });
+        const successMessage = /*[[${successMessage}]]*/ null;
+        if (successMessage) {
+            alert(successMessage); // 개인정보 수정 성공 메시지 표시
+        }
+});
 </script>
 </script>
 </body>
