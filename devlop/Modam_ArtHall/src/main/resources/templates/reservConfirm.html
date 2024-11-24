@@ -36,24 +36,24 @@
                 <div class="col-md-6 ">
                     <div class="mb-3">
                         <label class="form-label">공연제목</label>
-                        <p class="performanceTitleConfirm"></p>
+                        <p th:text="${performanceTitle}"></p>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">관람일자</label>
-                        <p class="selectedDateConfirm"></p>
+                        <p th:text="${showDate}"></p>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">관람시간</label>
-                        <p class="selectedTimeConfirm"></p>
+                        <p class="selectedTimeConfirm" data-show-time="${showTime}"></p>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">티켓 수</label>
-                        <p class="numberOfPeopleConfirm"></p>
+                        <p th:text="${numberOfPeople}"></p>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">예약좌석</label>
-                        <p class="selectedSeats1Confirm"></p>
-                        <p class="selectedSeats2Confirm"></p>
+                        <p th:text="${seatId1}"></p>
+                        <p th:text="${seatId2}"></p>
                     </div>
                 </div>
             </div>

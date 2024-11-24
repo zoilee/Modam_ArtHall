@@ -314,8 +314,29 @@ public class HomeController {
         return "seatSelect";
     }
 
-    @GetMapping("/reservConfirm")
-    public String reservConfirm() {
+    @PostMapping("/reservConfirm")
+    public String showReservConfirmPage(
+        @RequestParam("performanceId") String performanceId,
+        @RequestParam("performanceTitle") String performanceTitle,
+        @RequestParam("showId") String showId,
+        @RequestParam("showDate") String showDate,
+        @RequestParam("showTime") String showTime,
+        @RequestParam("numberOfPeople") int numberOfPeople,
+        @RequestParam("seatId1") String seatId1,
+        @RequestParam("seatId2") String seatId2,
+        Model model) {
+        
+        // 모델에 값 저장
+        model.addAttribute("performanceId", performanceId);
+        model.addAttribute("performanceTitle", performanceTitle);
+        model.addAttribute("showId", showId);
+        model.addAttribute("showDate", showDate);
+        model.addAttribute("showTime", showTime);
+        model.addAttribute("numberOfPeople", numberOfPeople);
+        model.addAttribute("seatId1", seatId1);
+        model.addAttribute("seatId2", seatId2);
+        
+        // 예약 확인 페이지로 이동
         return "reservConfirm";
     }
 
