@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Optional;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 
@@ -42,12 +43,16 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.arthall.modam.entity.CommentEntity;
 import com.arthall.modam.entity.PerformancesEntity;
 import com.arthall.modam.entity.ReservationsEntity;
+import com.arthall.modam.entity.RewardsEntity;
+import com.arthall.modam.entity.RewardsLogEntity;
 import com.arthall.modam.entity.UserEntity;
 import com.arthall.modam.repository.PerformancesRepository;
 import com.arthall.modam.repository.RewardsRepository;
 import com.arthall.modam.service.CommentService;
 import com.arthall.modam.service.PerformanceService;
 import com.arthall.modam.service.ReservationsService;
+import com.arthall.modam.service.RewardsLogService;
+import com.arthall.modam.service.RewardsService;
 import com.arthall.modam.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -71,6 +76,12 @@ public class HomeController {
     @Autowired
     private RewardsRepository rewardsRepository;
 
+    @Autowired
+    private RewardsService rewardsService;
+
+    @Autowired
+    private RewardsLogService rewardsLogService;
+
     
 
     @GetMapping("/")
@@ -83,54 +94,47 @@ public class HomeController {
         // 현재 인증 정보 가져오기
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
-            return "redirect:/login"; // 인증되지 않은 경우 로그인 페이지로 리다이렉트
+            return "redirect:/login";
         }
 
         Object principal = authentication.getPrincipal();
         String loginId = null;
 
-        if (principal instanceof OAuth2User) {
-            Map<String, Object> attributes = ((OAuth2User) principal).getAttributes();
-            loginId = (String) attributes.get("loginId");
-        } else if (principal instanceof UserDetails) {
+        if (principal instanceof UserDetails) {
             loginId = ((UserDetails) principal).getUsername();
-        } else {
-            throw new RuntimeException("인증된 사용자가 OAuth2User 또는 UserDetails가 아닙니다.");
         }
 
         if (loginId == null) {
-            throw new RuntimeException("loginId를 찾을 수 없습니다.");
+            throw new RuntimeException("사용자를 찾을 수 없습니다.");
         }
 
-        // loginId로 사용자 조회
+        // 사용자 데이터 조회
         UserEntity user = userService.getUserByLoginId(loginId);
         if (user == null) {
-            throw new RuntimeException("사용자를 찾을 수 없습니다: loginId = " + loginId);
+            throw new RuntimeException("사용자를 찾을 수 없습니다.");
         }
 
         int userId = user.getId();
 
-        // 예약 데이터 가져오기
-        List<ReservationsEntity> upcomingReservations = reservationService.getUpcomingReservationsByUserId(userId);
-        List<ReservationsEntity> pastReservations = reservationService.getPastReservationsByUserId(userId);
+        // 예약 데이터 조회
+        List<ReservationsEntity> upcomingReservations = reservationService.getUpcomingReservations(userId);
+        List<ReservationsEntity> pastReservations = reservationService.getPastReservations(userId);
 
-        // 최신 날짜 순으로 정렬
-        upcomingReservations.sort(Comparator.comparing(ReservationsEntity::getReservationDate).reversed());
-        pastReservations.sort(Comparator.comparing(ReservationsEntity::getReservationDate).reversed());
-
-        BigDecimal points = userService.getUserPointsById(userId);
+        // null 체크 후 초기화
+        if (upcomingReservations == null) {
+            upcomingReservations = new ArrayList<>();
+        }
+        if (pastReservations == null) {
+            pastReservations = new ArrayList<>();
+        }
 
         model.addAttribute("user", user);
-        model.addAttribute("points", points);
         model.addAttribute("upcomingReservations", upcomingReservations);
         model.addAttribute("pastReservations", pastReservations);
 
-        if (upcomingReservations.isEmpty()) {
-            model.addAttribute("noUpcomingReservationsMessage", "현재 예약이 없습니다.");
-        }
-        if (pastReservations.isEmpty()) {
-            model.addAttribute("noPastReservationsMessage", "과거 예약이 없습니다.");
-        }
+        // 적립금 정보
+        RewardsEntity rewards = rewardsService.getRewardsByUserId(userId);
+        model.addAttribute("points", rewards != null ? rewards.getTotalPoint() : BigDecimal.ZERO);
 
         return "mypage";
     }

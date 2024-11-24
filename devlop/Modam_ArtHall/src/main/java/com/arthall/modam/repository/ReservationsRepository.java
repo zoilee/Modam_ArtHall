@@ -8,7 +8,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.arthall.modam.entity.ReservationsEntity;
 
 public interface ReservationsRepository extends JpaRepository<ReservationsEntity, Integer> {
-    List<ReservationsEntity> findByUserEntity_IdAndReservationDateAfter(int userId, Timestamp date);
+    // 미래 예약 조회
+    List<ReservationsEntity> findByUserEntityIdAndReservationDateAfter(int userId, Timestamp reservationDate);
 
-    List<ReservationsEntity> findByUserEntity_IdAndReservationDateBefore(int userId, Timestamp date);
+    // 과거 예약 조회
+    List<ReservationsEntity> findByUserEntityIdAndReservationDateBefore(int userId, Timestamp reservationDate);
 }

@@ -14,14 +14,16 @@ public class ReservationsService {
     @Autowired
     private ReservationsRepository reservationRepository;
 
-    public List<ReservationsEntity> getUpcomingReservationsByUserId(int userId) {
+    public List<ReservationsEntity> getUpcomingReservations(int userId) {
+        // 현재 날짜를 기준으로 미래의 예약을 가져옵니다.
         Timestamp now = new Timestamp(System.currentTimeMillis());
-        return reservationRepository.findByUserEntity_IdAndReservationDateAfter(userId, now);
+        return reservationRepository.findByUserEntityIdAndReservationDateAfter(userId, now);
     }
 
-    public List<ReservationsEntity> getPastReservationsByUserId(int userId) {
+    public List<ReservationsEntity> getPastReservations(int userId) {
+        // 현재 날짜를 기준으로 과거의 예약을 가져옵니다.
         Timestamp now = new Timestamp(System.currentTimeMillis());
-        return reservationRepository.findByUserEntity_IdAndReservationDateBefore(userId, now);
+        return reservationRepository.findByUserEntityIdAndReservationDateBefore(userId, now);
     }
 
     public ReservationsEntity createReservation(ReservationsEntity reservationEntity) {

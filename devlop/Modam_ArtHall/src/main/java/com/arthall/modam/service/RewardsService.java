@@ -78,9 +78,16 @@ public class RewardsService {
         rewardLogsRepository.save(rewardLogsEntity);
         log.info("사용자 ID {}의 적립금 {}원 추가: {}", userId, points, description);
     }
+    
 
     @Transactional
     public void rollbackPoints(int userId, BigDecimal points, int reservationId) {
         addPoints(userId, points, "환불로 인한 적립금 반환", reservationId);
+    }
+
+    public RewardsEntity getRewardsByUserId(int userId) {
+        // 사용자 ID로 적립금 정보를 가져옵니다.
+        return rewardsRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("적립금 정보를 찾을 수 없습니다."));
     }
 }
