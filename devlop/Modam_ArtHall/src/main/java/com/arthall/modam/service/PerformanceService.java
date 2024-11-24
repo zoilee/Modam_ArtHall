@@ -1,9 +1,12 @@
 package com.arthall.modam.service;
 
+import java.sql.Date;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 import org.springframework.data.domain.Page;
@@ -56,26 +59,32 @@ public class PerformanceService {
     }
 
     // 다가오는 공연 목록
-    public List<PerformancesEntity> getUpcomingPerformances(java.sql.Date currentDate) {
-        // Fetch upcoming performances
+    public List<PerformancesEntity> getUpcomingPerformances() {
+        // 현재 날짜를 가져와 SQL Date로 변환
+        Date currentDate = Date.valueOf(LocalDate.now());
+
+        // 'enddate'가 현재 날짜 이후인 공연 리스트 가져오기
         List<PerformancesEntity> performances = performancesRepository.findByEnddateAfter(currentDate);
 
-        // Apply date formatting
+        // 날짜 포맷 적용
         performances.forEach(this::formatPerformanceDates);
+
+        // startdate 기준으로 정렬
+        performances.sort(Comparator.comparing(PerformancesEntity::getStartdate));
 
         return performances;
     }
 
     private void formatPerformanceDates(PerformancesEntity performance) {
+        // SimpleDateFormat 객체를 사용하여 날짜 포맷 적용
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
         if (performance.getStartdate() != null) {
-            performance.setFormattedStartDate(
-                dateFormatter.format(performance.getStartdate().toLocalDate())
-            );
+            performance.setFormattedStartDate(dateFormat.format(performance.getStartdate()));
         }
+
         if (performance.getEnddate() != null) {
-            performance.setFormattedEndDate(
-                dateFormatter.format(performance.getEnddate().toLocalDate())
-            );
+            performance.setFormattedEndDate(dateFormat.format(performance.getEnddate()));
         }
     }
 

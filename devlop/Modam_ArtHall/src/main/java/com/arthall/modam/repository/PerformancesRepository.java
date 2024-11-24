@@ -22,4 +22,12 @@ public interface PerformancesRepository extends JpaRepository<PerformancesEntity
     Page<PerformancesEntity> findByEnddateBefore(Date date, Pageable pageable);
 
     List<PerformancesEntity> findByEnddateAfter(Date date);
+
+    // 지난 공연 가져오기
+    @Query("SELECT p FROM PerformancesEntity p WHERE p.enddate < CURRENT_DATE")
+    Page<PerformancesEntity> findPastPerformances(Pageable pageable);
+
+    // 현재 및 미래 공연 가져오기
+    @Query("SELECT p FROM PerformancesEntity p WHERE p.enddate >= CURRENT_DATE ORDER BY p.startdate ASC")
+    List<PerformancesEntity> findUpcomingPerformances();
 }

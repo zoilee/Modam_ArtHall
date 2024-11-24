@@ -2,13 +2,10 @@ package com.arthall.modam.controller;
 
 import java.util.List;
 import java.util.Map;
-<<<<<<< Updated upstream
-import java.util.Optional;
-=======
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.security.Principal;
 
->>>>>>> Stashed changes
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -20,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -141,52 +139,56 @@ public class HomeController {
     }
 
 
-    // /showList 매핑
     @GetMapping("/showList")
     public String showList(@RequestParam(value = "page", defaultValue = "0") int page,
                            @RequestParam(value = "size", defaultValue = "5") int size,
                            Model model) {
     
-        Date currentDate = Date.valueOf(LocalDate.now());
-<<<<<<< Updated upstream
-    
-        List<PerformancesEntity> currentPerformances = performanceService.getUpcomingPerformances(currentDate);
-        List<PerformancesEntity> pastPerformances = performanceService.getFinishedPerformances(currentDate);
-    
-        // 디버깅용 로그 추가
-        System.out.println("Current Performances: " + currentPerformances);
-        System.out.println("Past Performances: " + pastPerformances);
-    
-        model.addAttribute("currentPerformances", currentPerformances);
-        model.addAttribute("pastPerformances", pastPerformances);
-=======
+        // Validate and adjust page and size
+        page = Math.max(page, 0);
+        size = Math.max(size, 1);
         Pageable pageable = PageRequest.of(page, size);
     
-        List<PerformancesEntity> allCurrentPerformances = performanceService.getUpcomingPerformances(currentDate);
+        // Fetch upcoming and past performances
+        List<PerformancesEntity> upcomingPerformances = performanceService.getUpcomingPerformances();
         Page<PerformancesEntity> pastPerformances = performanceService.getPastPerformances(pageable);
 
-        // 서비스에서 공연 데이터 가져오기
-        Map<String, Object> performancesData = BbsService.getPerformances(page, size);
     
-        // 현재 공연을 첫 4개와 나머지로 나누기
-        List<PerformancesEntity> top4Performances = allCurrentPerformances.stream().limit(4).toList();
-        List<PerformancesEntity> remainingPerformances = allCurrentPerformances.stream().skip(4).toList();
+        // Partition top 4 and remaining performances
+        List<PerformancesEntity> top4Performances = upcomingPerformances.stream()
+                .limit(4)
+                .toList();
+        List<PerformancesEntity> remainingPerformances = upcomingPerformances.stream()
+                .skip(4)
+                .toList();
     
+        // Partition remaining performances into chunks of 4
+        List<List<PerformancesEntity>> partitionedPerformances = IntStream.range(0, (remainingPerformances.size() + 3) / 4)
+                .mapToObj(i -> remainingPerformances.subList(i * 4, Math.min((i + 1) * 4, remainingPerformances.size())))
+                .toList();
+    
+        // Add data to model
         model.addAttribute("top4Performances", top4Performances);
-        model.addAttribute("remainingPerformances", remainingPerformances);
+        model.addAttribute("partitionedPerformances", partitionedPerformances);
         model.addAttribute("pastPerformances", pastPerformances);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", pastPerformances.getTotalPages());
-        // 모델에 데이터 추가
-        model.addAttribute("content", performancesData.get("content")); // 공연 데이터
-        model.addAttribute("currentPage", performancesData.get("currentPage")); // 현재 페이지 번호
-        model.addAttribute("totalPages", performancesData.get("totalPages")); // 총 페이지 수
-        model.addAttribute("totalElements", performancesData.get("totalElements")); // 총 데이터 개수
-        model.addAttribute("size", performancesData.get("size")); // 페이지 크기
->>>>>>> Stashed changes
+        model.addAttribute("isFirstPage", pastPerformances.isFirst());
+        model.addAttribute("isLastPage", pastPerformances.isLast());
     
         return "showList";
     }
+    
+    // 지난 공연 데이터만 반환하는 API
+    @GetMapping("/pastPerformances")
+    @ResponseBody
+    public Page<PerformancesEntity> getPastPerformances(@RequestParam(value = "page", defaultValue = "0") int page,
+                                                        @RequestParam(value = "size", defaultValue = "5") int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "performanceDate"));
+        return performanceService.getPastPerformances(pageable);
+    }
+
+    
 
 
     
