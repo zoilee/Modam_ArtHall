@@ -1,5 +1,7 @@
 package com.arthall.modam.service;
 
+import java.util.Optional;
+
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -165,14 +167,14 @@ public class UserService implements UserDetailsService {
         return user.getRole() == UserEntity.Role.ADMIN;
     }
 
-    public UserEntity findByLoginIdAndEmail(String loginId, String email) {
-
-        throw new UnsupportedOperationException("Unimplemented method 'findByLoginIdAndEmail'");
+    // 이름과 이메일로 사용자 검색
+    public Optional<UserEntity> findByNameAndEmail(String name, String email) {
+        return userRepository.findByNameAndEmail(name, email);
     }
 
-    public UserEntity findByNameAndEmail(String name, String email) {
-        
-        return userRepository.findByNameAndEmail(name, email);
+    // 아이디와 이메일로 사용자 검색
+    public Optional<UserEntity> findByLoginIdAndEmail(String loginId, String email) {
+        return userRepository.findByLoginIdAndEmail(loginId, email);
     }
 }
 

@@ -1,6 +1,6 @@
 package com.arthall.modam.service;
 
-import java.util.UUID;
+import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -64,30 +64,46 @@ public class MailService {
             return filename.replaceAll("[^a-zA-Z0-9._-]", "_");
         }
     
-         // ==========================임시 비밀번호 발급==========================
-         public void sendTemporaryPassword(String to, String temporaryPassword) {
-            try {
-                MimeMessage mimeMessage = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+    // ==========================임시 비밀번호 발급=========================
+    public static String generateTemporaryPassword() {
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        StringBuilder tempPassword = new StringBuilder();
+        Random random = new Random();
 
-            // 이메일 기본 설정
-            helper.setTo(to);
-            helper.setSubject("임시 비밀번호 발급");
-            helper.setText("<h1>임시 비밀번호 안내</h1>"
-                    + "<p>임시 비밀번호: <strong>" + temporaryPassword + "</strong></p>"
-                    + "<p>로그인 후 비밀번호를 반드시 변경해주세요.</p>", true);
-
-            // 이메일 전송
-            mailSender.send(mimeMessage);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("임시 비밀번호 메일 전송 중 오류가 발생했습니다: " + e.getMessage());
+        for (int i = 0; i < 10; i++) {
+            tempPassword.append(characters.charAt(random.nextInt(characters.length())));
         }
+
+        return tempPassword.toString();
     }
 
-    // 추가된 메서드: 임시 비밀번호 생성
-    public static String generateTemporaryPassword() {
-        return UUID.randomUUID().toString().substring(0, 8);
+    // 임시 비밀번호 전송 메서드
+    public void sendTemporaryPassword(String email, String temporaryPassword) {
+        try {
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+
+            helper.setTo(email);
+            helper.setFrom(fromAddress);
+            helper.setSubject("임시 비밀번호 안내");
+            helper.setText(
+                "<h1>임시 비밀번호 안내</h1>" +
+                "<p>회원님의 임시 비밀번호는 다음과 같습니다.</p>" +
+                "<p><strong>" + temporaryPassword + "</strong></p>" +
+                "<p>로그인 후 반드시 비밀번호를 변경해주세요.</p>",
+                true
+            );
+
+            mailSender.send(mimeMessage);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("메일 전송 중 오류가 발생했습니다.");
+        }
+    }
+    
+    public static boolean isTemporaryPassword(String password) {
+        return password.length() == 10; // 10자리 임시 비밀번호 체크
     }
 
 }
