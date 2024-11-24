@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -32,6 +33,7 @@ import com.arthall.modam.entity.PerformancesEntity;
 import com.arthall.modam.entity.UserEntity;
 import com.arthall.modam.repository.ImagesRepository;
 import com.arthall.modam.repository.PerformancesRepository;
+import com.arthall.modam.repository.ReservationRepository;
 
 @Controller
 @RequestMapping("/admin")
@@ -55,7 +57,9 @@ public class AdminController {
     @Autowired
     private PerformanceService performanceService;
 
-    
+    @Autowired
+    private ReservationRepository reservationRepository;
+
 
     // 공지사항 목록 조회 (페이지네이션 적용)
     @GetMapping("/noticeList")
@@ -255,16 +259,26 @@ public String updateAdminNotice(
     public String showAdminCommitList(
             Model model,
             @RequestParam(name = "page", defaultValue = "0") int page) {
-        int pageSize = 5; // 페이지당 표시할 공지사항 수
-
-        Page<PerformancesEntity> performances = bbsService.getPerformances(page, pageSize);
-
+    
+        int pageSize = 5; // 페이지당 표시할 공연 수
+        Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<PerformancesDto> performancesPage = performanceService.getPerformances(pageable);
+    
+        // PerformancesEntity를 PerformancesDto로 변환하고, 예약 수 추가 설정
+        List<PerformancesDto> performances = performancesPage.getContent().stream()
+                .peek(dto -> {
+                    int reservationCount = reservationRepository.countByPerformanceId(dto.getId());
+                    dto.setReservationCount(reservationCount);
+                })
+                .collect(Collectors.toList());
+    
         model.addAttribute("performances", performances);
         model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", performances.getTotalPages()); // 전체 페이지 수 전달
-
+        model.addAttribute("totalPages", performancesPage.getTotalPages()); // 전체 페이지 수 전달
+    
         return "admin/adminShowCommitList";
     }
+    
 
     @GetMapping("/showCommitWrite")
     public String showAdminCommitWrite() {
@@ -306,45 +320,51 @@ public String updateAdminNotice(
     @GetMapping("/showCommitDelete")
     public String showCommitDelete(@RequestParam("id") int id, RedirectAttributes redirectAttributes) {
 
-        // 공연데이터 가져오기
-        PerformancesEntity performance = performancesRepository.findById(id).orElse(null);
-        ImagesEntity.ReferenceType referenceType = ImagesEntity.ReferenceType.PERFORMANCE;
-
-        if (performance == null) {
-            redirectAttributes.addFlashAttribute("error", "공연 정보를 찾을 수 없습니다.");
-            return "redirect:showCommitList";
-        }
-
-        List<ImagesEntity> images = imagesRepository.findByReferenceIdAndReferenceType(performance.getId(),
-                referenceType);
-
-        // 파일 삭제
-        boolean filDeleteError = false;
-        for (ImagesEntity image : images) {
-            try {
-                fileService.deleteFile(image.getImageUrl());
-                System.out.println("파일 삭제 성공: " + image.getImageUrl());
-            } catch (IOException e) {
-                System.err.println("파일 삭제 실패: " + image.getImageUrl());
-                filDeleteError = true;
-            }
-
-        }
-
-        // 이미지 db 삭제
-        imagesRepository.deleteAll(images);
-
-        // 공연 db 삭제
-        performancesRepository.deleteById(id);
-
-        if (filDeleteError) {
-            redirectAttributes.addFlashAttribute("message", "이미지파일이 삭제되지 않았습니다.");
-        } else {
-            redirectAttributes.addFlashAttribute("message", "공연이 삭제되었습니다.");
-        }
-
+    // 공연 데이터 가져오기
+    PerformancesEntity performance = performancesRepository.findById(id).orElse(null);
+    if (performance == null) {
+        redirectAttributes.addFlashAttribute("error", "공연 정보를 찾을 수 없습니다.");
         return "redirect:showCommitList";
     }
+
+    // 예약이 있는지 확인
+    int reservationCount = reservationRepository.countByPerformanceId(performance.getId());
+    if (reservationCount > 0) {
+    // 예약이 있는 경우 삭제 불가 메시지 설정
+    redirectAttributes.addFlashAttribute("error", "예약이 있는 공연은 삭제가 불가합니다.");
+    return "redirect:showCommitList";
+}
+
+
+    // 공연 삭제 처리 (이미지 파일과 데이터)
+    List<ImagesEntity> images = imagesRepository.findByReferenceIdAndReferenceType(performance.getId(), ImagesEntity.ReferenceType.PERFORMANCE);
+
+    boolean fileDeleteError = false;
+    for (ImagesEntity image : images) {
+        try {
+            fileService.deleteFile(image.getImageUrl());
+            System.out.println("파일 삭제 성공: " + image.getImageUrl());
+        } catch (IOException e) {
+            System.err.println("파일 삭제 실패: " + image.getImageUrl());
+            fileDeleteError = true;
+        }
+    }
+
+    // 이미지 DB 삭제
+    imagesRepository.deleteAll(images);
+
+    // 공연 DB 삭제
+    performancesRepository.deleteById(id);
+
+    if (fileDeleteError) {
+        redirectAttributes.addFlashAttribute("message", "이미지 파일 삭제 중 일부 오류가 발생했습니다.");
+    } else {
+        redirectAttributes.addFlashAttribute("message", "공연이 삭제되었습니다.");
+    }
+
+    return "redirect:showCommitList";
+}
+
 
     @GetMapping("/showCommitView")
     public String showCommitView(@RequestParam("id") int id, Model model) {
