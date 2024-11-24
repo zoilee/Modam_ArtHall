@@ -1,6 +1,9 @@
 package com.arthall.modam.entity;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
+
+import org.hibernate.annotations.CreationTimestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,8 +15,8 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "user_rewards")
-public class UserRewardEntity {
+@Table(name = "rewards")
+public class RewardsEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,13 +25,12 @@ public class UserRewardEntity {
     @Column(name = "user_id", nullable = false)
     private int userId;
 
-    @Column(name = "points", nullable = false)
-    private int points;
+    @Column(name = "total_point", precision = 10, scale = 2, nullable = false)
+    private BigDecimal totalPoint; // 총 적립금
 
-    @Column(name = "description", length = 100)
-    private String description;
-
-    @Column(name = "created_at")
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
     private Timestamp createdAt;
 
+    
 }

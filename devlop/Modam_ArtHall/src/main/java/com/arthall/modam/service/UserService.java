@@ -1,33 +1,38 @@
 package com.arthall.modam.service;
 
 
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.arthall.modam.dto.UserDto;
 import com.arthall.modam.entity.UserEntity;
-import com.arthall.modam.entity.UserRewardEntity;
+import com.arthall.modam.entity.RewardsEntity;
 import com.arthall.modam.repository.UserRepository;
-import com.arthall.modam.repository.UserRewardsRepository;
+import com.arthall.modam.repository.RewardsRepository;
 
 import jakarta.annotation.PostConstruct;
 
 @Service
+@Transactional
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
-    private final UserRewardsRepository userRewardsRepository;
+    private final RewardsRepository RewardsRepository;
     private final PasswordEncoder passwordEncoder;
 
     public UserService(UserRepository userRepository, 
-                       UserRewardsRepository userRewardsRepository,
+                       RewardsRepository RewardsRepository,
                        PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-        this.userRewardsRepository = userRewardsRepository;
+        this.RewardsRepository = RewardsRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -47,6 +52,13 @@ public class UserService implements UserDetailsService {
 
         userRepository.save(userEntity);
         System.out.println("새 사용자 등록: " + userDto.getLoginId());
+        // Rewards 생성
+        RewardsEntity rewards = new RewardsEntity();
+        rewards.setUserId(userEntity.getId()); // 저장된 userEntity의 ID 사용
+        rewards.setTotalPoint(BigDecimal.ZERO); // 초기 적립금 0
+        rewards.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+
+        RewardsRepository.save(rewards);
     }
 
     // loginId로 사용자 ID 가져오기
@@ -79,15 +91,15 @@ public class UserService implements UserDetailsService {
     
 
     // ID 기반 포인트 조회
-    public int getUserPointsById(int userId) {
+    public BigDecimal getUserPointsById(int userId) {
         System.out.println("포인트 조회 중: User ID = " + userId);
-        return userRewardsRepository.findByUserId(userId)
-                .map(UserRewardEntity::getPoints)
-                .orElse(0); // 포인트가 없는 경우 0 반환
+        return RewardsRepository.findByUserId(userId)
+                .map(RewardsEntity::getTotalPoint)
+                .orElse(BigDecimal.ZERO); // 포인트가 없는 경우 0 반환
     }
 
     // loginId 기반 포인트 조회
-    public int getUserPointsByLoginId(String loginId) {
+    public BigDecimal getUserPointsByLoginId(String loginId) {
         UserEntity user = getUserByLoginId(loginId);
         return getUserPointsById(user.getId());
     }

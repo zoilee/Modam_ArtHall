@@ -21,7 +21,7 @@ public class ReservationsDto {
     private BigDecimal totalPrice;
     private String status;
     private String ticket;
-
+    /* 
     public static ReservationsDto toReservationDto(ReservationsEntity reservationEntity) {
         ReservationsDto dto = new ReservationsDto();
         dto.setId(reservationEntity.getId());
@@ -35,5 +35,5 @@ public class ReservationsDto {
 
         return dto;
     }
-
+    */
 }

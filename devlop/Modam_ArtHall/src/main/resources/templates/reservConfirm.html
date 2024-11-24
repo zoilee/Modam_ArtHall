@@ -63,10 +63,15 @@
         <div class="row mb-4" style="padding-top: 50px;">
             <!-- 적립금 사용 섹션 -->
             <div class="col-md-6 points-section">
-                <label>적립금사용</label>
+                <!-- 사용 가능 적립금 -->
+                <label class="points-label">적립금</label>
+                <p class="points-available">
+                    사용 가능: <strong th:text="${points}"></strong> 원
+                </p>
+                <!-- 사용 적립금 입력 -->
                 <div class="input-group mt-2">
-                    <span class="input-group-text">현재 적립금 nnnn원</span>
-                    <input type="text" class="form-control" placeholder="원">
+                    <input type="number" class="form-control points-input" id="usedPointsInput" placeholder="사용할 적립금">
+                    <button class="btn btn-primary points-apply-btn" id="applyPointsButton">적용</button>
                 </div>
             </div>
 
@@ -75,13 +80,24 @@
                 <div class="payment-summary">
                     <h5 class="section-title">결제금액</h5>
                     <ul class="list-unstyled">
-                        <li class="d-flex justify-content-between"><span>좌석 1</span> <span id="seatPrice1">200,000 원</span></li>
-                        <li class="d-flex justify-content-between"><span>좌석 2</span> <span id="seatPrice2">80,000 원</span></li>
-                        <li class="d-flex justify-content-between text-danger"><span>적립금사용</span> <span>-5,000 원</span></li>
+                        <li class="d-flex justify-content-between">
+                            <span>좌석 1</span>
+                            <span id="seatPrice1">200,000 원</span>
+                        </li>
+                        <li class="d-flex justify-content-between">
+                            <span>좌석 2</span>
+                            <span id="seatPrice2">80,000 원</span>
+                        </li>
+                        <input type="hidden" val="${price}">
+                        <li class="d-flex justify-content-between text-danger">
+                            <span>적립금사용</span>
+                            <span id="usedPointsDisplay">0 원</span>
+                        </li>
                     </ul>
                     <hr>
                     <div class="d-flex justify-content-between align-items-center">
-                        <h3>총 액</h3> <h3><span id="totalPrice"></span>원</h3>
+                        <h3>총 결제 금액</h3>
+                        <h3><span id="totalPrice" th:text="${price}"></span><span id="won"> 원</span></h3>
                     </div>
                     <button class="btn btn-custom mt-3">결제하기</button>
                 </div>
@@ -89,11 +105,19 @@
         </div>
         
     </div>
+    <div id="successMessage" style="display: none;">
+        <h3>결제가 성공적으로 완료되었습니다!</h3>
+        <p>티켓 번호: <strong id="ticketId"></strong></p>
+        <p>적립된 금액: <strong id="rewardPoints"></strong> 원</p>
+        <a href="">확인</a>
+    </div>
+
 
     <!-- 푸터 가져오기 -->
 <th:block th:replace="~{fragments/footer :: footerFragment}"></th:block> 
 </body>
-<script>
+<script th:inline="javascript">
+    //티켓생성
     function generateTicketId() {
         // 현재 날짜 yyyyMMdd 형식으로 변환
         const now = new Date();
@@ -115,15 +139,60 @@
 
     console.log(generateTicketId());
 
+ 
 
+     /*<![CDATA[*/
+    const userPoints = /*[[${points}]]*/; // 서버에서 전달된 포인트 값
+    const userId = /*[[${userId}]]*/; // 서버에서 전달된 로그인 사용자 ID
+    const basePrice = /*[[${price}]]*/; // 서버에서 전달된 기본 결제 금액
+    /*]]>*/
+    console.log("User Points:", userPoints);
+    console.log("User ID:", userId);
     $(document).ready(function () {
         
         var IMP = window.IMP; 
         IMP.init("imp82757082");
+       
+        // 적립금 적용 버튼 클릭 이벤트
+        $("#applyPointsButton").click(function () {
+            const usedPoints = parseFloat($("#usedPointsInput").val()) || 0;
+
+            if (usedPoints < 0) {
+                alert("적립금은 음수로 입력할 수 없습니다.");
+                $("#usedPointsInput").val(0);
+                return;
+            }
+
+            if (usedPoints > userPoints) {
+                alert("사용 가능한 적립금보다 큽니다.");
+                $("#usedPointsInput").val(userPoints);
+                return;
+            }
+
+            // 결제 금액 계산
+            const totalPrice = basePrice - usedPoints;
+            if (totalPrice < 0) {
+                alert("결제 금액은 0원보다 커야 합니다.");
+                return;
+            }
+
+            // 화면 업데이트
+            $("#usedPointsDisplay").text(`-${usedPoints.toLocaleString()} 원`);
+            $("#won").text(" ");
+            $("#totalPrice").text(totalPrice.toLocaleString() + " 원");
+            alert("적립금이 적용되었습니다.");
+        });
 
         //결제시작버튼
         $(".btn-custom").click(function () {
-            const ticket = generateTicketId();
+            const usedPoints = parseFloat($("#usedPointsInput").val()) || 0; // 사용한 적립금
+            const ticket = generateTicketId(); //티켓번호
+            const finalAmount = basePrice - usedPoints;
+
+            if (finalAmount <= 0) {
+                alert("결제 금액은 0원보다 커야 합니다.");
+                return;
+            }
 
             
             IMP.request_pay({
@@ -131,7 +200,7 @@
                 pay_method: "card",
                 merchant_uid: ticket,   // 티켓번호
                 name: "공연 티켓 결제",
-                amount: 500,                         
+                amount: finalAmount,                         
                 buyer_email: "ohsj2337@naver.com",
                 buyer_name: "홍길동",
                 buyer_tel: "010-4242-4242",
@@ -155,44 +224,26 @@
                             status: 'PAID',
                             imp_uid: rep.imp_uid,
                             show_id: 1, //show id 넣기
-                            user_id: 2, //user id 넣기
+                            user_id: userId, //user id 넣기
                             seat_id1: 'A1', //seat_id1 넣기
                             seat_id2: "A2", //seat_id2 넣기
+                            myPoint: usedPoints // 사용한 적립금
                             
                         }),
                         success: function(response){
-                            alert("결제 완료" + JSON.stringify(response));
-                            console(response); //백엔드 응답 체크
+                            $("#successMessage").show();
+                            $("#ticketId").text(ticket);
+                            $("#rewardPoints").text(rewardPoints.toLocaleString());
                         },
                         error: function(xhr, status, error){
                             alert("서버 처리 오류" + xhr.responseText);
                             console.error("결제 에러",error );
                         }
-
                     });
-
                 }
-
-
-
-
             })
-            
-            
            
-            
-            
-            // 결제 데이터 준비
-            const paymentData = {
-                amount: 500, // 결제 금액
-                currency: "KRW", // 통화
-                //고유 번호는 서버에서 처리
-                name: "공연 티켓 결제", // 결제 제목
-                buyer_name: "홍길동", // 구매자 이름
-                buyer_email: "test@example.com", // 구매자 이메일
-                buyer_tel: "010-1234-5678" // 구매자 전화번호
-            };
-
+            //끝
         })
     });
 </script>

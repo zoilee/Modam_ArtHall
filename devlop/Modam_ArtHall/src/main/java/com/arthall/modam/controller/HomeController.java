@@ -3,6 +3,7 @@ package com.arthall.modam.controller;
 import java.util.List;
 
 import java.util.Map;
+import java.math.BigDecimal;
 import java.security.Principal;
 
 import java.sql.Date;
@@ -24,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -42,6 +44,7 @@ import com.arthall.modam.entity.PerformancesEntity;
 import com.arthall.modam.entity.ReservationsEntity;
 import com.arthall.modam.entity.UserEntity;
 import com.arthall.modam.repository.PerformancesRepository;
+import com.arthall.modam.repository.RewardsRepository;
 import com.arthall.modam.service.CommentService;
 import com.arthall.modam.service.PerformanceService;
 import com.arthall.modam.service.ReservationsService;
@@ -64,6 +67,11 @@ public class HomeController {
 
     @Autowired
     private CommentService commentService;
+
+    @Autowired
+    private RewardsRepository rewardsRepository;
+
+    
 
     @GetMapping("/")
     public String home() {
@@ -110,7 +118,7 @@ public class HomeController {
         upcomingReservations.sort(Comparator.comparing(ReservationsEntity::getReservationDate).reversed());
         pastReservations.sort(Comparator.comparing(ReservationsEntity::getReservationDate).reversed());
 
-        int points = userService.getUserPointsById(userId);
+        BigDecimal points = userService.getUserPointsById(userId);
 
         model.addAttribute("user", user);
         model.addAttribute("points", points);
@@ -306,7 +314,40 @@ public class HomeController {
     }
 
     @GetMapping("/reservConfirm")
-    public String reservConfirm() {
+    public String reservConfirm(Model model) {
+        //가입폼 체크 이거 service로 만들어주면안되나요?
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        Object principal = authentication.getPrincipal();
+        String loginId = null;
+
+        if (principal instanceof OAuth2User) {
+            Map<String, Object> attributes = ((OAuth2User) principal).getAttributes();
+            loginId = (String) attributes.get("loginId");
+        } else if (principal instanceof UserDetails) {
+            loginId = ((UserDetails) principal).getUsername();
+        } else {
+            throw new RuntimeException("인증된 사용자가 OAuth2User 또는 UserDetails가 아닙니다.");
+        }
+
+        if (loginId == null) {
+            throw new RuntimeException("loginId를 찾을 수 없습니다.");
+        }
+        // loginId로 사용자 조회
+        UserEntity user = userService.getUserByLoginId(loginId);
+        if (user == null) {
+            throw new RuntimeException("사용자를 찾을 수 없습니다: loginId = " + loginId);
+        }
+
+        int userId = user.getId();
+
+        BigDecimal points = userService.getUserPointsById(userId);
+        System.out.println("내 포인트는 : " + points);
+        
+        int price = 600;
+        model.addAttribute("price", price);
+        model.addAttribute("points", points.intValue());
+        model.addAttribute("userId", userId);
         return "reservConfirm";
     }
 
