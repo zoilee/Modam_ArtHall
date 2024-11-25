@@ -12,7 +12,7 @@ import com.arthall.modam.entity.RewardsLogEntity;
 public interface RewardsLogRepository extends JpaRepository<RewardsLogEntity, Integer> {
     Optional<RewardsLogEntity> findByUserId(int userId);
 
-    // 사용자 ID로 적립금 로그 조회 (최근 내역 순서)
-    List<RewardsLogEntity> findByUserIdOrderByCreatedAtDesc(int userId);
+    // userId와 reservationsId를 기준으로 적립금 로그 조회
+    List<RewardsLogEntity> findByUserIdAndReservationsId(int userId, int reservationsId);
 
 }

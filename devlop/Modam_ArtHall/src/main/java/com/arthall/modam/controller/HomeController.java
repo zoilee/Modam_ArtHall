@@ -82,9 +82,6 @@ public class HomeController {
     @Autowired
     private RewardsService rewardsService;
 
-    @Autowired
-    private RewardsLogService rewardsLogService;
-
     
 
     @GetMapping("/")

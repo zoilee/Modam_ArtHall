@@ -14,8 +14,8 @@ public class RewardsLogService {
     @Autowired
     private RewardsLogRepository rewardsLogRepository;
 
-    public List<RewardsLogEntity> getRewardsLogByUserId(int userId) {
-        // 사용자 ID로 적립금 로그 조회
-        return rewardsLogRepository.findByUserIdOrderByCreatedAtDesc(userId);
+    // userId와 reservationsId를 기반으로 적립금 로그 가져오기
+    public List<RewardsLogEntity> getLogsByUserIdAndReservationId(int userId, int reservationsId) {
+        return rewardsLogRepository.findByUserIdAndReservationsId(userId, reservationsId);
     }
 }
