@@ -91,51 +91,41 @@ public class HomeController {
 
     @GetMapping("/mypage")
     public String mypage(Model model) {
-        // 현재 인증 정보 가져오기
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
             return "redirect:/login";
         }
-
+    
         Object principal = authentication.getPrincipal();
         String loginId = null;
-
+    
         if (principal instanceof UserDetails) {
             loginId = ((UserDetails) principal).getUsername();
         }
-
+    
         if (loginId == null) {
             throw new RuntimeException("사용자를 찾을 수 없습니다.");
         }
-
-        // 사용자 데이터 조회
+    
         UserEntity user = userService.getUserByLoginId(loginId);
         if (user == null) {
             throw new RuntimeException("사용자를 찾을 수 없습니다.");
         }
-
+    
         int userId = user.getId();
-
+    
         // 예약 데이터 조회
         List<ReservationsEntity> upcomingReservations = reservationService.getUpcomingReservations(userId);
         List<ReservationsEntity> pastReservations = reservationService.getPastReservations(userId);
-
-        // null 체크 후 초기화
-        if (upcomingReservations == null) {
-            upcomingReservations = new ArrayList<>();
-        }
-        if (pastReservations == null) {
-            pastReservations = new ArrayList<>();
-        }
-
+    
         model.addAttribute("user", user);
-        model.addAttribute("upcomingReservations", upcomingReservations);
-        model.addAttribute("pastReservations", pastReservations);
-
+        model.addAttribute("upcomingReservations", upcomingReservations != null ? upcomingReservations : new ArrayList<>());
+        model.addAttribute("pastReservations", pastReservations != null ? pastReservations : new ArrayList<>());
+    
         // 적립금 정보
         RewardsEntity rewards = rewardsService.getRewardsByUserId(userId);
         model.addAttribute("points", rewards != null ? rewards.getTotalPoint() : BigDecimal.ZERO);
-
+    
         return "mypage";
     }
 
