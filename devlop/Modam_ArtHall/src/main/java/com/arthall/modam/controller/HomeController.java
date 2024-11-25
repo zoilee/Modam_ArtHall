@@ -21,6 +21,7 @@ import java.util.Calendar;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -32,6 +33,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -45,6 +47,7 @@ import com.arthall.modam.repository.PerformancesRepository;
 import com.arthall.modam.service.CommentService;
 import com.arthall.modam.service.PerformanceService;
 import com.arthall.modam.service.ReservationsService;
+import com.arthall.modam.service.ShowService;
 import com.arthall.modam.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -58,6 +61,9 @@ public class HomeController {
 
     @Autowired
     private PerformanceService performanceService;
+
+    @Autowired
+    private ShowService showService;
 
     @Autowired
     private ReservationsService reservationService;
@@ -335,6 +341,14 @@ public class HomeController {
         model.addAttribute("numberOfPeople", numberOfPeople);
         model.addAttribute("seatId1", seatId1);
         model.addAttribute("seatId2", seatId2);
+
+
+        try {
+            showService.updateSeatAvailability(showId, numberOfPeople);
+        } catch (Exception e) {
+            model.addAttribute("error", "예약 처리 중 오류가 발생했습니다.");
+            return "errorPage"; // 오류 페이지로 리다이렉트
+        }
         
         // 예약 확인 페이지로 이동
         return "reservConfirm";

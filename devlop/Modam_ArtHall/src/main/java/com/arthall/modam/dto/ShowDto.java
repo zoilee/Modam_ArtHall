@@ -1,5 +1,6 @@
 package com.arthall.modam.dto;
 
+
 import java.sql.Date;
 
 import lombok.Data;

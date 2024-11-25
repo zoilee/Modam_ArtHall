@@ -3,7 +3,7 @@ package com.arthall.modam.repository;
 import com.arthall.modam.entity.ImagesEntity;
 import com.arthall.modam.entity.PerformancesEntity;
 
-import java.util.Date;
+import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
 

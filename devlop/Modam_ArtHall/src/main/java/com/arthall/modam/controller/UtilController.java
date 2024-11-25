@@ -32,7 +32,7 @@ public class UtilController {
     public ResponseEntity<Map<String, Object>> getShowId(@RequestParam("performanceId") int performanceId,
                                                           @RequestParam("showDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date showDate,
                                                           @RequestParam("showTime") int showTime) {
-        List<ShowEntity> shows = showRepository.findByPerformancesEntity_IdAndShowDateAndShowTime(performanceId, showDate, showTime);
+        List<ShowEntity> shows = showRepository.findByPerformancesEntity_IdAndShowDateAndShowTime(performanceId, (java.sql.Date) showDate, showTime);
         
         Map<String, Object> response = new HashMap<>();
         if (!shows.isEmpty()) {

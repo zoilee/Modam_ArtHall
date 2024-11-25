@@ -32,7 +32,7 @@ public class ReservationsEntity {
     private UserEntity userEntity;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "show_id", referencedColumnName = "show_id") // show_id 컬럼을 참조
+    @JoinColumn(name = "show_id", referencedColumnName = "id") // show_id 컬럼을 참조
     private ShowEntity showEntity;
 
     @Column(name = "seat_id1", length = 10) // 첫 번째 좌석 ID

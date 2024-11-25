@@ -1,9 +1,11 @@
 package com.arthall.modam.controller;
 
 import com.arthall.modam.entity.NoticesEntity;
+import com.arthall.modam.dto.PerformancesDto;
 import com.arthall.modam.entity.ImagesEntity;
 import com.arthall.modam.service.BbsService;
 import com.arthall.modam.service.FileService;
+import com.arthall.modam.service.PerformanceService;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,6 +35,9 @@ public class AdminController {
 
     @Autowired
     private PerformancesRepository performancesRepository;
+
+    @Autowired
+    private PerformanceService performanceService;
 
     @Autowired
     private ImagesRepository imagesRepository;
@@ -209,7 +214,7 @@ public class AdminController {
     }
 
     @PostMapping("/showComitWrite")
-    public String AdminCommitWrite(PerformancesEntity performancesEntity,
+    public String AdminCommitWrite(PerformancesEntity performancesEntity, PerformancesDto performanceDto, 
             @RequestParam(value = "file", required = false) MultipartFile file,
             RedirectAttributes redirectAttributes) {
 
@@ -235,6 +240,9 @@ public class AdminController {
         }
 
         redirectAttributes.addFlashAttribute("message", "공연 정보가 성공적으로 등록되었습니다.");
+
+        // performance와 show 등록
+        performanceService.registerPerformanceWithShows(performanceDto);
 
         return "redirect:showCommitList";
     }
