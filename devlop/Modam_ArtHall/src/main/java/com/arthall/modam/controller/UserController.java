@@ -3,15 +3,18 @@ package com.arthall.modam.controller;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.arthall.modam.dto.UserDto;
-
+import com.arthall.modam.entity.NoticesEntity;
+import com.arthall.modam.service.BbsService;
 import com.arthall.modam.service.UserService;
 
 import jakarta.servlet.http.HttpSession;
@@ -21,6 +24,10 @@ import jakarta.validation.Valid;
 public class UserController {
     @Autowired
     private final UserService userService;
+
+    @Autowired
+    private BbsService bbsService;
+
 
     // @Autowired
     // private ReservationService reservationService;
@@ -81,6 +88,39 @@ public class UserController {
             return "login";  // 로그인 실패 시 다시 로그인 페이지로 이동
         }
     }
+
+
+/********************************************************** 공지사항 *******************************************************************/
+
+    // 모든 사용자용 공지사항 목록 조회 (페이지네이션 적용)
+    @GetMapping("/userNoticeList")
+    public String showNoticeList(Model model, @RequestParam(name = "page", defaultValue = "0") int page) {
+        int pageSize = 5; // 페이지당 표시할 공지사항 수
+        Page<NoticesEntity> notices = bbsService.getNotices(page, pageSize);
+        model.addAttribute("notices", notices); // Page 객체 자체를 모델에 추가
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", notices.getTotalPages()); // 전체 페이지 수 전달
+        return "userNoticeList"; // 일반 사용자용 템플릿 반환
+    }
+
+    // 공지사항 상세 조회 페이지
+    @GetMapping("/userNoticeView")
+    public String showNoticeView(@RequestParam("id") int id, Model model) {
+        NoticesEntity notice = bbsService.getNoticeById(id).orElse(null);
+        if (notice == null) {
+            return "redirect:/userNoticeList"; // 공지사항이 없을 경우 목록으로 리다이렉트
+        }
+        model.addAttribute("notice", notice);
+        return "userNoticeView"; // 일반 사용자용 템플릿 반환
+    }
+
+
+
+
+
+
+
+
 
     // @GetMapping("/mypage")
     // public String mypage(Model model) {

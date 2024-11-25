@@ -72,6 +72,8 @@ public class AdminController {
         return "admin/adminNoticeList";
     }
 
+
+    
     // 공지사항 작성 페이지
     @GetMapping("/noticeWrite")
     public String showAdminNoticeWrite() {
