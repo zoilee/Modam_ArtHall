@@ -71,8 +71,6 @@ public class AdminController {
         model.addAttribute("totalPages", notices.getTotalPages()); // 전체 페이지 수 전달
         return "admin/adminNoticeList";
     }
-
-
     
     // 공지사항 작성 페이지
     @GetMapping("/noticeWrite")
@@ -188,9 +186,6 @@ public String updateAdminNotice(
 
     return "redirect:/admin/noticeEdit?id=" + id; // 오류 발생 시 다시 수정 페이지로 이동
 }
-
-    
-    
 
     // 삭제 요청 처리
     @PostMapping("/noticeDelete")
@@ -450,9 +445,11 @@ public String updateAdminNotice(
     }
 
 
+/****************************************************************************** */
+
 
     @GetMapping("/userCommit")
-public String showAdminUserCommit(
+    public String showAdminUserCommit(
         @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
         @RequestParam(value = "page", defaultValue = "0") int page,
         Model model) {

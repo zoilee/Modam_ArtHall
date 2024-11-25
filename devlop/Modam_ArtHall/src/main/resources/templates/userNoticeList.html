@@ -29,7 +29,7 @@
                 <tbody>
                     <!-- 반복되는 공지사항 항목 -->
                     <tr th:each="notice, stat : ${notices.content}">
-                        <td th:text="${stat.index + 1}">1</td> <!-- 공지사항 번호 -->
+                        <td th:text="${notices.totalElements - stat.index}">1</td> <!-- 공지사항 번호, 최신 공지가 위로 -->
                         <td>
                             <!-- 제목에 링크 추가 -->
                             <a th:href="@{/userNoticeView(id=${notice.id})}" th:text="${notice.title}">공지사항 제목</a>
@@ -41,26 +41,26 @@
         </div>
 
         <!-- Pagination -->
-        <nav aria-label="Page navigation">
-            <ul class="pagination justify-content-center">
-                <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-                    <a class="page-link" th:href="@{|/noticeList1?page=${currentPage - 1}|}" aria-label="Previous" th:if="${currentPage > 0}">
-                        <span aria-hidden="true">&lt;</span>
-                    </a>
+        <div class="d-flex justify-content-center mt-4">
+            <ul class="pagination">
+                <!-- 이전 버튼 -->
+                <li class="page-item" th:classappend="${notices.hasPrevious()} ? '' : 'disabled'">
+                    <a class="page-link" th:href="@{/userNoticeList(page=${notices.number - 1})}">이전</a>
                 </li>
-                <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}" th:classappend="${i == currentPage} ? 'active'">
-                    <a class="page-link" th:href="@{|/noticeList1?page=${i}|}" th:text="${i + 1}">1</a>
+                <!-- 페이지 번호 -->
+                <li class="page-item" th:each="i : ${#numbers.sequence(0, notices.totalPages - 1)}"
+                    th:classappend="${i == notices.number} ? 'active'">
+                    <a class="page-link" th:href="@{/userNoticeList(page=${i})}" th:text="${i + 1}">1</a>
                 </li>
-                <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
-                    <a class="page-link" th:href="@{|/noticeList1?page=${currentPage + 1}|}" aria-label="Next" th:if="${currentPage < totalPages - 1}">
-                        <span aria-hidden="true">&gt;</span>
-                    </a>
+                <!-- 다음 버튼 -->
+                <li class="page-item" th:classappend="${notices.hasNext()} ? '' : 'disabled'">
+                    <a class="page-link" th:href="@{/userNoticeList(page=${notices.number + 1})}">다음</a>
                 </li>
             </ul>
-        </nav>
+        </div>
     </div>
 
-    <!-- 푸터 -->
+    <!-- 푸터 가져오기 -->
     <th:block th:replace="~{fragments/footer :: footerFragment}"></th:block>
 
     <!-- Bootstrap JS (Optional) -->

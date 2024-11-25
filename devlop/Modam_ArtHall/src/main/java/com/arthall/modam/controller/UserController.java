@@ -92,14 +92,17 @@ public class UserController {
 
 /********************************************************** 공지사항 *******************************************************************/
 
-    // 모든 사용자용 공지사항 목록 조회 (페이지네이션 적용)
+    
+    // 일반 사용자용 공지사항 목록 조회 (페이지네이션 적용)
     @GetMapping("/userNoticeList")
-    public String showNoticeList(Model model, @RequestParam(name = "page", defaultValue = "0") int page) {
+    public String showUserNoticeList(Model model, @RequestParam(name = "page", defaultValue = "0") int page) {
         int pageSize = 5; // 페이지당 표시할 공지사항 수
         Page<NoticesEntity> notices = bbsService.getNotices(page, pageSize);
+        
         model.addAttribute("notices", notices); // Page 객체 자체를 모델에 추가
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", notices.getTotalPages()); // 전체 페이지 수 전달
+        
         return "userNoticeList"; // 일반 사용자용 템플릿 반환
     }
 
