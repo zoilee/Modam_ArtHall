@@ -53,12 +53,18 @@
 <!-- 푸터 가져오기 -->
 <th:block th:replace="~{fragments/footer :: footerFragment}"></th:block>
 <script>
-    // URLSearchParams를 사용하여 쿼리 파라미터 확인
-    const urlParams = new URLSearchParams(window.location.search);
+    // // URLSearchParams를 사용하여 쿼리 파라미터 확인
+    // const urlParams = new URLSearchParams(window.location.search);
 
-    // error=true가 URL에 포함되어 있으면 alert 메시지를 띄움
-    if (urlParams.has('error') && urlParams.get('error') === 'true') {
-        alert('아이디 또는 비밀번호가 맞지 않습니다. 다시 입력해 주세요.');
+    // // error=true가 URL에 포함되어 있으면 alert 메시지를 띄움
+    // if (urlParams.has('error') && urlParams.get('error') === 'true') {
+    //     alert('아이디 또는 비밀번호가 맞지 않습니다. 다시 입력해 주세요.');
+    // }
+    // 세션에서 errorMessage 값을 가져와 알림 표시
+    
+    const errorMessage = /*[[${session.errorMessage}]]*/ 'null';
+    if (errorMessage !== 'null') {
+        alert(errorMessage); // 세션 기반 에러 메시지 표시
     }
 </script>
 <!-- Bootstrap JS, Popper.js, and jQuery -->

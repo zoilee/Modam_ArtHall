@@ -46,6 +46,17 @@ public class SecurityConfig {
                 .loginProcessingUrl("/login")  // 로그인 폼의 action URL
                 .defaultSuccessUrl("/", true)  // 로그인 성공 시 이동할 기본 URL
                 .failureUrl("/login?error=true")  // 로그인 실패 시 이동할 URL
+                .failureHandler((request, response, exception) -> {
+                    String errorMessage = "아이디 또는 비밀번호가 일치하지 않습니다.";
+            
+                    // 계정 정지 상태 메시지 처리
+                    if (exception.getMessage().contains("계정이 정지되었습니다")) {
+                        errorMessage = "계정이 정지되었습니다. 관리자에게 문의하세요.";
+                    }
+            
+                    request.getSession().setAttribute("errorMessage", errorMessage);
+                    response.sendRedirect("/login");
+                })
                 .usernameParameter("username") // username 파라미터 설정
                 .passwordParameter("password")
                 .permitAll()  // 로그인 페이지에 대한 접근 권한 설정 추가

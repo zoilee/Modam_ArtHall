@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import com.arthall.modam.entity.UserEntity;
 import com.arthall.modam.entity.UserEntity.Role;
+import com.arthall.modam.entity.UserEntity.Status;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -46,7 +47,7 @@ public class UserDto {
     // 추가된 필드: 소셜 로그인 여부
     private String provider;
     private Role role; // UserEntity.Role로 변경
-    private String status;
+    private Status status;
     private LocalDateTime createdAt;
 
         public UserEntity toEntity() {

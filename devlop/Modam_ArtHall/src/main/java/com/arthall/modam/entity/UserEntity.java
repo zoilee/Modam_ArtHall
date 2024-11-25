@@ -33,14 +33,6 @@ public class UserEntity {
     @Enumerated(EnumType.STRING)
     private Role role = Role.USER; // 사용자 역할 (USER 또는 ADMIN)
 
-    @Column(nullable = false)
-    private String status = "ACTIVE"; // 계정 상태 (ACTIVE 기본값)
-
-    @Column(name = "provider", nullable = false)
-    private String provider = "LOCAL"; // 로그인 제공자 (LOCAL, KAKAO, NAVER, GOOGLE)
-
-    @Column(name = "created_at", updatable = false)
-    private Timestamp createdAt = new Timestamp(System.currentTimeMillis());
     // Enum for role
     public enum Role {
         USER, ADMIN
@@ -50,5 +42,28 @@ public class UserEntity {
     public void setRole(Role role) {
         this.role = role;
     }
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Status status = Status.ACTIVE; // 기본값 설정
+
+    public enum Status {
+        ACTIVE,
+        BANNED
+    }
+
+    @Column(name = "provider", nullable = false)
+    private String provider = "LOCAL"; // 로그인 제공자 (LOCAL, KAKAO, NAVER, GOOGLE)
+
+    @Column(name = "created_at", updatable = false)
+    private Timestamp createdAt = new Timestamp(System.currentTimeMillis());
+
+    public void setStatus(String string) {
+ 
+        throw new UnsupportedOperationException("Unimplemented method 'setStatus'");
+    }
+    
+
+    
 
 }
