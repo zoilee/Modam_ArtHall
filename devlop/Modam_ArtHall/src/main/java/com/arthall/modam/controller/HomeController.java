@@ -316,11 +316,11 @@ public class HomeController {
 
     @PostMapping("/reservConfirm")
     public String showReservConfirmPage(
-        @RequestParam("performanceId") String performanceId,
+        @RequestParam("performanceId") int performanceId,
         @RequestParam("performanceTitle") String performanceTitle,
-        @RequestParam("showId") String showId,
-        @RequestParam("showDate") String showDate,
-        @RequestParam("showTime") String showTime,
+        @RequestParam("showId") int showId,
+        @RequestParam("showDate") Date showDate,
+        @RequestParam("showTime") int showTime,
         @RequestParam("numberOfPeople") int numberOfPeople,
         @RequestParam("seatId1") String seatId1,
         @RequestParam("seatId2") String seatId2,

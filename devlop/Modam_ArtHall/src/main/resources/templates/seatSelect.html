@@ -91,8 +91,6 @@
 <script>
 let selectedSeats = new Array();
 const seatWrapper = document.querySelector(".seat-wrapper");
-// 서버에서 전달받은 예약된 좌석들
-const unavailableSeats = /*[[${unavailableSeats}]]*/ [];
 
 // 좌석 번호를 매핑하는 함수
 function mapping(input, i, j) {
@@ -106,34 +104,37 @@ function setClassBasedOnValue(input) {
     const row = value[0];  // 행 (예: A, B, C...)
     const col = parseInt(value.substring(1));  // 열 (숫자 부분)
 
-    // 좌석이 이미 예약된 경우 unavailable 클래스 추가
-    if (unavailableSeats.includes(value)) {
-            input.classList.add("unavailable");
-            input.disabled = true; // 클릭 불가능
-        } else {
-            // vip 클래스 추가
-            if ((row === 'A' || row === 'B' || row === 'C') && col >= 4 && col <= 15) {
-                input.classList.add("vip");
-                // r 클래스 추가
-            } else if ((row === 'A' && col >= 1 && col <= 3) || (row === 'A' && col >= 16 && col <= 18) ||
-                    (row === 'B' && col >= 1 && col <= 3) || (row === 'B' && col >= 16 && col <= 18) ||
-                    (row === 'C' && col >= 1 && col <= 3) || (row === 'C' && col >= 16 && col <= 18) ||
-                    row === 'D' ||
-                    (row === 'E' || row === 'F' || row === 'G' || row === 'H') && col >= 4 && col <= 15) {
-                input.classList.add("r");
-                // s 클래스 추가
-            } else if ((row === 'E' && col >= 1 && col <= 3) || (row === 'E' && col >= 16 && col <= 18) ||
-                    (row === 'F' && col >= 1 && col <= 3) || (row === 'F' && col >= 16 && col <= 18) ||
-                    (row === 'G' && col >= 1 && col <= 3) || (row === 'G' && col >= 16 && col <= 18) ||
-                    (row === 'H' && col >= 1 && col <= 3) || (row === 'H' && col >= 16 && col <= 18) ||
-                    row === 'I' ||
-                    (row === 'J' && col >= 4 && col <= 15)) {
-                input.classList.add("s");
-                // 그 외 a 클래스
-            } else {
-                input.classList.add("a");
-            }
-        }
+    // vip 클래스 조건
+    if (
+        (row === 'A' || row === 'B' || row === 'C') && col >= 4 && col <= 15
+    ) {
+        input.classList.add("vip");
+    }
+    // r 클래스 조건
+    else if (
+        (row === 'A' && col >= 1 && col <= 3) || (row === 'A' && col >= 16 && col <= 18) ||
+        (row === 'B' && col >= 1 && col <= 3) || (row === 'B' && col >= 16 && col <= 18) ||
+        (row === 'C' && col >= 1 && col <= 3) || (row === 'C' && col >= 16 && col <= 18) ||
+        row === 'D' ||
+        (row === 'E' || row === 'F' || row === 'G' || row === 'H') && col >= 4 && col <= 15
+    ) {
+        input.classList.add("r");
+    }
+    // s 클래스 조건
+    else if (
+        (row === 'E' && col >= 1 && col <= 3) || (row === 'E' && col >= 16 && col <= 18) ||
+        (row === 'F' && col >= 1 && col <= 3) || (row === 'F' && col >= 16 && col <= 18) ||
+        (row === 'G' && col >= 1 && col <= 3) || (row === 'G' && col >= 16 && col <= 18) ||
+        (row === 'H' && col >= 1 && col <= 3) || (row === 'H' && col >= 16 && col <= 18) ||
+        row === 'I' ||
+        (row === 'J' && col >= 4 && col <= 15)
+    ) {
+        input.classList.add("s");
+    }
+    // 그 외 a 클래스
+    else {
+        input.classList.add("a");
+    }
 }
 
 // 좌석을 생성하는 함수
@@ -169,13 +170,20 @@ $(document).on('click', '.seat', function () {
     var seatId = seatButton.val();
     const seatPicked1 = document.querySelector("#seatPicked1");
     const seatPicked2 = document.querySelector("#seatPicked2");
-    
+
+    // numberOfPeople 값 가져오기 (숨겨진 input에서)
+    const numberOfPeople = parseInt($('input[name="numberOfPeople"]').val(), 10);
+
     // 이미 선택된 좌석이 2개 이상일 경우 추가 선택 막기
-    if (selectedSeats.length >= 2 && !seatButton.hasClass('selected')) {
-        alert("최대 2개의 좌석만 선택할 수 있습니다.");
-        return; // 2개 이상 선택했을 때는 아무 작업도 하지 않음
+    if (numberOfPeople === 1 && selectedSeats.length >= 1 && !seatButton.hasClass('selected')) {
+        alert("하나의 좌석만 선택할 수 있습니다.");
+        return; // 1명이 선택일 경우 1개 이상의 좌석만 선택할 수 있도록 제한
     }
-    
+    if (numberOfPeople === 2 && selectedSeats.length >= 2 && !seatButton.hasClass('selected')) {
+        alert("최대 2개의 좌석만 선택할 수 있습니다.");
+        return; // 2명이 선택일 경우 2개 이상의 좌석만 선택할 수 있도록 제한
+    }
+
     if (seatButton.hasClass('selected')) {
         // 선택 해제
         seatButton.removeClass('selected');
@@ -204,7 +212,7 @@ function updateForm() {
     // 기존의 hidden input 제거 (폼 업데이트 시마다 새로 추가)
     const existingInput1 = document.querySelector('input[name="seatId1"]');
     const existingInput2 = document.querySelector('input[name="seatId2"]');
-    
+
     if (existingInput1) existingInput1.remove();
     if (existingInput2) existingInput2.remove();
 
@@ -218,9 +226,9 @@ function updateForm() {
 }
 
 // 폼을 body에 추가하고 제출
-$('#toReservConfirm').click(function() {
-    updateForm(); // 폼을 업데이트하고
-    form.submit(); // 폼을 제출
+$('#toReservConfirm').on('click', function() {
+    $('body').append(form);
+    form.submit();
 });
 
 </script>
