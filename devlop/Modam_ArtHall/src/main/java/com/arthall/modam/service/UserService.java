@@ -148,6 +148,18 @@ public class UserService implements UserDetailsService {
     public boolean isAdmin(UserEntity user) {
         return user.getRole() == UserEntity.Role.ADMIN;
     }
+
+    public UserEntity saveUser(UserEntity user) {
+        UserEntity savedUser = userRepository.save(user);
+
+        // 사용자 저장 시 적립금 기본값 설정
+        RewardsEntity rewards = new RewardsEntity();
+        rewards.setUserId(savedUser.getId());
+        rewards.setTotalPoint(BigDecimal.ZERO);
+        RewardsRepository.save(rewards);
+
+        return savedUser;
+    }
 }
 
 

@@ -101,6 +101,8 @@ public class HomeController {
     
         if (principal instanceof UserDetails) {
             loginId = ((UserDetails) principal).getUsername();
+        } else if (principal instanceof OAuth2User) {
+            loginId = (String) ((OAuth2User) principal).getAttributes().get("loginId");
         }
     
         if (loginId == null) {
@@ -124,11 +126,11 @@ public class HomeController {
     
         // 적립금 정보
         RewardsEntity rewards = rewardsService.getRewardsByUserId(userId);
-        model.addAttribute("points", rewards != null ? rewards.getTotalPoint() : BigDecimal.ZERO);
+        model.addAttribute("points", rewards.getTotalPoint());
     
         return "mypage";
     }
-
+    
     @GetMapping("/registeruserEdit")
     public String registeruserEdit() {
         return "registeruserEdit";

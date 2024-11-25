@@ -84,10 +84,14 @@ public class RewardsService {
     public void rollbackPoints(int userId, BigDecimal points, int reservationId) {
         addPoints(userId, points, "환불로 인한 적립금 반환", reservationId);
     }
-
     public RewardsEntity getRewardsByUserId(int userId) {
-        // 사용자 ID로 적립금 정보를 가져옵니다.
+        // 적립금 정보를 조회하고 없을 경우 기본값 반환
         return rewardsRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("적립금 정보를 찾을 수 없습니다."));
+                .orElseGet(() -> {
+                    RewardsEntity defaultRewards = new RewardsEntity();
+                    defaultRewards.setUserId(userId);
+                    defaultRewards.setTotalPoint(BigDecimal.ZERO); // 기본값 0 포인트
+                    return defaultRewards;
+                });
     }
 }
