@@ -487,6 +487,7 @@ public String editUserForm(@RequestParam("id") int userId, Model model) {
     return "admin/adminUserEditForm";
 }
 
+
 @PostMapping("/users/update")
 public String updateUser(
         @RequestParam("id") int userId,
@@ -495,12 +496,15 @@ public String updateUser(
         @RequestParam("email") String email,
         @RequestParam("phoneNumber") String phoneNumber,
         @RequestParam("role") String role,
+        @RequestParam("status") String status,
         RedirectAttributes redirectAttributes) {
 
-    userService.updateUser(userId, loginId, name, email, phoneNumber, role);
+    userService.updateUser(userId, loginId, name, email, phoneNumber, role, status);
     redirectAttributes.addFlashAttribute("message", "회원 정보가 수정되었습니다.");
     return "redirect:/admin/userCommit"; // 수정 후 회원 목록 페이지로 이동
 }
+
+
 
 
 

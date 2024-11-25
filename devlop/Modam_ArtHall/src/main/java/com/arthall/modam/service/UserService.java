@@ -42,6 +42,7 @@ public class UserService implements UserDetailsService {
         userEntity.setEmail(userDto.getEmail());
         userEntity.setPhoneNumber(userDto.getPhoneNumber());
         userEntity.setRole(UserEntity.Role.USER);
+        userEntity.setStatus(UserEntity.Status.ACTIVE); // 기본 상태 설정
         userRepository.save(userEntity);
     }
 
@@ -85,13 +86,11 @@ public class UserService implements UserDetailsService {
             adminUser.setEmail("admin@example.com");
             adminUser.setPhoneNumber("010-1234-5678");
             adminUser.setRole(UserEntity.Role.ADMIN); // 관리자 권한 설정
-            adminUser.setStatus("active");
+            adminUser.setStatus(UserEntity.Status.ACTIVE); // 기본 상태 설정
             userRepository.save(adminUser);
             System.out.println("관리자 계정 생성 완료");
         });
     }
-
-/*/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
 
     // 회원 ID로 회원 조회
     public UserEntity getUserById(int userId) {
@@ -107,11 +106,10 @@ public class UserService implements UserDetailsService {
             return userRepository.findByNameContainingIgnoreCase(keyword, pageable); // 키워드로 검색
         }
     }
-    
-    
-    
+
+  
     // 회원 정보 수정
-    public void updateUser(int userId, String loginId, String name, String email, String phoneNumber, String role) {
+    public void updateUser(int userId, String loginId, String name, String email, String phoneNumber, String role, String status) {
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다. ID: " + userId));
 
@@ -120,8 +118,12 @@ public class UserService implements UserDetailsService {
         user.setEmail(email);
         user.setPhoneNumber(phoneNumber);
         user.setRole(UserEntity.Role.valueOf(role.toUpperCase())); // 역할 설정 (ADMIN, USER 등)
+        user.setStatus(UserEntity.Status.valueOf(status.toUpperCase())); // 상태 설정 (ACTIVE, BANNED)
         userRepository.save(user);
     }
+
+    
+    
 
     // 회원 삭제
     public void deleteUser(int userId) {

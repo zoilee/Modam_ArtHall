@@ -48,6 +48,18 @@
                 </select>
             </div>
 
+            <!-- 상태 선택 추가 -->
+            <div class="mb-3">
+                <label for="status" class="form-label">상태</label>
+                <select class="form-select" id="status" name="status" th:field="*{user.status}">
+                    <option value="ACTIVE">ACTIVE</option>
+                    <option value="BANNED">BANNED</option>
+                </select>
+            </div>
+            
+            
+            
+            
             <div class="d-flex justify-content-end">
                 <button type="submit" class="btn btn-primary">수정</button>
                 <a th:href="@{/admin/userCommit}" class="btn btn-secondary ms-2">취소</a>
