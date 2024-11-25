@@ -72,6 +72,11 @@ public class BbsService {
         performancesRepository.deleteById(id);
     }
 
-
+    // 지난 공연 조회 (페이징)
+    public Page<PerformancesEntity> getPastPerformances(int page, int size) {
+        int validatedSize = (size > 0) ? size : 5; // 기본값을 5로 지정
+        Pageable pageable = PageRequest.of(page, validatedSize, Sort.by(Sort.Direction.DESC, "performanceDate"));
+        return performancesRepository.findPastPerformances(pageable);
+    }
 
 }
