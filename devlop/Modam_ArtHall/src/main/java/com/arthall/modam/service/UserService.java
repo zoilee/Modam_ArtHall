@@ -117,6 +117,12 @@ public class UserService implements UserDetailsService {
         return getUserPointsById(user.getId());
     }
 
+    // 새 예외 클래스 추가
+    public static class UserBannedException extends RuntimeException {
+        public UserBannedException(String message) {
+            super(message);
+        }
+    }
     // UserDetailsService의 메서드 구현 (Spring Security)
     @Override
     public UserDetails loadUserByUsername(String loginId) throws UsernameNotFoundException {
@@ -133,12 +139,6 @@ public class UserService implements UserDetailsService {
                 .password(userEntity.getPassword())
                 .roles(userEntity.getRole().name())
                 .build();
-    }
-    // 새 예외 클래스 추가
-    public class UserBannedException extends RuntimeException {
-        public UserBannedException(String message) {
-            super(message);
-        }
     }
 
     //=================================개인정보 수정 ======================================
