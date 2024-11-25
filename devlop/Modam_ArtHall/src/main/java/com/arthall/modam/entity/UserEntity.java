@@ -38,14 +38,9 @@ public class UserEntity {
         USER, ADMIN
     }
 
-    // Set the role using the Role enum
-    public void setRole(Role role) {
-        this.role = role;
-    }
-
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private Status status = Status.ACTIVE; // 기본값 설정
+    private Status status; // 기본값 설정
 
     public enum Status {
         ACTIVE,
@@ -58,10 +53,6 @@ public class UserEntity {
     @Column(name = "created_at", updatable = false)
     private Timestamp createdAt = new Timestamp(System.currentTimeMillis());
 
-    public void setStatus(String string) {
- 
-        throw new UnsupportedOperationException("Unimplemented method 'setStatus'");
-    }
     
 
     

@@ -120,20 +120,25 @@ public class UserService implements UserDetailsService {
     // UserDetailsService의 메서드 구현 (Spring Security)
     @Override
     public UserDetails loadUserByUsername(String loginId) throws UsernameNotFoundException {
-        System.out.println("Spring Security 사용자 인증 중: loginId = " + loginId);
-
         UserEntity userEntity = userRepository.findByLoginId(loginId)
-            .orElseThrow(() -> new UsernameNotFoundException("아이디 또는 비밀번호가 일치하지 않습니다."));
+                .orElseThrow(() -> new UsernameNotFoundException("아이디 또는 비밀번호가 일치하지 않습니다."));
 
-            // 상태 확인
-            if ("BANNED".equals(userEntity.getStatus())) {
-                throw new UsernameNotFoundException("계정이 정지되었습니다. 관리자에게 문의하세요.");
-            }
-            return User.builder()
+        // BANNED 상태 확인
+        if (userEntity.getStatus() == UserEntity.Status.BANNED) {
+            throw new UserBannedException("계정이 정지되었습니다. 관리자에게 문의하세요.");
+        }
+
+        return User.builder()
                 .username(userEntity.getLoginId())
                 .password(userEntity.getPassword())
-                .roles(userEntity.getRole().name()) // 사용자 역할 설정
+                .roles(userEntity.getRole().name())
                 .build();
+    }
+    // 새 예외 클래스 추가
+    public class UserBannedException extends RuntimeException {
+        public UserBannedException(String message) {
+            super(message);
+        }
     }
 
     //=================================개인정보 수정 ======================================

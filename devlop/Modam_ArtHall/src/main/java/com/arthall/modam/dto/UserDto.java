@@ -46,8 +46,8 @@ public class UserDto {
 
     // 추가된 필드: 소셜 로그인 여부
     private String provider;
-    private Role role; // UserEntity.Role로 변경
-    private Status status;
+    private Role role = Role.USER;
+    private Status status = Status.ACTIVE;
     private LocalDateTime createdAt;
 
         public UserEntity toEntity() {
@@ -57,7 +57,9 @@ public class UserDto {
         userEntity.setName(this.name);
         userEntity.setEmail(this.email);
         userEntity.setPhoneNumber(this.phoneNumber);
-        userEntity.setRole(UserEntity.Role.USER); // 기본 역할 설정
+        userEntity.setRole(this.role);
+        userEntity.setStatus(this.status);
+        userEntity.setProvider(this.provider);
         return userEntity;
     }
 }
