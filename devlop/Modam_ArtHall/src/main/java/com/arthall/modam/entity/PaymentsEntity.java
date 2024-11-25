@@ -42,6 +42,9 @@ public class PaymentsEntity {
     @Column(name = "status", nullable = false, length = 20)
     private String status; // 상태 (예: 'pending', 'completed')
 
+    @Column(name = "imp_uid")
+    private String impUid; // iamportuid
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private Timestamp createdAt;

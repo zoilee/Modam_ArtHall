@@ -46,7 +46,7 @@ public class PaymentController {
     RewardsRepository rewardsRepository;
     @Autowired
     RewardsService rewardsService;
-    
+
     @Transactional
     @PostMapping("/payments/process")
     public ResponseEntity<String> handlePayment(@RequestBody Map<String, Object> paymentData) {
@@ -64,17 +64,15 @@ public class PaymentController {
                 // 결제 성공시db저장
                 String ticket = payment.getResponse().getMerchantUid();
                 String email = payment.getResponse().getBuyerEmail();
-                BigDecimal total_price = payment.getResponse().getAmount(); //결제 가격
-                BigDecimal usedPoints = new BigDecimal(paymentData.get("myPoint").toString()); //사용한 적립금
+                BigDecimal total_price = payment.getResponse().getAmount(); // 결제 가격
+                BigDecimal usedPoints = new BigDecimal(paymentData.get("myPoint").toString()); // 사용한 적립금
                 int userId = Integer.parseInt(paymentData.get("user_id").toString());
                 // 예약정보 db
                 ReservationsEntity newReservation = new ReservationsEntity();
                 ShowEntity showEntity = showRepository.findById(Integer.parseInt(paymentData.get("show_id").toString()))
-                                      .orElseThrow(() -> new IllegalArgumentException("Invalid show ID"));
+                        .orElseThrow(() -> new IllegalArgumentException("Invalid show ID"));
                 UserEntity userEntity = userRepository.findById(Integer.parseInt(paymentData.get("user_id").toString()))
-                                      .orElseThrow(() -> new IllegalArgumentException("Invalid show ID"));
-
-                
+                        .orElseThrow(() -> new IllegalArgumentException("Invalid show ID"));
 
                 newReservation.setSeatId1(paymentData.get("seat_id1").toString()); // 좌석id1
                 newReservation.setSeatId2(paymentData.get("seat_id2").toString()); // 좌석id2
@@ -97,6 +95,7 @@ public class PaymentController {
                 paymentsEntity.setStatus(payment.getResponse().getStatus());
                 paymentsEntity.setTransactionType(PaymentsEntity.TransactionType.PAYMENT);
                 paymentsEntity.setReservation(thisReservation);
+                paymentsEntity.setImpUid(impUid);
 
                 paymentsRepository.save(paymentsEntity);
                 System.out.println("결제정보db 저장 성공");
@@ -105,7 +104,7 @@ public class PaymentController {
 
                 // 적립금 차감 처리
                 if (usedPoints.compareTo(BigDecimal.ZERO) > 0) {
-                    rewardsService.deductPoints(userId, usedPoints, reservationId );
+                    rewardsService.deductPoints(userId, usedPoints, reservationId);
                 }
 
                 // 적립금 계산 및 적립
@@ -116,7 +115,6 @@ public class PaymentController {
                 } else {
                     log.info("결제 금액이 0원이므로 적립금을 추가하지 않습니다.");
                 }
-
 
                 // 이메일로 티켓번호 보내주기
                 MailDto mailDto = new MailDto();
@@ -139,4 +137,26 @@ public class PaymentController {
         }
     }
 
+    @Transactional
+    @PostMapping("/payments/refund")
+    public ResponseEntity<String> handleRefund(@RequestBody Map<String, Object> cancelData) {
+        try {
+            int resId = Integer.parseInt(cancelData.get("id").toString());
+            String impuid = portOneService
+            
+            portOneService.getRefundByImpuid(impuid);
+            // impUid로 결제 정보 조회
+            IamportResponse<Payment> refund = portOneService.getPaymentByImpUid(impuid);
+            if (refund.getCode() == 0) {
+
+            } else {
+            log.error("환불 실패: {}", payment.getMessage());
+            return ResponseEntity.status(400).body("환불 실패");
+            }
+
+            } catch (Exception e) {
+            log.error("결제 처리 중 오류 발생: {}", e.getMessage());
+            return ResponseEntity.status(500).body("결제 처리 중 오류 발생");
+        }
+    }
 }
