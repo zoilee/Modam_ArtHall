@@ -50,6 +50,9 @@ public class PerformancesEntity {
     @SQLRestriction("reference_type = 'PERFORMANCE'")
     private List<ImagesEntity> imagesEntities;
 
+    @OneToMany(mappedBy = "performancesEntity", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<ShowEntity> shows;
+
     @Transient
     private String formattedAverageRating;
 

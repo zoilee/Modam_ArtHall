@@ -40,9 +40,6 @@ public class ShowEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "performance_id", referencedColumnName = "id")
     private PerformancesEntity performancesEntity;
-
-    public Object getShowId() {
-        throw new UnsupportedOperationException("올바르지 않은 접근입니다. 'getShowId'");
-    }
+    
 
 }
