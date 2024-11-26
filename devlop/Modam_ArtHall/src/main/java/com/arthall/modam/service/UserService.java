@@ -60,6 +60,10 @@ public class UserService implements UserDetailsService {
         if (isEmailDuplicate(userDto.getEmail())) {
             throw new IllegalArgumentException("이미 등록된 이메일입니다.");
         }
+        // 전화번호 중복 체크
+        if (isPhoneNumberDuplicate(userDto.getPhoneNumber())) {
+            throw new IllegalArgumentException("이미 등록된 전화번호입니다.");
+        }
     
         // 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(userDto.getPassword());
@@ -67,6 +71,9 @@ public class UserService implements UserDetailsService {
     
         // DTO -> Entity 변환
         UserEntity userEntity = userDto.toEntity();
+        userEntity.setRole(UserEntity.Role.USER); // 기본값 설정
+        userEntity.setProvider("LOCAL"); // 로컬 사용자로 설정
+        userEntity.setStatus(UserEntity.Status.ACTIVE); // 계정 상태 활성화
     
         // 저장
         userRepository.save(userEntity);

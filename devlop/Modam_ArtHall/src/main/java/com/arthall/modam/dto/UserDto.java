@@ -57,9 +57,9 @@ public class UserDto {
         userEntity.setName(this.name);
         userEntity.setEmail(this.email);
         userEntity.setPhoneNumber(this.phoneNumber);
-        userEntity.setRole(this.role);
-        userEntity.setStatus(this.status);
-        userEntity.setProvider(this.provider);
+        userEntity.setRole(this.role != null ? this.role : UserEntity.Role.USER); // 기본값 설정
+        userEntity.setStatus(this.status != null ? this.status : UserEntity.Status.ACTIVE); // 기본값 설정
+        userEntity.setProvider(this.provider != null ? this.provider : "LOCAL"); // 기본값 설정
         return userEntity;
     }
 }
