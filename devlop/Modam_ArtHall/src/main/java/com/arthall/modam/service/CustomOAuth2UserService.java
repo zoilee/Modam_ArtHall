@@ -84,13 +84,17 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
          return createOAuth2User(oAuth2User, attributes, loginId);
         }
         private OAuth2User createOAuth2User(OAuth2User oAuth2User, Map<String, Object> attributes, String loginId) {
-        Map<String, Object> customAttributes = new HashMap<>(attributes);
-        customAttributes.put("loginId", loginId); // loginId를 추가
-
-        // ROLE_USER 권한 추가
-        Collection<GrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
-
-        return new DefaultOAuth2User(oAuth2User.getAuthorities(), customAttributes, "loginId");
-
-    }
+            Map<String, Object> customAttributes = new HashMap<>(attributes);
+            customAttributes.put("loginId", loginId); // loginId를 추가
+        
+            // 데이터베이스에서 사용자 역할 조회
+            UserEntity user = userRepository.findByLoginId(loginId)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다: " + loginId));
+            
+            // ROLE_ 접두사를 추가하여 Spring Security 권한과 일치시킴
+            String roleWithPrefix = "ROLE_" + user.getRole().name(); // USER -> ROLE_USER, ADMIN -> ROLE_ADMIN
+            Collection<GrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority(roleWithPrefix));
+        
+            return new DefaultOAuth2User(authorities, customAttributes, "loginId");
+        }
 }

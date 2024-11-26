@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -78,12 +79,25 @@ public class UserController {
             // 인증되지 않은 사용자는 로그인 페이지로 리다이렉트
             return "redirect:/login";
         }
+        Object principal = authentication.getPrincipal();
+        String loginId = null;
+         // 소셜 로그인 사용자
+        if (principal instanceof DefaultOAuth2User) {
+            DefaultOAuth2User oAuth2User = (DefaultOAuth2User) principal;
+            loginId = (String) oAuth2User.getAttributes().get("loginId");
+        }
+        // 로컬 로그인 사용자
+        else if (principal instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) principal;
+            loginId = userDetails.getUsername();
+        }
+
+        if (loginId == null) {
+            throw new RuntimeException("로그인 ID를 찾을 수 없습니다.");
+        }
 
         // 로그인된 사용자 정보 가져오기
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        String loginId = userDetails.getUsername();
         UserEntity userEntity = userService.getUserByLoginId(loginId);
-
         model.addAttribute("user", userEntity);
         return "registeruserEdit";
     }
