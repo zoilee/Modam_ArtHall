@@ -1,8 +1,9 @@
 package com.arthall.modam.repository;
 
-import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -10,9 +11,10 @@ import com.arthall.modam.entity.RewardsLogEntity;
 
 @Repository
 public interface RewardsLogRepository extends JpaRepository<RewardsLogEntity, Integer> {
-    Optional<RewardsLogEntity> findByUserId(int userId);
+    // 단일 사용자 ID로 가장 최근의 적립금 로그 조회
+    Optional<RewardsLogEntity> findFirstByUserIdOrderByCreatedAtDesc(int userId);
 
-    // userId와 reservationsId를 기준으로 적립금 로그 조회
-    List<RewardsLogEntity> findByUserIdAndReservationsId(int userId, int reservationsId);
+    // 사용자 ID로 적립금 로그 전체 조회
+    Page<RewardsLogEntity> findByUserId(int userId, Pageable pageable);
 
 }

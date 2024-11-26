@@ -33,40 +33,37 @@
                 <h5>
                     <strong>총 적립금:</strong> <span th:text="${#numbers.formatDecimal(points, 0, 0)}">0</span> Point
                 </h5>
-                <button 
-                    class="btn btn-info" 
-                    onclick="fetchRewardsLog('/rewards-log?userId=[[${user.id}]]&reservationsId=[[${reservation.id}]]')">
-                    적립금 내역
-                </button>
-            </div>
+
+                <!-- 적립금 내역 조회 버튼 -->
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#rewardsLogModal">적립금 내역 조회</button>
         </div>
 
-        <!-- 모달 -->
-        <div class="modal fade" id="logModal" tabindex="-1" aria-labelledby="logModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
+        <div class="modal fade" id="rewardsLogModal" tabindex="-1" aria-labelledby="rewardsLogModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="logModalLabel">적립금 로그</h5>
+                        <h5 class="modal-title">적립금 내역</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>날짜</th>
-                                    <th>설명</th>
-                                    <th>변동 적립금</th>
-                                    <th>총 적립금</th>
-                                </tr>
-                            </thead>
-                            <tbody id="logTableBody">
-                                <!-- 로그 데이터가 여기 추가됩니다 -->
-                            </tbody>
-                        </table>
+                        <ul id="rewards-log-list" class="list-group"></ul>
+                    </div>
+                    <div class="modal-footer">
+                        <nav class="w-100 d-flex justify-content-center align-items-center">
+                            <button id="prev-page" class="btn btn-outline-primary btn-sm mx-2" onclick="fetchLogs(currentPage - 1)">
+                                <i class="bi bi-chevron-left"></i> 이전
+                            </button>
+                            <span id="current-page-info" class="fw-bold mx-3">현재 페이지: 1 / 2</span>
+                            <button id="next-page" class="btn btn-outline-primary btn-sm mx-2" onclick="fetchLogs(currentPage + 1)">
+                                다음 <i class="bi bi-chevron-right"></i>
+                            </button>
+                        </nav>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+       
 
         <!-- 현재 예매내역 -->
         <h5 class="mt-4">현재 예매내역</h5>
@@ -181,46 +178,75 @@
     <th:block th:replace="~{fragments/footer :: footerFragment}"></th:block>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- JavaScript -->
     <script>
-        function fetchRewardsLog(url) {
-            fetch(url)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log("적립금 로그 데이터:", data);
+        let currentPage = 0;
+let totalPages = 1;
 
-                    const logTableBody = document.getElementById("logTableBody");
-                    logTableBody.innerHTML = ""; // 기존 로그 초기화
+function fetchLogs(page) {
+    // 페이지 유효성 검사
+    if (page < 0 || page >= totalPages) {
+        console.error(`Invalid page number: ${page}`);
+        return;
+    }
 
-                    if (data.length === 0) {
-                        logTableBody.innerHTML = "<tr><td colspan='4'>적립금 로그가 없습니다.</td></tr>";
-                    } else {
-                        data.forEach(log => {
-                            const logRow = `
-                                <tr>
-                                    <td>${new Date(log.createdAt).toLocaleString()}</td>
-                                    <td>${log.description}</td>
-                                    <td>${log.changePoint}</td>
-                                    <td>${log.totalPoint}</td>
-                                </tr>
-                            `;
-                            logTableBody.innerHTML += logRow;
-                        });
-                    }
+    // AJAX 요청으로 데이터 가져오기
+    fetch(`/mypage/logs?page=${page}&size=4`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log("Received data:", data);
 
-                    // 모달 열기
-                    const logModal = new bootstrap.Modal(document.getElementById("logModal"));
-                    logModal.show();
-                })
-                .catch(error => {
-                    console.error("적립금 로그 불러오기 중 오류:", error);
-                    alert("적립금 로그를 불러오는 중 문제가 발생했습니다. 관리자에게 문의하세요.");
-                });
-        }
+            // 로그 리스트 업데이트
+            updateRewardsLogList(data.content);
+
+            // 페이지 정보 업데이트
+            currentPage = data.number;
+            totalPages = data.totalPages;
+            updatePaginationButtons();
+        })
+        .catch(error => {
+            console.error("Error fetching logs:", error);
+        });
+}
+
+function updateRewardsLogList(logs) {
+    const logList = document.getElementById("rewards-log-list");
+    logList.innerHTML = "";
+
+    if (logs.length === 0) {
+        logList.innerHTML = "<li class='list-group-item'>적립금 로그가 없습니다.</li>";
+        return;
+    }
+
+    logs.forEach(log => {
+        const logItem = document.createElement("li");
+        logItem.classList.add("list-group-item");
+        logItem.innerHTML = `
+            <strong>${new Date(log.createdAt).toLocaleString()}</strong><br>
+            <span>변동 포인트:</span> ${log.changePoint}<br>
+            <span>총 포인트:</span> ${log.totalPoint}<br>
+            <span>설명:</span> ${log.description}<br>
+        `;
+        logList.appendChild(logItem);
+    });
+}
+
+function updatePaginationButtons() {
+    document.getElementById("prev-page").disabled = currentPage === 0;
+    document.getElementById("next-page").disabled = currentPage >= totalPages - 1;
+
+    document.getElementById("current-page-info").textContent = `현재 페이지: ${currentPage + 1} / ${totalPages}`;
+}
+
+// 모달이 열릴 때 첫 페이지 로드
+document.getElementById("rewardsLogModal").addEventListener("shown.bs.modal", () => {
+    fetchLogs(0);
+});
     </script>
 </body>
 </html>

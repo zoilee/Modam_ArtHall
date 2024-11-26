@@ -2,6 +2,7 @@ package com.arthall.modam.entity;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -14,6 +15,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
@@ -25,36 +27,38 @@ public class ReservationsEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id; // 기본 키
+    private int id;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private UserEntity userEntity;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "show_id", referencedColumnName = "show_id") // show_id 컬럼을 참조
+    @JoinColumn(name = "show_id", referencedColumnName = "show_id")
     private ShowEntity showEntity;
 
-    @Column(name = "seat_id1", length = 10) // 첫 번째 좌석 ID
+    @Column(name = "seat_id1", length = 10)
     private String seatId1;
 
-    @Column(name = "seat_id2", length = 10) // 두 번째 좌석 ID
+    @Column(name = "seat_id2", length = 10)
     private String seatId2;
 
     @CreationTimestamp
     @Column(name = "reservation_date", nullable = false, updatable = false)
-    private Timestamp reservationDate; // 예약 날짜
+    private Timestamp reservationDate;
 
     @Column(name = "total_price", nullable = false, precision = 10, scale = 2)
-    private BigDecimal totalPrice; // 총 금액
+    private BigDecimal totalPrice;
 
     @Column(name = "status", length = 20)
-    private String status; // 예약 상태
+    private String status;
 
     @Column(name = "ticket", length = 100)
-    private String ticket; // 티켓
+    private String ticket;
 
     @OneToOne(mappedBy = "reservation", cascade = CascadeType.ALL)
     private PaymentsEntity payment;
 
+    @OneToMany(mappedBy = "reservationsEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RewardsLogEntity> rewardsLogEntities; // RewardsLogEntity와 연결
 }

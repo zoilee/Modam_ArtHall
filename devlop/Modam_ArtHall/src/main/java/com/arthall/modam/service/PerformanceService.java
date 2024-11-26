@@ -125,4 +125,10 @@ public class PerformanceService {
             return Optional.empty(); // 공연이 없을 경우 빈 Optional 반환
         }
     }
+    //메인페이지
+    public List<PerformancesEntity> getCurrentlyRunningPerformances() {
+        // 현재 날짜를 java.sql.Date로 변환
+        Date today = new Date(System.currentTimeMillis());
+        return performancesRepository.findByStartdateBeforeAndEnddateAfter(today, today);
+    }
 }

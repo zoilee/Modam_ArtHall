@@ -3,6 +3,7 @@ package com.arthall.modam.repository;
 import com.arthall.modam.entity.ImagesEntity;
 import com.arthall.modam.entity.PerformancesEntity;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -32,5 +33,8 @@ public interface PerformancesRepository extends JpaRepository<PerformancesEntity
     // 현재 및 미래 공연 가져오기
     @Query("SELECT p FROM PerformancesEntity p WHERE p.enddate >= CURRENT_DATE ORDER BY p.startdate ASC")
     List<PerformancesEntity> findUpcomingPerformances();
+
+    //메인페이지
+    List<PerformancesEntity> findByStartdateBeforeAndEnddateAfter(Date startdate, Date enddate);
 
 }

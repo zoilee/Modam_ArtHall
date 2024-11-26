@@ -11,6 +11,7 @@ import java.sql.Date;
 import java.time.LocalDate;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 
@@ -26,6 +27,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -44,6 +47,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.arthall.modam.entity.CommentEntity;
+import com.arthall.modam.entity.ImagesEntity;
+import com.arthall.modam.entity.NoticesEntity;
 import com.arthall.modam.entity.PerformancesEntity;
 import com.arthall.modam.entity.ReservationsEntity;
 import com.arthall.modam.entity.RewardsEntity;
@@ -52,6 +57,7 @@ import com.arthall.modam.entity.UserEntity;
 import com.arthall.modam.repository.PerformancesRepository;
 import com.arthall.modam.repository.RewardsRepository;
 import com.arthall.modam.service.CommentService;
+import com.arthall.modam.service.NoticesService;
 import com.arthall.modam.service.PerformanceService;
 import com.arthall.modam.service.ReservationsService;
 import com.arthall.modam.service.RewardsLogService;
@@ -68,6 +74,9 @@ public class HomeController {
     private UserService userService;
 
     @Autowired
+    private PerformancesRepository performancesRepository;
+
+    @Autowired
     private PerformanceService performanceService;
 
     @Autowired
@@ -82,10 +91,24 @@ public class HomeController {
     @Autowired
     private RewardsService rewardsService;
 
-    
+    @Autowired
+    private RewardsLogService rewardsLogService;
 
+    @Autowired
+    private NoticesService noticesService;
+
+    
     @GetMapping("/")
-    public String home() {
+    public String showMainPage(Model model) {
+        // 현재 날짜
+        Date currentDate = new Date(System.currentTimeMillis());
+
+        // 데이터베이스에서 현재 상영 중인 공연 데이터 가져오기
+        List<PerformancesEntity> performances = performancesRepository.findByStartdateBeforeAndEnddateAfter(currentDate, currentDate);
+
+
+        // 모델에 데이터 추가
+        model.addAttribute("performances", performances);
         return "main";
     }
 
@@ -95,42 +118,67 @@ public class HomeController {
         if (authentication == null || !authentication.isAuthenticated()) {
             return "redirect:/login";
         }
-    
+
         Object principal = authentication.getPrincipal();
         String loginId = null;
-    
+
         if (principal instanceof UserDetails) {
             loginId = ((UserDetails) principal).getUsername();
         } else if (principal instanceof OAuth2User) {
             loginId = (String) ((OAuth2User) principal).getAttributes().get("loginId");
         }
-    
+
         if (loginId == null) {
             throw new RuntimeException("사용자를 찾을 수 없습니다.");
         }
-    
+
         UserEntity user = userService.getUserByLoginId(loginId);
         if (user == null) {
             throw new RuntimeException("사용자를 찾을 수 없습니다.");
         }
-    
+
         int userId = user.getId();
-    
+
         // 예약 데이터 조회
         List<ReservationsEntity> upcomingReservations = reservationService.getUpcomingReservations(userId);
         List<ReservationsEntity> pastReservations = reservationService.getPastReservations(userId);
-    
+
+
         model.addAttribute("user", user);
         model.addAttribute("upcomingReservations", upcomingReservations != null ? upcomingReservations : new ArrayList<>());
         model.addAttribute("pastReservations", pastReservations != null ? pastReservations : new ArrayList<>());
-    
+
         // 적립금 정보
         RewardsEntity rewards = rewardsService.getRewardsByUserId(userId);
         model.addAttribute("points", rewards.getTotalPoint());
-    
+
         return "mypage";
     }
-    
+
+    @GetMapping("/mypage/logs")
+    @ResponseBody
+    public Page<RewardsLogEntity> getPagedLogs(
+            @RequestParam("page") int page,
+            @RequestParam("size") int size) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new RuntimeException("Unauthorized");
+        }
+
+        // 현재 사용자 가져오기
+        Object principal = authentication.getPrincipal();
+        String loginId = (principal instanceof UserDetails) ?
+                ((UserDetails) principal).getUsername() : (String) ((OAuth2User) principal).getAttributes().get("loginId");
+
+        UserEntity user = userService.getUserByLoginId(loginId);
+        if (user == null) throw new RuntimeException("사용자를 찾을 수 없습니다.");
+
+        // 페이징 데이터 반환
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        return rewardsLogService.getLogsByUserId(user.getId(), pageable);
+    }
+        
+
     @GetMapping("/registeruserEdit")
     public String registeruserEdit() {
         return "registeruserEdit";
