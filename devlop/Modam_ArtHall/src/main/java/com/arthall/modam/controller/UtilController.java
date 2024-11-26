@@ -36,7 +36,7 @@ public class UtilController {
         
         Map<String, Object> response = new HashMap<>();
         if (!shows.isEmpty()) {
-            response.put("showId", shows.get(0).getShowId()); // 첫 번째 결과를 사용
+            response.put("showId", shows.get(0).getId()); // 첫 번째 결과를 사용
             return ResponseEntity.ok(response);
         } else {
             response.put("error", "해당 공연 정보를 찾을 수 없습니다.");

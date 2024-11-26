@@ -29,9 +29,10 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.arthall.modam.entity.PerformancesEntity;
-
+import com.arthall.modam.entity.ShowEntity;
 import com.arthall.modam.repository.ImagesRepository;
 import com.arthall.modam.repository.PerformancesRepository;
+import com.arthall.modam.repository.ShowRepository;
 
 @Controller
 @RequestMapping("/admin")
@@ -45,6 +46,9 @@ public class AdminController {
 
     @Autowired
     private ImagesRepository imagesRepository;
+
+    @Autowired
+    private ShowRepository showRepository;
 
     @Autowired
     private BbsService bbsService;
@@ -298,6 +302,19 @@ public String AdminCommitWrite(@ModelAttribute PerformancesDto performanceDto,
             return "redirect:showCommitList";
         }
 
+        // 공연에 관련된 쇼 삭제
+        List<ShowEntity> relatedShows = showRepository.findByPerformancesEntity_Id(id);
+        boolean showDeleteError = false;
+        for (ShowEntity show : relatedShows) {
+            try {
+                showRepository.delete(show);
+                System.out.println("쇼 삭제 성공: " + show.getId());
+            } catch (Exception e) {
+                System.err.println("쇼 삭제 실패: " + show.getId());
+                showDeleteError = true;
+            }
+        }
+
         List<ImagesEntity> images = imagesRepository.findByReferenceIdAndReferenceType(performance.getId(),
                 referenceType);
 
@@ -320,10 +337,13 @@ public String AdminCommitWrite(@ModelAttribute PerformancesDto performanceDto,
         // 공연 db 삭제
         performancesRepository.deleteById(id);
 
-        if (filDeleteError) {
+        // 메시지 설정
+        if (showDeleteError) {
+            redirectAttributes.addFlashAttribute("message", "연관된 쇼가 삭제되지 않았습니다.");
+        } else if (filDeleteError) {
             redirectAttributes.addFlashAttribute("message", "이미지파일이 삭제되지 않았습니다.");
         } else {
-            redirectAttributes.addFlashAttribute("message", "공연이 삭제되었습니다.");
+            redirectAttributes.addFlashAttribute("message", "공연과 관련된 쇼, 이미지, 공연이 삭제되었습니다.");
         }
 
         return "redirect:showCommitList";
