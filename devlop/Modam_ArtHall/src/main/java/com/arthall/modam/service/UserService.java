@@ -133,12 +133,11 @@ public class UserService implements UserDetailsService {
         if (userEntity.getStatus() == UserEntity.Status.BANNED) {
             throw new UserBannedException("계정이 정지되었습니다. 관리자에게 문의하세요.");
         }
-        // ROLE_ 접두사를 추가하여 권한 생성
-        String roleWithPrefix = "ROLE_" + userEntity.getRole().name(); // USER -> ROLE_USER, ADMIN -> ROLE_ADMIN
+    
         return User.builder()
                 .username(userEntity.getLoginId())
                 .password(userEntity.getPassword())
-                .roles(roleWithPrefix)
+                .roles(userEntity.getRole().name())
                 .build();
     }
 

@@ -60,16 +60,20 @@ public class UserController {
     public String loginUser(@RequestParam("loginId") String loginId, @RequestParam("password") String password, RedirectAttributes redirectAttributes, Model model) {
         UserEntity user = userService.getUserByLoginId(loginId);
 
-        if (user != null && passwordEncoder.matches(password, user.getPassword())) {
-            if (MailService.isTemporaryPassword(password)) { // 임시 비밀번호인지 확인
-                redirectAttributes.addFlashAttribute("tempPasswordMessage", "임시 비밀번호로 로그인하셨습니다. 비밀번호를 변경해주세요.");
-            }
-            // 세션 저장 로직
-            return "redirect:/";
-        } else {
-            model.addAttribute("loginError", "아이디 또는 비밀번호가 잘못되었습니다.");
-            return "login";
-        }
+        // 사용자가 존재하지 않을 경우
+    if (user == null || !passwordEncoder.matches(password, user.getPassword())) {
+        model.addAttribute("loginError", "아이디 또는 비밀번호가 잘못되었습니다.");
+        return "login";
+    }
+
+    // 계정이 BANNED 상태일 경우 처리
+    if (user.getStatus() == UserEntity.Status.BANNED) {
+        model.addAttribute("loginError", "계정이 정지되었습니다. 관리자에게 문의하세요.");
+        return "login";
+    }
+
+    // 로컬 사용자 로그인 세션 처리
+    return "redirect:/"; // 로그인 성공 시 메인 페이지로 이동
     }
     
     // =================================개인정보 수정 폼 표시====================================
