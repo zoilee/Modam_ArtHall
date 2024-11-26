@@ -2,6 +2,7 @@ package com.arthall.modam.service;
 
 import java.io.IOException;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 public class PortOneService {
     private IamportClient iamportClient;
     private ReservationsRepository reservationsRepository;
+    @Autowired
     private PaymentsRepository paymentsRepository;
 
     @Value("${api.key}")
@@ -49,8 +51,4 @@ public class PortOneService {
         return ticket;
     }
 
-    public String findImpUidByResId(int id) {
-        String impUid = paymentsRepository.findImpUidByResId(id);
-        return impUid;
-    }
 }

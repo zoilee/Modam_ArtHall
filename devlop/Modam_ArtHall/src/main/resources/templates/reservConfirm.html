@@ -231,9 +231,17 @@
                             
                         }),
                         success: function(response){
+                            console.log(response); // JSON 전체 출력
+                            const rewardPoints = response.rewardPoints;
+                            const message = response.message;
                             $("#successMessage").show();
                             $("#ticketId").text(ticket);
-                            $("#rewardPoints").text(rewardPoints.toLocaleString());
+                            if (response.rewardPoints) {
+                                $("#rewardPoints").text(parseFloat(rewardPoints).toLocaleString());
+                            } else {
+                                $("#rewardPoints").text("0");
+                            }
+                            alert(message.toLocaleString());
                         },
                         error: function(xhr, status, error){
                             alert("서버 처리 오류" + xhr.responseText);

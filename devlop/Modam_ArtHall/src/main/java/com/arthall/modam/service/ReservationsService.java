@@ -15,7 +15,6 @@ public class ReservationsService {
     @Autowired
     private ReservationsRepository reservationRepository;
 
-
     public List<ReservationsEntity> getUpcomingReservations(int userId) {
         // 오늘 날짜 가져오기
         LocalDate today = LocalDate.now();

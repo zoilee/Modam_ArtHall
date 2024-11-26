@@ -31,7 +31,7 @@ public class PaymentsEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "transaction_type", nullable = false)
-    private TransactionType transactionType; // 'payment' 또는 'refund'
+    private TransactionType transactionType; // 'PAYMENT' 또는 'REFUND' 'PART_REFUND'
 
     @Column(name = "amount", nullable = false, precision = 10, scale = 2)
     private BigDecimal amount; // 금액
@@ -42,14 +42,14 @@ public class PaymentsEntity {
     @Column(name = "status", nullable = false, length = 20)
     private String status; // 상태 (예: 'pending', 'completed')
 
-    @Column(name = "imp_uid")
-    private String impUid; // iamportuid
-
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private Timestamp createdAt;
 
+    @Column(name = "reAmount", nullable = false, precision = 10, scale = 2)
+    private BigDecimal reAmount;
+
     public enum TransactionType {
-        PAYMENT, REFUND
+        PAYMENT, REFUND, PART_REFUND
     }
 }
