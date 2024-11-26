@@ -196,10 +196,10 @@
                 }),
                 dataType: "json",
                 success: function (response) {
-                    alert("환불 성공: " + response.message);
+                    alert(response.message);
                 },
                 error: function (error) {
-                    alert("환불 실패: " + response.message);
+                    alert(response.message);
                 },
             });
         });

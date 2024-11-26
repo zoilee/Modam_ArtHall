@@ -5,7 +5,11 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -178,7 +182,9 @@ public class PaymentController {
             // 환불 조건
             // 환불체크
             if ("CANCEL".equals(thisReservation.getStatus())) {
-                throw new IllegalArgumentException("이미 취소된 예약입니다.");
+                response.put("message", "이미 취소된 예약입니다.");
+                return ResponseEntity.ok(response);
+                
             }
 
             // 패널티 check
@@ -189,15 +195,20 @@ public class PaymentController {
             if (daysBetween >= 7) {
                 // 전액 환불
                 refund = portOneService.getRefundByImpuid(cancelData);
-            } else if (daysBetween >= 3) {
-                // 50% 패널티 적용
+            } else if (daysBetween >= 1 && daysBetween <= 6) {
+                // 1~6일 50% 패널티 적용
                 BigDecimal penaltycancelAmount = cancelAmount.multiply(BigDecimal.valueOf(0.5));
                 CancelData cancelPenaltyData = new CancelData(merchant_uid, false, penaltycancelAmount);
                 refund = portOneService.getRefundByImpuid(cancelPenaltyData);
                 System.out.println("패널티 기간이므로 사용한 적립금은 환불X");
+            } else if (daysBetween == 0) {
+                // 공연 당일 환불 불가
+                response.put("message", "환불 불가: 공연 당일입니다.");
+                return ResponseEntity.ok(response);
             } else {
-                // 환불 불가
-                throw new IllegalArgumentException("환불 불가: 공연 당일");
+                // 공연 이후 환불 불가
+                response.put("message", "환불 불가: 이미 공연이 종료되었습니다");
+                return ResponseEntity.ok(response);
             }
             // 환불 데이터로 결제 정보 조회 및 환불
 
@@ -220,23 +231,36 @@ public class PaymentController {
                 // 패널티 없는 환불만
                 if (daysBetween >= 7) {
                     // 적립금 db rollbackPoints(int userId, BigDecimal points, int reservationId)
-                    RewardsLogEntity thisRewardsLog = rewardsLogRepository
-                            .findByUserIdAndDescriptionAndReservationsId(userId, "USE", resId)
+                    Optional<RewardsLogEntity> useRewardsLogOpt = rewardsLogRepository
+                            .findByUserIdAndDescriptionAndReservationsId(userId, "USE", resId);
+                    if (useRewardsLogOpt.isPresent()) {
+                        RewardsLogEntity thisRewardsLog = useRewardsLogOpt.get();
+                        BigDecimal rollbackPoints = thisRewardsLog.getChangePoint().abs(); // abs 메서드로 절대값 변환
+                        rewardsService.rollbackPoints(userId, rollbackPoints, resId);
+                    } else {
+                        System.out.println("적립금 사용 로그가 없습니다. userId: " + userId + ", reservationId: " + resId);
+                    }
+                    // 받은 적립금 cancel
+                    RewardsLogEntity cancelRewardsLog = rewardsLogRepository
+                            .findByUserIdAndDescriptionAndReservationsId(userId, "EARN", resId)
                             .orElseThrow(() -> new IllegalArgumentException(
-                                    "Invalid reservation ID: " + thisReservation.getId())); // USE인 로그가져오기
-                    BigDecimal rollbackPoints = thisRewardsLog.getChangePoint().abs(); // abs 메서드로 절대값 변환
-                    rewardsService.rollbackPoints(userId, rollbackPoints, resId);
-                }
+                                    "Invalid reservation ID: " + thisReservation.getId())); // EARN인 로그가져오기
+                    BigDecimal cancelPoints = cancelRewardsLog.getChangePoint();
+                    rewardsService.deductPoints(userId, cancelPoints, resId, "CANCEL");
+
+                    System.out.println("적립금 db 반환 및 롤백 성공");
+                    
+                }else{
                 // 받은 적립금 cancel
-                RewardsLogEntity cancelRewardsLog = rewardsLogRepository
-                        .findByUserIdAndDescriptionAndReservationsId(userId, "EARN", resId)
-                        .orElseThrow(() -> new IllegalArgumentException(
-                                "Invalid reservation ID: " + thisReservation.getId())); // EARN인 로그가져오기
-                BigDecimal cancelPoints = cancelRewardsLog.getChangePoint();
-                rewardsService.deductPoints(userId, cancelPoints, resId, "CANCEL");
+                    RewardsLogEntity cancelRewardsLog = rewardsLogRepository
+                            .findByUserIdAndDescriptionAndReservationsId(userId, "EARN", resId)
+                            .orElseThrow(() -> new IllegalArgumentException(
+                                    "Invalid reservation ID: " + thisReservation.getId())); // EARN인 로그가져오기
+                    BigDecimal cancelPoints = cancelRewardsLog.getChangePoint();
+                    rewardsService.deductPoints(userId, cancelPoints, resId, "CANCEL");
 
-                System.out.println("적립금 db 반환 및 롤백 성공");
-
+                    System.out.println("적립금 db 반환 및 롤백 성공");
+                }    
                 response.put("message", "환불 성공");
 
                 return ResponseEntity.ok(response);
