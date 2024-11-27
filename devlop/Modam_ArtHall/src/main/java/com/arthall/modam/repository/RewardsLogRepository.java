@@ -16,5 +16,6 @@ public interface RewardsLogRepository extends JpaRepository<RewardsLogEntity, In
 
     // 사용자 ID로 적립금 로그 전체 조회
     Page<RewardsLogEntity> findByUserId(int userId, Pageable pageable);
+    
 
 }

@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-
+import java.util.stream.Collectors;
 import java.time.format.DateTimeFormatter;
 
 import org.springframework.data.domain.Page;
@@ -125,10 +125,9 @@ public class PerformanceService {
             return Optional.empty(); // 공연이 없을 경우 빈 Optional 반환
         }
     }
-    //메인페이지
-    public List<PerformancesEntity> getCurrentlyRunningPerformances() {
-        // 현재 날짜를 java.sql.Date로 변환
-        Date today = new Date(System.currentTimeMillis());
+
+    // 최신 공연 리스트를 가져오는 메서드
+    public List<PerformancesEntity> getPerformancesByDate(Date today) {
         return performancesRepository.findByStartdateBeforeAndEnddateAfter(today, today);
     }
 }

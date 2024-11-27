@@ -7,13 +7,51 @@
     <!-- 스타일 시트 -->
     <link rel="stylesheet" th:href="@{/css/layout/style.css}">
     <link rel="stylesheet" th:href="@{/css/main/style.css}">
+    <!-- Swiper CSS -->
+        <link
+        rel="stylesheet"
+        href="https://unpkg.com/swiper/swiper-bundle.min.css"
+        />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Swiper JS -->
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
     <style>
-        .fixed-image {
-            height: 400px;
-            width: 100%;
-            object-fit: cover;
-        }
+.swiper-container {
+    width: 100%; /* 슬라이드 전체 너비 */
+    padding: 50px 0; /* 상하 여백 */
+}
+
+.swiper-slide {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    opacity: 0.5; /* 기본 음영 처리 */
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+.swiper-slide-active {
+    opacity: 1; /* 중앙 슬라이드는 강조 */
+    transform: scale(1.1); /* 확대 효과 */
+}
+
+.card {
+    width: 300px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: transform 0.3s ease-in-out;
+}
+
+.card img {
+    height: 400px;
+    object-fit: cover;
+    width: 100%;
+}
+
+.card:hover {
+    transform: translateY(-10px); /* 호버 시 살짝 떠오르는 효과 */
+}
     </style>
 </head>
 <body>
@@ -26,71 +64,73 @@
         <h1>hero(slide)</h1>
     </div>
 
-    <!-- 슬라이드 섹션 -->
-    <div class="container my-5">
-        <h2 class="mb-4">현재 상영 중인 공연</h2>
-        <div id="performanceCarousel" class="carousel slide" data-bs-ride="carousel">
-            <div class="carousel-inner">
-                <!-- 슬라이드 1 -->
-                <div class="carousel-item active">
-                    <div class="d-flex justify-content-center">
-                        <div class="performance-card">
-                            <img th:src="${performance != null && !#lists.isEmpty(performance.imagesEntities) && performance.imagesEntities[0]?.imageUrl != null 
-                                            ? performance.imagesEntities[0]?.imageUrl 
-                                            : '/imgs/default-image.png'}"
-                                 alt="공연 이미지"
-                                 class="performance-image">
-                            <div class="performance-details">
-                                <h3 th:text="${performance?.title ?: '제목 없음'}"></h3>
-                                <p th:text="'공연기간: ' + ${performance?.startdate ?: '알 수 없음'} + ' ~ ' + ${performance?.enddate ?: '알 수 없음'}"></p>
-                            </div>
-                        </div>
+    <div class="container-fluid mt-5">
+        <h3 class="text-center mb-4">현재 상영 중인 공연</h3>
+        <div class="swiper-container">
+            <div class="swiper-wrapper">
+                <!-- Thymeleaf로 공연 데이터를 반복하여 렌더링 -->
+                <a class="swiper-slide card" th:href="@{'/showDetail/' + ${performance.id}}" th:each="performance : ${performances}">
+                    <img th:src="${performance.imagesEntities != null && performance.imagesEntities.size() > 0
+                                  ? performance.imagesEntities[0].imageUrl
+                                  : '/imgs/default-poster.jpg'}"
+                         class="card-img-top" alt="공연 이미지">
+                    <div class="card-body text-center">
+                        <h5 class="card-title" th:text="${performance.title}">공연 제목</h5>
+                        <p class="card-text" th:text="${performance.formattedStartDate} + ' ~ ' + ${performance.formattedEndDate}">
+                            공연 기간
+                        </p>
                     </div>
-                </div>
-                <!-- 슬라이드 2 -->
-                <div class="carousel-item" th:each="performance : ${performances}">
-                    <div class="d-flex justify-content-center">
-                        <div class="card mx-3" style="width: 400px; height: 550px;">
-                            <!-- Null 또는 빈 리스트일 경우 기본 이미지 사용 -->
-                            <img th:src="${#lists.isEmpty(performance?.imagesEntities) ? '/imgs/default-image.png' : performance.imagesEntities[0].imageUrl}"
-                                 class="card-img-top" alt="공연 이미지"
-                                 style="height: 70%; object-fit: cover; border-radius: 8px;">
-                            <div class="card-body text-center">
-                                <h5 class="card-title" th:text="${performance.title}">공연 제목</h5>
-                                <p class="card-text" th:text="'공연기간: ' + ${performance.startdate} + ' ~ ' + ${performance.enddate}"></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- 추가 슬라이드 -->
+                </a>
             </div>
-            <!-- 슬라이드 버튼 -->
-            <button class="carousel-control-prev" type="button" data-bs-target="#performanceCarousel" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Previous</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#performanceCarousel" data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Next</span>
-            </button>
+            <!-- 페이지네이션 -->
+            <div class="swiper-pagination"></div>
         </div>
     </div>
-
-    <!-- 공지사항 섹션 -->
-    <div class="container my-5">
-        <h2>최근 공지사항</h2>
-        <ul>
-            <li th:each="notice : ${recentNotices}">
-                <span th:text="${notice.title}">공지사항 제목</span>
-                <span th:text="${#dates.format(notice.createdAt, 'yyyy-MM-dd')}">2024-11-25</span>
-            </li>
-        </ul>
-    </div>
+    
+    
+    
+    
+        <!-- 공지사항 섹션 -->
+        <div class="container my-5">
+            <h2>최근 공지사항</h2>
+            <ul class="list-group">
+                <li class="list-group-item" th:each="notice : ${recentNotices}">
+                    <a th:href="@{'/noticeView/' + ${notice.id}}"><h5 th:text="${notice.title}">공지사항 제목</h5></a>
+                    <p th:text="${#dates.format(notice.createdAt, 'yyyy-MM-dd')}">2024-11-25</p>
+                </li>
+            </ul>
+        </div>
    
-    <!-- 푸터 가져오기 -->
+    <!-- 푸터 -->
     <th:block th:replace="~{fragments/footer :: footerFragment}"></th:block>
 
     <!-- 부트스트랩 스크립트 -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const swiper = new Swiper('.swiper-container', {
+                slidesPerView: 3, // 한 번에 보이는 슬라이드 개수
+                spaceBetween: 30, // 슬라이드 간 간격
+                loop: true, // 무한 루프
+                centeredSlides: true, // 현재 활성화된 슬라이드를 중앙에 위치
+                autoplay: {
+                    delay: 3000, // 3초 간격으로 자동 슬라이드
+                    disableOnInteraction: false, // 사용자 상호작용 후에도 자동 슬라이드 유지
+                },
+                pagination: {
+                    el: '.swiper-pagination', // 페이지네이션 요소
+                    clickable: true, // 클릭 가능
+                },
+            });
+
+            // 카드 hover 시 슬라이드 일시정지 및 재개
+            const cards = document.querySelectorAll('.swiper-slide');
+            cards.forEach((card) => {
+                card.addEventListener('mouseenter', () => swiper.autoplay.stop()); // hover 시 멈춤
+                card.addEventListener('mouseleave', () => swiper.autoplay.start()); // hover 해제 시 다시 시작
+            });
+        });
+
+    </script>
 </body>
 </html>
