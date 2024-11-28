@@ -16,11 +16,16 @@
     <!-- Swiper JS -->
     <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
     <style>
+/* Swiper 컨테이너 */
 .swiper-container {
     width: 100%; /* 슬라이드 전체 너비 */
     padding: 50px 0; /* 상하 여백 */
+    position: relative; /* 버튼을 컨테이너 안에 배치 */
+    overflow: hidden;
+    box-sizing: border-box; /* 크기 계산 방식 설정 */
 }
 
+/* 카드 스타일 */
 .swiper-slide {
     display: flex;
     justify-content: center;
@@ -28,29 +33,78 @@
     flex-direction: column;
     opacity: 0.5; /* 기본 음영 처리 */
     transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    text-decoration: none; /* 링크 스타일 제거 */
+    height: auto; /* 슬라이드 높이를 자동으로 조정 */
 }
 
 .swiper-slide-active {
     opacity: 1; /* 중앙 슬라이드는 강조 */
-    transform: scale(1.1); /* 확대 효과 */
+    transform: scale(1.05); /* 약간 확대 */
 }
 
-.card {
-    width: 300px;
+.maincard {
+    width: 260px; /* 카드 고정 너비 */
+    max-width: 90%; /* 최대 너비 설정 */
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
     overflow: hidden;
     transition: transform 0.3s ease-in-out;
 }
 
-.card img {
-    height: 400px;
+.maincard img {
+    height: 250px; /* 이미지 높이 설정 */
     object-fit: cover;
     width: 100%;
 }
 
-.card:hover {
+.maincard:hover {
     transform: translateY(-10px); /* 호버 시 살짝 떠오르는 효과 */
+}
+
+/* 페이지네이션 */
+.swiper-pagination {
+    bottom: 20px; /* 이미지와 겹치지 않도록 아래로 이동 */
+}
+
+.swiper-pagination-bullet {
+    background-color: #007bff; /* 페이지네이션 색상 */
+    opacity: 0.7;
+}
+
+.swiper-pagination-bullet-active {
+    opacity: 1;
+}
+
+/* 이전/다음 버튼 */
+.swiper-button-prev,
+.swiper-button-next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    background-color: rgba(0, 0, 0, 0.6); /* 반투명 배경 */
+    border-radius: 50%; /* 둥근 버튼 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    cursor: pointer;
+    z-index: 10;
+    transition: background-color 0.3s ease;
+}
+
+.swiper-button-prev:hover,
+.swiper-button-next:hover {
+    background-color: rgba(0, 0, 0, 0.8); /* 호버 시 배경 색상 변경 */
+}
+
+.swiper-button-prev {
+    left: 20px; /* 왼쪽 버튼 위치 */
+}
+
+.swiper-button-next {
+    right: 20px; /* 오른쪽 버튼 위치 */
 }
     </style>
 </head>
@@ -69,7 +123,7 @@
         <div class="swiper-container">
             <div class="swiper-wrapper">
                 <!-- Thymeleaf로 공연 데이터를 반복하여 렌더링 -->
-                <a class="swiper-slide card" th:href="@{'/showDetail/' + ${performance.id}}" th:each="performance : ${performances}">
+                <a class="swiper-slide maincard" th:href="@{'/showDetail/' + ${performance.id}}" th:each="performance : ${performances}">
                     <img th:src="${performance.imagesEntities != null && performance.imagesEntities.size() > 0
                                   ? performance.imagesEntities[0].imageUrl
                                   : '/imgs/default-poster.jpg'}"
@@ -82,6 +136,9 @@
                     </div>
                 </a>
             </div>
+            <!-- 네비게이션 버튼 -->
+            <div class="swiper-button-prev"></div>
+            <div class="swiper-button-next"></div>
             <!-- 페이지네이션 -->
             <div class="swiper-pagination"></div>
         </div>
@@ -110,9 +167,9 @@
         document.addEventListener('DOMContentLoaded', () => {
             const swiper = new Swiper('.swiper-container', {
                 slidesPerView: 3, // 한 번에 보이는 슬라이드 개수
-                spaceBetween: 30, // 슬라이드 간 간격
+                spaceBetween: 100, // 슬라이드 간 간격
                 loop: true, // 무한 루프
-                centeredSlides: true, // 현재 활성화된 슬라이드를 중앙에 위치
+                centeredSlides: true, // 중앙에 슬라이드 정렬
                 autoplay: {
                     delay: 3000, // 3초 간격으로 자동 슬라이드
                     disableOnInteraction: false, // 사용자 상호작용 후에도 자동 슬라이드 유지
@@ -120,6 +177,10 @@
                 pagination: {
                     el: '.swiper-pagination', // 페이지네이션 요소
                     clickable: true, // 클릭 가능
+                },
+                navigation: {
+                    nextEl: '.swiper-button-next', // 다음 버튼
+                    prevEl: '.swiper-button-prev', // 이전 버튼
                 },
             });
 
@@ -130,7 +191,6 @@
                 card.addEventListener('mouseleave', () => swiper.autoplay.start()); // hover 해제 시 다시 시작
             });
         });
-
     </script>
 </body>
 </html>
