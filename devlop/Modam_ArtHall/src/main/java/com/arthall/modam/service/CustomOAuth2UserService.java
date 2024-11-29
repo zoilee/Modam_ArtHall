@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -13,13 +14,19 @@ import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import com.arthall.modam.entity.UserEntity;
+import com.arthall.modam.entity.UserEntity.Status;
+import com.arthall.modam.repository.UserRepository;
+
 @Service
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private final KakaoUserService kakaoUserService;
+    private final UserRepository userRepository;
 
-    public CustomOAuth2UserService(KakaoUserService kakaoUserService) {
+    public CustomOAuth2UserService(KakaoUserService kakaoUserService, UserRepository userRepository) {
         this.kakaoUserService = kakaoUserService;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -55,17 +62,35 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             throw new RuntimeException("OAuth2 공급자로부터 loginId를 가져올 수 없습니다.");
         }
 
+        // 데이터베이스에서 사용자 정보 확인
+        Optional<UserEntity> existingUserOpt = userRepository.findByLoginId(loginId);
+
+        // 사용자 상태 확인
+        if (existingUserOpt.isPresent()) {
+            UserEntity existingUser = existingUserOpt.get();
+
+            // 상태가 BANNED인 경우 로그인 차단
+            if (existingUser.getStatus() == Status.BANNED) {
+                throw new UserService.UserBannedException("계정이 정지되었습니다. 관리자에게 문의하세요.");
+            }
+
+            // 기존 사용자 반환
+            return createOAuth2User(oAuth2User, attributes, loginId);
+        }
+
         // 사용자 정보 저장 또는 조회
         kakaoUserService.registerUser(loginId, email, name, registrationId.toUpperCase());
+        // OAuth2User 생성 및 반환
+         return createOAuth2User(oAuth2User, attributes, loginId);
+        }
+        private OAuth2User createOAuth2User(OAuth2User oAuth2User, Map<String, Object> attributes, String loginId) {
+            Map<String, Object> customAttributes = new HashMap<>(attributes);
+            customAttributes.put("loginId", loginId); // loginId를 추가
+        
+              // 소셜 로그인 사용자를 ROLE_USER로 설정
+    Collection<GrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
 
-        // 새로운 OAuth2User를 반환하며 loginId 포함
-        Map<String, Object> customAttributes = new HashMap<>(attributes);
-        customAttributes.put("loginId", loginId); // loginId를 추가
-
-        // ROLE_USER 권한 추가
-        Collection<GrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
-
-        return new DefaultOAuth2User(oAuth2User.getAuthorities(), customAttributes, "loginId");
-
-    }
+    // DefaultOAuth2User 대신 통합된 사용자 객체 생성
+    return new DefaultOAuth2User(authorities, customAttributes, "loginId");
+        }
 }

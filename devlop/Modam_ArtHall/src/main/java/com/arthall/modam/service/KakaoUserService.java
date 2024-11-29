@@ -26,7 +26,7 @@ public KakaoUserService(UserRepository userRepository) {
         user.setEmail(email);
         user.setName(name);
         user.setProvider(provider); // KAKAO 또는 NAVER
-        user.setStatus("ACTIVE");
+        user.setStatus(UserEntity.Status.ACTIVE);
 
         return userRepository.save(user);
     }

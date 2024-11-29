@@ -21,8 +21,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -101,7 +99,6 @@ public class HomeController {
     @Autowired
     private NoticesRepository noticesRepository;
 
-    
     @GetMapping("/")
     public String home(Model model) {
         // 현재 날짜 가져오기
@@ -109,24 +106,25 @@ public class HomeController {
 
         // 현재 상영 중인 공연 리스트 가져오기
         List<PerformancesEntity> performances = performanceService.getPerformancesByDate(today);
-    
+
         // 공연 데이터 형식화
         performances.forEach(performance -> {
             if (performance.getStartdate() != null && performance.getEnddate() != null) {
-                performance.setFormattedStartDate(new SimpleDateFormat("yyyy-MM-dd").format(performance.getStartdate()));
+                performance
+                        .setFormattedStartDate(new SimpleDateFormat("yyyy-MM-dd").format(performance.getStartdate()));
                 performance.setFormattedEndDate(new SimpleDateFormat("yyyy-MM-dd").format(performance.getEnddate()));
             } else {
                 performance.setFormattedStartDate("N/A");
                 performance.setFormattedEndDate("N/A");
             }
         });
-    
+
         // 최근 공지사항 4개 가져오기
         List<NoticesEntity> recentNotices = noticesService.getRecentNotices(4);
 
         model.addAttribute("performances", performances);
         model.addAttribute("recentNotices", recentNotices);
-    
+
         return "main"; // Thymeleaf 템플릿 이름
     }
 
@@ -161,9 +159,9 @@ public class HomeController {
         List<ReservationsEntity> upcomingReservations = reservationService.getUpcomingReservations(userId);
         List<ReservationsEntity> pastReservations = reservationService.getPastReservations(userId);
 
-
         model.addAttribute("user", user);
-        model.addAttribute("upcomingReservations", upcomingReservations != null ? upcomingReservations : new ArrayList<>());
+        model.addAttribute("upcomingReservations",
+                upcomingReservations != null ? upcomingReservations : new ArrayList<>());
         model.addAttribute("pastReservations", pastReservations != null ? pastReservations : new ArrayList<>());
 
         // 적립금 정보
@@ -185,17 +183,17 @@ public class HomeController {
 
         // 현재 사용자 가져오기
         Object principal = authentication.getPrincipal();
-        String loginId = (principal instanceof UserDetails) ?
-                ((UserDetails) principal).getUsername() : (String) ((OAuth2User) principal).getAttributes().get("loginId");
+        String loginId = (principal instanceof UserDetails) ? ((UserDetails) principal).getUsername()
+                : (String) ((OAuth2User) principal).getAttributes().get("loginId");
 
         UserEntity user = userService.getUserByLoginId(loginId);
-        if (user == null) throw new RuntimeException("사용자를 찾을 수 없습니다.");
+        if (user == null)
+            throw new RuntimeException("사용자를 찾을 수 없습니다.");
 
         // 페이징 데이터 반환
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         return rewardsLogService.getLogsByUserId(user.getId(), pageable);
     }
-        
 
     @GetMapping("/registeruserEdit")
     public String registeruserEdit() {
@@ -205,8 +203,8 @@ public class HomeController {
     // /showList 매핑
     @GetMapping("/showList")
     public String showList(@RequestParam(value = "page", defaultValue = "0") int page,
-                           @RequestParam(value = "size", defaultValue = "5") int size,
-                           Model model) {
+            @RequestParam(value = "size", defaultValue = "5") int size,
+            Model model) {
 
         // Validate and adjust page and size
         page = Math.max(page, 0);
@@ -216,7 +214,6 @@ public class HomeController {
         // 현재 날짜를 기준으로 공연 데이터 분리
         List<PerformancesEntity> upcomingPerformances = performanceService.getUpcomingPerformances();
         Page<PerformancesEntity> pastPerformances = performanceService.getPastPerformances(pageable);
-        
 
         // 최근 4개 공연 추출
         List<PerformancesEntity> top4Performances = upcomingPerformances.stream()
@@ -226,10 +223,12 @@ public class HomeController {
         List<PerformancesEntity> remainingPerformances = upcomingPerformances.stream()
                 .skip(4)
                 .toList();
-    
+
         // Partition remaining performances into chunks of 4
-        List<List<PerformancesEntity>> partitionedPerformances = IntStream.range(0, (remainingPerformances.size() + 3) / 4)
-                .mapToObj(i -> remainingPerformances.subList(i * 4, Math.min((i + 1) * 4, remainingPerformances.size())))
+        List<List<PerformancesEntity>> partitionedPerformances = IntStream
+                .range(0, (remainingPerformances.size() + 3) / 4)
+                .mapToObj(
+                        i -> remainingPerformances.subList(i * 4, Math.min((i + 1) * 4, remainingPerformances.size())))
                 .toList();
 
         model.addAttribute("top4Performances", top4Performances);
@@ -402,7 +401,7 @@ public class HomeController {
 
     @GetMapping("/reservConfirm")
     public String reservConfirm(Model model) {
-        //가입폼 체크 이거 service로 만들어주면안되나요?
+        // 가입폼 체크 이거 service로 만들어주면안되나요?
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         Object principal = authentication.getPrincipal();
@@ -430,7 +429,7 @@ public class HomeController {
 
         BigDecimal points = userService.getUserPointsById(userId);
         System.out.println("내 포인트는 : " + points);
-        
+
         int price = 600;
         model.addAttribute("price", price);
         model.addAttribute("points", points.intValue());
@@ -438,9 +437,9 @@ public class HomeController {
         return "reservConfirm";
     }
 
-    @RequestMapping(value = "/reservForm", method = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(value = "/reservForm", method = { RequestMethod.GET, RequestMethod.POST })
     public String showReservationForm(@RequestParam("performanceId") int performanceId,
-                                    Model model) {
+            Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         // 로그인되지 않은 경우
@@ -463,15 +462,15 @@ public class HomeController {
         // 오늘 날짜를 Calendar 객체로 가져오기
         Calendar calendar = Calendar.getInstance();
         Date today = (Date) calendar.getTime();
-        
+
         // 오늘 날짜를 문자열로 변환하여 모델에 추가
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String todayString = dateFormat.format(today);
-        
+
         model.addAttribute("today", todayString); // 오늘 날짜를 모델에 추가
         return "reservForm";
     }
-    
+
     // 사용자 역할을 반환하는 유틸리티 메서드
     private String getUserRole(Authentication authentication) {
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();

@@ -1,5 +1,6 @@
 package com.arthall.modam.service;
 
+import java.util.Optional;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -28,28 +29,58 @@ public class UserService implements UserDetailsService {
     private final RewardsRepository RewardsRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, 
-                       RewardsRepository RewardsRepository,
-                       PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository,
+            RewardsRepository RewardsRepository,
+            PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.RewardsRepository = RewardsRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
-    // 회원가입 처리
+    // ==================================회원가입 처리====================================
+    // 아이디 중복 체크
+    public boolean isLoginIdDuplicate(String loginId) {
+        return userRepository.findByLoginId(loginId).isPresent();
+    }
+
+    // 이메일 중복 체크
+    public boolean isEmailDuplicate(String email) {
+        return userRepository.findByEmail(email).isPresent();
+    }
+
+    // 전화번호 중복 체크
+    public boolean isPhoneNumberDuplicate(String phoneNumber) {
+        return userRepository.findByPhoneNumber(phoneNumber).isPresent();
+    }
+
     public void registerUser(UserDto userDto) {
-        if (userRepository.findByLoginId(userDto.getLoginId()).isPresent()) {
-            throw new IllegalArgumentException("이미 존재하는 사용자입니다.");
+        System.out.println("회원가입 요청 처리 중: " + userDto);
+
+        // 아이디 중복 체크
+        if (isLoginIdDuplicate(userDto.getLoginId())) {
+            throw new IllegalArgumentException("이미 사용 중인 아이디입니다.");
         }
 
-        UserEntity userEntity = new UserEntity();
-        userEntity.setLoginId(userDto.getLoginId());
-        userEntity.setPassword(passwordEncoder.encode(userDto.getPassword())); // 비밀번호 암호화
-        userEntity.setName(userDto.getName());
-        userEntity.setEmail(userDto.getEmail());
-        userEntity.setPhoneNumber(userDto.getPhoneNumber());
-        userEntity.setRole(UserEntity.Role.USER);
+        // 이메일 중복 체크
+        if (isEmailDuplicate(userDto.getEmail())) {
+            throw new IllegalArgumentException("이미 등록된 이메일입니다.");
+        }
+        // 전화번호 중복 체크
+        if (isPhoneNumberDuplicate(userDto.getPhoneNumber())) {
+            throw new IllegalArgumentException("이미 등록된 전화번호입니다.");
+        }
 
+        // 비밀번호 암호화
+        String encodedPassword = passwordEncoder.encode(userDto.getPassword());
+        userDto.setPassword(encodedPassword);
+
+        // DTO -> Entity 변환
+        UserEntity userEntity = userDto.toEntity();
+        userEntity.setRole(UserEntity.Role.USER); // 기본값 설정
+        userEntity.setProvider("LOCAL"); // 로컬 사용자로 설정
+        userEntity.setStatus(UserEntity.Status.ACTIVE); // 계정 상태 활성화
+
+        // 저장
         userRepository.save(userEntity);
         System.out.println("새 사용자 등록: " + userDto.getLoginId());
         // Rewards 생성
@@ -74,21 +105,19 @@ public class UserService implements UserDetailsService {
     // userId로 사용자 정보 가져오기
     public UserEntity getUserById(int userId) {
         System.out.println("getUserById 호출됨: userId = " + userId);
-    
+
         return userRepository.findById(userId)
-            .orElseThrow(() -> {
-                System.err.println("사용자를 찾을 수 없습니다: ID = " + userId);
-                return new RuntimeException("사용자를 찾을 수 없습니다: ID = " + userId);
-            });
+                .orElseThrow(() -> {
+                    System.err.println("사용자를 찾을 수 없습니다: ID = " + userId);
+                    return new RuntimeException("사용자를 찾을 수 없습니다: ID = " + userId);
+                });
     }
 
     // 추가 메서드 예시: loginId로 사용자 정보 가져오기
     public UserEntity getUserByLoginId(String loginId) {
         return userRepository.findByLoginId(loginId)
-            .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다: loginId = " + loginId));
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다: loginId = " + loginId));
     }
-
-    
 
     // ID 기반 포인트 조회
     public BigDecimal getUserPointsById(int userId) {
@@ -104,25 +133,39 @@ public class UserService implements UserDetailsService {
         return getUserPointsById(user.getId());
     }
 
+    // 새 예외 클래스 추가
+    public static class UserBannedException extends RuntimeException {
+        public UserBannedException(String message) {
+            super(message);
+        }
+    }
+
     // UserDetailsService의 메서드 구현 (Spring Security)
     @Override
     public UserDetails loadUserByUsername(String loginId) throws UsernameNotFoundException {
-        System.out.println("Spring Security 사용자 인증 중: loginId = " + loginId);
-
         UserEntity userEntity = userRepository.findByLoginId(loginId)
-                .orElseThrow(() -> {
-                    System.err.println("사용자를 찾을 수 없습니다: loginId = " + loginId);
-                    return new UsernameNotFoundException("사용자를 찾을 수 없습니다: loginId = " + loginId);
-                });
+                .orElseThrow(() -> new UsernameNotFoundException("아이디 또는 비밀번호가 일치하지 않습니다."));
+
+        // BANNED 상태 확인
+        if (userEntity.getStatus() == UserEntity.Status.BANNED) {
+            throw new UserBannedException("계정이 정지되었습니다. 관리자에게 문의하세요.");
+        }
 
         return User.builder()
                 .username(userEntity.getLoginId())
                 .password(userEntity.getPassword())
-                .roles(userEntity.getRole().name()) // 사용자 역할 설정
+                .roles(userEntity.getRole().name())
                 .build();
     }
 
-    // 관리자 계정 자동 생성
+    // =================================개인정보 수정
+    // ======================================
+    // UserService 내 추가
+    public void updateUser(UserEntity userEntity) {
+        userRepository.save(userEntity);
+    }
+
+    // ============================관리자 계정 자동 생성===================================
     @PostConstruct
     public void createAdminUser() {
         if (userRepository.findByLoginId("admin").isEmpty()) {
@@ -141,8 +184,8 @@ public class UserService implements UserDetailsService {
 
     public boolean login(String loginId, String rawPassword) {
         return userRepository.findByLoginId(loginId)
-            .map(user -> passwordEncoder.matches(rawPassword, user.getPassword())) // 비밀번호 비교
-            .orElse(false); // 사용자가 존재하지 않을 경우 false 반환
+                .map(user -> passwordEncoder.matches(rawPassword, user.getPassword())) // 비밀번호 비교
+                .orElse(false); // 사용자가 존재하지 않을 경우 false 반환
     }
 
     public boolean isAdmin(UserEntity user) {
@@ -160,7 +203,14 @@ public class UserService implements UserDetailsService {
 
         return savedUser;
     }
+
+    // 이름과 이메일로 사용자 검색
+    public Optional<UserEntity> findByNameAndEmail(String name, String email) {
+        return userRepository.findByNameAndEmail(name, email);
+    }
+
+    // 아이디와 이메일로 사용자 검색
+    public Optional<UserEntity> findByLoginIdAndEmail(String loginId, String email) {
+        return userRepository.findByLoginIdAndEmail(loginId, email);
+    }
 }
-
-
-
