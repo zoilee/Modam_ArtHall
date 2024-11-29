@@ -1,6 +1,7 @@
 package com.arthall.modam.service;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,14 +15,18 @@ public class ReservationsService {
     @Autowired
     private ReservationsRepository reservationRepository;
 
-    public List<ReservationsEntity> getUpcomingReservationsByUserId(int userId) {
-        Timestamp now = new Timestamp(System.currentTimeMillis());
-        return reservationRepository.findByUserEntity_IdAndReservationDateAfter(userId, now);
+    public List<ReservationsEntity> getUpcomingReservations(int userId) {
+        // 오늘 날짜 가져오기
+        LocalDate today = LocalDate.now();
+        // JPA 쿼리 호출
+        return reservationRepository.findUpcomingReservationsByShowDate(userId, today);
     }
 
-    public List<ReservationsEntity> getPastReservationsByUserId(int userId) {
-        Timestamp now = new Timestamp(System.currentTimeMillis());
-        return reservationRepository.findByUserEntity_IdAndReservationDateBefore(userId, now);
+    public List<ReservationsEntity> getPastReservations(int userId) {
+        // 오늘 날짜 가져오기
+        LocalDate today = LocalDate.now();
+        // JPA 쿼리 호출
+        return reservationRepository.findPastReservationsByShowDate(userId, today);
     }
 
     public ReservationsEntity createReservation(ReservationsEntity reservationEntity) {

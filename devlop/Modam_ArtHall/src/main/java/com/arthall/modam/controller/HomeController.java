@@ -3,6 +3,7 @@ package com.arthall.modam.controller;
 import java.util.List;
 
 import java.util.Map;
+import java.math.BigDecimal;
 import java.security.Principal;
 
 import java.sql.Date;
@@ -16,6 +17,7 @@ import java.util.HashMap;
 import java.util.Optional;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 
@@ -24,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -40,11 +43,16 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.arthall.modam.entity.CommentEntity;
 import com.arthall.modam.entity.PerformancesEntity;
 import com.arthall.modam.entity.ReservationsEntity;
+import com.arthall.modam.entity.RewardsEntity;
+import com.arthall.modam.entity.RewardsLogEntity;
 import com.arthall.modam.entity.UserEntity;
 import com.arthall.modam.repository.PerformancesRepository;
+import com.arthall.modam.repository.RewardsRepository;
 import com.arthall.modam.service.CommentService;
 import com.arthall.modam.service.PerformanceService;
 import com.arthall.modam.service.ReservationsService;
+import com.arthall.modam.service.RewardsLogService;
+import com.arthall.modam.service.RewardsService;
 import com.arthall.modam.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -65,6 +73,17 @@ public class HomeController {
     @Autowired
     private CommentService commentService;
 
+    @Autowired
+    private RewardsRepository rewardsRepository;
+
+    @Autowired
+    private RewardsService rewardsService;
+
+    @Autowired
+    private RewardsLogService rewardsLogService;
+
+    
+
     @GetMapping("/")
     public String home() {
         return "main";
@@ -72,61 +91,46 @@ public class HomeController {
 
     @GetMapping("/mypage")
     public String mypage(Model model) {
-        // 현재 인증 정보 가져오기
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
-            return "redirect:/login"; // 인증되지 않은 경우 로그인 페이지로 리다이렉트
+            return "redirect:/login";
         }
-
+    
         Object principal = authentication.getPrincipal();
         String loginId = null;
-
-        if (principal instanceof OAuth2User) {
-            Map<String, Object> attributes = ((OAuth2User) principal).getAttributes();
-            loginId = (String) attributes.get("loginId");
-        } else if (principal instanceof UserDetails) {
+    
+        if (principal instanceof UserDetails) {
             loginId = ((UserDetails) principal).getUsername();
-        } else {
-            throw new RuntimeException("인증된 사용자가 OAuth2User 또는 UserDetails가 아닙니다.");
+        } else if (principal instanceof OAuth2User) {
+            loginId = (String) ((OAuth2User) principal).getAttributes().get("loginId");
         }
-
+    
         if (loginId == null) {
-            throw new RuntimeException("loginId를 찾을 수 없습니다.");
+            throw new RuntimeException("사용자를 찾을 수 없습니다.");
         }
-
-        // loginId로 사용자 조회
+    
         UserEntity user = userService.getUserByLoginId(loginId);
         if (user == null) {
-            throw new RuntimeException("사용자를 찾을 수 없습니다: loginId = " + loginId);
+            throw new RuntimeException("사용자를 찾을 수 없습니다.");
         }
-
+    
         int userId = user.getId();
-
-        // 예약 데이터 가져오기
-        List<ReservationsEntity> upcomingReservations = reservationService.getUpcomingReservationsByUserId(userId);
-        List<ReservationsEntity> pastReservations = reservationService.getPastReservationsByUserId(userId);
-
-        // 최신 날짜 순으로 정렬
-        upcomingReservations.sort(Comparator.comparing(ReservationsEntity::getReservationDate).reversed());
-        pastReservations.sort(Comparator.comparing(ReservationsEntity::getReservationDate).reversed());
-
-        int points = userService.getUserPointsById(userId);
-
+    
+        // 예약 데이터 조회
+        List<ReservationsEntity> upcomingReservations = reservationService.getUpcomingReservations(userId);
+        List<ReservationsEntity> pastReservations = reservationService.getPastReservations(userId);
+    
         model.addAttribute("user", user);
-        model.addAttribute("points", points);
-        model.addAttribute("upcomingReservations", upcomingReservations);
-        model.addAttribute("pastReservations", pastReservations);
-
-        if (upcomingReservations.isEmpty()) {
-            model.addAttribute("noUpcomingReservationsMessage", "현재 예약이 없습니다.");
-        }
-        if (pastReservations.isEmpty()) {
-            model.addAttribute("noPastReservationsMessage", "과거 예약이 없습니다.");
-        }
-
+        model.addAttribute("upcomingReservations", upcomingReservations != null ? upcomingReservations : new ArrayList<>());
+        model.addAttribute("pastReservations", pastReservations != null ? pastReservations : new ArrayList<>());
+    
+        // 적립금 정보
+        RewardsEntity rewards = rewardsService.getRewardsByUserId(userId);
+        model.addAttribute("points", rewards.getTotalPoint());
+    
         return "mypage";
     }
-
+    
     @GetMapping("/registeruserEdit")
     public String registeruserEdit() {
         return "registeruserEdit";
@@ -306,7 +310,40 @@ public class HomeController {
     }
 
     @GetMapping("/reservConfirm")
-    public String reservConfirm() {
+    public String reservConfirm(Model model) {
+        //가입폼 체크 이거 service로 만들어주면안되나요?
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        Object principal = authentication.getPrincipal();
+        String loginId = null;
+
+        if (principal instanceof OAuth2User) {
+            Map<String, Object> attributes = ((OAuth2User) principal).getAttributes();
+            loginId = (String) attributes.get("loginId");
+        } else if (principal instanceof UserDetails) {
+            loginId = ((UserDetails) principal).getUsername();
+        } else {
+            throw new RuntimeException("인증된 사용자가 OAuth2User 또는 UserDetails가 아닙니다.");
+        }
+
+        if (loginId == null) {
+            throw new RuntimeException("loginId를 찾을 수 없습니다.");
+        }
+        // loginId로 사용자 조회
+        UserEntity user = userService.getUserByLoginId(loginId);
+        if (user == null) {
+            throw new RuntimeException("사용자를 찾을 수 없습니다: loginId = " + loginId);
+        }
+
+        int userId = user.getId();
+
+        BigDecimal points = userService.getUserPointsById(userId);
+        System.out.println("내 포인트는 : " + points);
+        
+        int price = 600;
+        model.addAttribute("price", price);
+        model.addAttribute("points", points.intValue());
+        model.addAttribute("userId", userId);
         return "reservConfirm";
     }
 
