@@ -4,17 +4,14 @@ import java.sql.Date;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.time.format.DateTimeFormatter;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import java.util.ArrayList;
-import java.util.List;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -22,8 +19,9 @@ import org.springframework.stereotype.Service;
 
 import com.arthall.modam.dto.PerformancesDto;
 import com.arthall.modam.entity.PerformancesEntity;
+import com.arthall.modam.repository.CommentRepository;
 import com.arthall.modam.repository.PerformancesRepository;
-import com.arthall.modam.repository.ReservationRepository;
+import com.arthall.modam.repository.ReservationsRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -31,13 +29,14 @@ import jakarta.transaction.Transactional;
 public class PerformanceService {
 
     private final PerformancesRepository performancesRepository;
-    private final ReservationRepository reservationRepository;
+    private final CommentRepository commentRepository;
+    @Autowired
+    private ReservationsRepository reservationsRepository;
 
-    // 생성자 주입 방식 사용
-    public PerformanceService(PerformancesRepository performanceRepository,
-            ReservationRepository reservationRepository) {
+    // 생성자 주입 방식 사용, @Autowired 생략 가능
+    public PerformanceService(PerformancesRepository performanceRepository, CommentRepository commentRepository) {
         this.performancesRepository = performanceRepository;
-        this.reservationRepository = reservationRepository;
+        this.commentRepository = commentRepository;
     }
 
     // 스레드-안전한 DateTimeFormatter
@@ -111,6 +110,32 @@ public class PerformanceService {
     // ID로 공연 정보 가져오기
     public Optional<PerformancesEntity> getPerformanceById(Integer id) {
         return performancesRepository.findById(id);
+    }
+
+    // ID로 공연 정보 가져오고 평균 평점 추가 설정
+    public Optional<PerformancesEntity> getPerformanceWithAverageRating(Integer performanceId) {
+        Optional<PerformancesEntity> performanceOpt = performancesRepository.findById(performanceId);
+
+        if (performanceOpt.isPresent()) {
+            PerformancesEntity performance = performanceOpt.get();
+            Double averageRating = commentRepository.findAverageRatingByPerformanceId(performanceId);
+
+            // 소수점 한 자리까지 포맷하여 평균 평점 설정
+            DecimalFormat df = new DecimalFormat("#.#");
+            String formattedRating = (averageRating != null) ? df.format(averageRating) : "0.0";
+            performance.setFormattedAverageRating(formattedRating);
+
+            return Optional.of(performance);
+        } else {
+            return Optional.empty(); // 공연이 없을 경우 빈 Optional 반환
+        }
+    }
+
+    // 최신 공연 리스트를 가져오는 메서드
+    public List<PerformancesEntity> getPerformancesByDate(Date today) {
+        return performancesRepository.findByStartdateBeforeAndEnddateAfter(today, today);
+    }
+
     // 모든 공연의 예약 현황 정보 가져오기 (내림차순 정렬)
     public List<PerformancesDto> getPerformancesWithReservationRate() {
         List<PerformancesEntity> performances = performancesRepository
@@ -119,7 +144,7 @@ public class PerformanceService {
 
         for (PerformancesEntity performance : performances) {
             int totalSeats = 100; // 예시로 전체 좌석 수를 100으로 가정
-            int reservedSeats = reservationRepository.countByPerformanceId(performance.getId());
+            int reservedSeats = reservationsRepository.countByPerformanceId(performance.getId());
             double reservationRate = (double) reservedSeats / totalSeats * 100;
 
             PerformancesDto dto = PerformancesDto.toPerformancesDto(performance);
@@ -151,7 +176,7 @@ public class PerformanceService {
 
     @Transactional
     public boolean deletePerformance(int performanceId) {
-        int reservationCount = reservationRepository.countByPerformanceId(performanceId);
+        int reservationCount = reservationsRepository.countByPerformanceId(performanceId);
         if (reservationCount == 0) {
             // 예약이 없는 경우에만 삭제
             performancesRepository.deleteById(performanceId);
@@ -161,8 +186,4 @@ public class PerformanceService {
         }
     }
 
-    // 최신 공연 리스트를 가져오는 메서드
-    public List<PerformancesEntity> getPerformancesByDate(Date today) {
-        return performancesRepository.findByStartdateBeforeAndEnddateAfter(today, today);
-    }
 }

@@ -13,6 +13,9 @@ import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,7 +33,7 @@ import com.arthall.modam.entity.PerformancesEntity;
 import com.arthall.modam.entity.UserEntity;
 import com.arthall.modam.repository.ImagesRepository;
 import com.arthall.modam.repository.PerformancesRepository;
-import com.arthall.modam.repository.ReservationRepository;
+import com.arthall.modam.repository.ReservationsRepository;
 
 @Controller
 @RequestMapping("/admin")
@@ -55,7 +58,7 @@ public class AdminController {
     private PerformanceService performanceService;
 
     @Autowired
-    private ReservationRepository reservationRepository;
+    private ReservationsRepository reservationRepository;
 
     // 공지사항 목록 조회 (페이지네이션 적용)
     @GetMapping("/noticeList")

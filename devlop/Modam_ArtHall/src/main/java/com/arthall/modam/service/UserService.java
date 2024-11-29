@@ -105,17 +105,6 @@ public class UserService implements UserDetailsService {
                 });
     }
 
-    // userId로 사용자 정보 가져오기
-    public UserEntity getUserById(int userId) {
-        System.out.println("getUserById 호출됨: userId = " + userId);
-
-        return userRepository.findById(userId)
-                .orElseThrow(() -> {
-                    System.err.println("사용자를 찾을 수 없습니다: ID = " + userId);
-                    return new RuntimeException("사용자를 찾을 수 없습니다: ID = " + userId);
-                });
-    }
-
     // 추가 메서드 예시: loginId로 사용자 정보 가져오기
     public UserEntity getUserByLoginId(String loginId) {
         return userRepository.findByLoginId(loginId)
@@ -215,11 +204,6 @@ public class UserService implements UserDetailsService {
     // 아이디와 이메일로 사용자 검색
     public Optional<UserEntity> findByLoginIdAndEmail(String loginId, String email) {
         return userRepository.findByLoginIdAndEmail(loginId, email);
-            adminUser.setStatus(UserEntity.Status.ACTIVE); // 기본 상태 설정
-            userRepository.save(adminUser);
-            System.out.println("관리자 계정 생성 완료");
-        });
-
     }
 
     // 회원 ID로 회원 조회

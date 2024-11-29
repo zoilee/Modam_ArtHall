@@ -34,6 +34,8 @@ public class UserController {
     private final PasswordEncoder passwordEncoder;
     private final UserService userService;
     private final MailService mailService;
+    @Autowired
+    private BbsService bbsService;
 
     // 생성자 주입
     public UserController(PasswordEncoder passwordEncoder, UserService userService, MailService mailService) {
