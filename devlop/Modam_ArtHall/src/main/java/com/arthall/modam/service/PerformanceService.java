@@ -12,22 +12,32 @@ import java.time.format.DateTimeFormatter;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.arthall.modam.dto.PerformancesDto;
 import com.arthall.modam.entity.PerformancesEntity;
-import com.arthall.modam.repository.CommentRepository;
 import com.arthall.modam.repository.PerformancesRepository;
+import com.arthall.modam.repository.ReservationRepository;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class PerformanceService {
 
     private final PerformancesRepository performancesRepository;
-    private final CommentRepository commentRepository;
+    private final ReservationRepository reservationRepository;
 
-    // 생성자 주입 방식 사용, @Autowired 생략 가능
-    public PerformanceService(PerformancesRepository performanceRepository, CommentRepository commentRepository) {
+    // 생성자 주입 방식 사용
+    public PerformanceService(PerformancesRepository performanceRepository,
+            ReservationRepository reservationRepository) {
         this.performancesRepository = performanceRepository;
-        this.commentRepository = commentRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     // 스레드-안전한 DateTimeFormatter
@@ -39,39 +49,36 @@ public class PerformanceService {
         // 'enddate'가 현재 날짜 이후인 공연 리스트 가져오기
         List<PerformancesEntity> performances = performancesRepository.findByEnddateAfter(currentDate);
         formatPerformanceDates(performances);
-        
+
         // startdate 기준으로 정렬
         performances.sort(Comparator.comparing(PerformancesEntity::getStartdate));
         return performances;
-        
+
     }
 
-        // 지난 공연 페이징 처리
-        public Page<PerformancesEntity> getPastPerformances(Pageable pageable) {
-            // Repository에서 데이터 가져오기
-            Page<PerformancesEntity> pastPerformances = performancesRepository.findByEnddateBefore(
-                new java.sql.Date(System.currentTimeMillis()), pageable
-            );
-        
-            // 디버깅 로그
-            System.out.println("Fetched Performances: " + pastPerformances.getContent().size());
-        
-            // 날짜 포맷팅
-            pastPerformances.getContent().forEach(performance -> {
-                if (performance.getStartdate() != null) {
-                    performance.setFormattedStartDate(
-                        dateFormatter.format(performance.getStartdate().toLocalDate())
-                    );
-                }
-                if (performance.getEnddate() != null) {
-                    performance.setFormattedEndDate(
-                        dateFormatter.format(performance.getEnddate().toLocalDate())
-                    );
-                }
-            });
-        
-            return pastPerformances;
-        }
+    // 지난 공연 페이징 처리
+    public Page<PerformancesEntity> getPastPerformances(Pageable pageable) {
+        // Repository에서 데이터 가져오기
+        Page<PerformancesEntity> pastPerformances = performancesRepository.findByEnddateBefore(
+                new java.sql.Date(System.currentTimeMillis()), pageable);
+
+        // 디버깅 로그
+        System.out.println("Fetched Performances: " + pastPerformances.getContent().size());
+
+        // 날짜 포맷팅
+        pastPerformances.getContent().forEach(performance -> {
+            if (performance.getStartdate() != null) {
+                performance.setFormattedStartDate(
+                        dateFormatter.format(performance.getStartdate().toLocalDate()));
+            }
+            if (performance.getEnddate() != null) {
+                performance.setFormattedEndDate(
+                        dateFormatter.format(performance.getEnddate().toLocalDate()));
+            }
+        });
+
+        return pastPerformances;
+    }
 
     private void formatPerformanceDates(List<PerformancesEntity> performances) {
         for (PerformancesEntity performance : performances) {
@@ -91,7 +98,6 @@ public class PerformanceService {
         return dateFormatter.format(localDate);
     }
 
-
     // 전체 목록 검색
     public List<PerformancesEntity> findAll() {
         return performancesRepository.findAll();
@@ -105,24 +111,53 @@ public class PerformanceService {
     // ID로 공연 정보 가져오기
     public Optional<PerformancesEntity> getPerformanceById(Integer id) {
         return performancesRepository.findById(id);
+    // 모든 공연의 예약 현황 정보 가져오기 (내림차순 정렬)
+    public List<PerformancesDto> getPerformancesWithReservationRate() {
+        List<PerformancesEntity> performances = performancesRepository
+                .findAll(Sort.by(Sort.Direction.DESC, "createdAt"));
+        List<PerformancesDto> performanceDetails = new ArrayList<>();
+
+        for (PerformancesEntity performance : performances) {
+            int totalSeats = 100; // 예시로 전체 좌석 수를 100으로 가정
+            int reservedSeats = reservationRepository.countByPerformanceId(performance.getId());
+            double reservationRate = (double) reservedSeats / totalSeats * 100;
+
+            PerformancesDto dto = PerformancesDto.toPerformancesDto(performance);
+            dto.setImageUrl(performance.getImagesEntities().isEmpty() ? null
+                    : performance.getImagesEntities().get(0).getImageUrl());
+            dto.setReservationRate(reservationRate);
+            dto.setReservationCount(reservedSeats); // 예약 수 설정
+
+            performanceDetails.add(dto);
+        }
+
+        return performanceDetails;
     }
 
-    // ID로 공연 정보 가져오고 평균 평점 추가 설정
-    public Optional<PerformancesEntity> getPerformanceWithAverageRating(Integer performanceId) {
-        Optional<PerformancesEntity> performanceOpt = performancesRepository.findById(performanceId);
+    // 페이지네이션을 사용하여 공연 목록 가져오기 (최신순 정렬)
+    public Page<PerformancesDto> getPerformances(Pageable pageable) {
+        return performancesRepository.findAll(pageable)
+                .map(PerformancesDto::toPerformancesDto);
+    }
 
-        if (performanceOpt.isPresent()) {
-            PerformancesEntity performance = performanceOpt.get();
-            Double averageRating = commentRepository.findAverageRatingByPerformanceId(performanceId);
+    @Transactional
+    public void deactivatePerformance(int performanceId) {
+        // 공연 비활성화
+        PerformancesEntity performance = performancesRepository.findById(performanceId)
+                .orElseThrow(() -> new IllegalArgumentException("공연을 찾을 수 없습니다."));
+        performance.setActive(false);
+        performancesRepository.save(performance);
+    }
 
-            // 소수점 한 자리까지 포맷하여 평균 평점 설정
-            DecimalFormat df = new DecimalFormat("#.#");
-            String formattedRating = (averageRating != null) ? df.format(averageRating) : "0.0";
-            performance.setFormattedAverageRating(formattedRating);
-
-            return Optional.of(performance);
+    @Transactional
+    public boolean deletePerformance(int performanceId) {
+        int reservationCount = reservationRepository.countByPerformanceId(performanceId);
+        if (reservationCount == 0) {
+            // 예약이 없는 경우에만 삭제
+            performancesRepository.deleteById(performanceId);
+            return true;
         } else {
-            return Optional.empty(); // 공연이 없을 경우 빈 Optional 반환
+            return false;
         }
     }
 

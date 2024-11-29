@@ -14,41 +14,44 @@
      <!-- 헤더 -->
      <th:block th:replace="~{fragments/header :: headerFragment}"></th:block>
 
+    <div class="content"><!-- 공지사항 목록 Section -->
+
     <!-- 공지사항 목록 Section -->
+
     <div class="container my-5" style="padding-top: 100px;">
         <h2 class="mb-4">공지사항</h2>
-
-        <!-- 공지사항 Table -->
-        <table class="table table-bordered text-center">
-            <thead>
-                <tr>
-                    <th style="width: 10%;">번호</th>
-                    <th style="width: 50%;">제목</th>
-                    <th style="width: 20%;">작성일자</th>
-                    <th style="width: 20%;">수정/삭제</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- 반복되는 공지사항 항목 -->
-                <tr th:each="notice : ${notices}">
-                    <td th:text="${notice.id}">1</td> <!-- 공지사항 ID -->
-                    <!-- 제목에 링크 추가 -->
-                    <td><a th:href="@{/admin/noticeView(id=${notice.id})}" th:text="${notice.title}">공지사항 제목</a></td>
-                    <td th:text="${#dates.format(notice.createdAt, 'yyyy-MM-dd')}">2023-11-08</td> <!-- 작성일자 -->
-                    <td>
-                        <a th:href="@{/admin/noticeEdit(id=${notice.id})}" class="btn btn-sm btn-primary">수정하기</a>
-                        <form th:action="@{/admin/noticeDelete(id=${notice.id})}" method="post" style="display: inline;" 
-                              onsubmit="return confirm('정말 삭제하시겠습니까?');">
-                            <button type="submit" class="btn btn-sm btn-danger">삭제</button>
-                        </form>
-                    </td>
-                </tr>
-            </tbody>
-            
-        </table>
-
+        <div class="table-responsive">
+            <!-- 공지사항 Table -->
+            <table class="table table-bordered text-center">
+                <thead>
+                    <tr>
+                        <th style="width: 10%;">번호</th>
+                        <th style="width: 50%;">제목</th>
+                        <th style="width: 20%;">작성일자</th>
+                        <th style="width: 20%;">수정/삭제</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- 반복되는 공지사항 항목 -->
+                    <tr th:each="notice : ${notices}">
+                        <td th:text="${notice.id}">1</td> <!-- 공지사항 ID -->
+                        <!-- 제목에 링크 추가 -->
+                        <td><a th:href="@{/admin/noticeView(id=${notice.id})}" th:text="${notice.title}">공지사항 제목</a></td>
+                        <td th:text="${#dates.format(notice.createdAt, 'yyyy-MM-dd')}">2023-11-08</td> <!-- 작성일자 -->
+                        <td>
+                            <a th:href="@{/admin/noticeEdit(id=${notice.id})}" class="btn btn-sm btn-primary">수정하기</a>
+                            <form th:action="@{/admin/noticeDelete(id=${notice.id})}" method="post" style="display: inline;" 
+                                onsubmit="return confirm('정말 삭제하시겠습니까?');">
+                                <button type="submit" class="btn btn-sm btn-danger">삭제</button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+                
+            </table>
+        </div>    
         <!-- 등록하기 버튼 -->
-        <div class="text-start mb-3">
+        <div class="text-end mb-3">
             <a th:href="@{/admin/noticeWrite}" class="btn btn-secondary">등록하기</a>
         </div>
 
@@ -76,14 +79,10 @@
                 </li>
             </ul>
         </nav>
+          
+    </div>        
 
-
-        <!-- 검색 필드 -->
-        <div class="input-group mt-3">
-            <span class="input-group-text">icon</span>
-            <input type="text" class="form-control" placeholder="검색">
-            <button class="btn btn-outline-secondary" type="button">검색</button>
-        </div>
+    
     </div>
 
     <!-- 푸터 가져오기 -->

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>adminUserCommit</title>
+    <title>회원 관리</title>
     <!-- 스타일 시트 -->
     <link rel="stylesheet" th:href="@{/css/layout/style.css}">
     <link rel="stylesheet" th:href="@{/css/admin/style.css}">
@@ -13,43 +13,65 @@
     <!-- 헤더 -->
     <th:block th:replace="~{fragments/header :: headerFragment}"></th:block>
 
-        <!-- 콘텐츠 부분 (회원 관리) -->
-        <div class="content container my-5" style="padding-top: 100px;">
-            <h2 class="mb-4" style="font-weight: bold;">회원관리</h2>
-    
-            <!-- 회원조회 검색 필드 -->
-            <div class="mb-3 row">
-                <label for="searchUser" class="col-sm-2 col-form-label" style="font-weight: bold;">회원조회</label>
-                <div class="col-sm-10">
-                    <div class="input-group">
-                        <input type="text" class="form-control" id="searchUser" placeholder="검색">
-                        <button type="button" class="btn btn-secondary">icon</button>
-                    </div>
-                </div>
-            </div>
+    <!-- 콘텐츠 영역 -->
+    <div class="content container my-5" style="padding-top: 100px;">
+        <h2 class="mb-4" style="font-weight: bold;">회원 관리</h2>
 
-        <!-- 회원 정보 표시 영역(loop 돌면서 추가) -->
-        <div class="ascl-member-info-container d-flex align-items-center">
-            <div class="user-id mx-5">userId</div>
-            <div class="user-details">
-                <p>이름 : {username}</p>
-                <p>가입일 : {registerDate}</p>
-                <p>이메일 : {userEmail}</p>
-                <p>전화번호 : {userPhone}</p>
-            </div>
-            <div class="ascl-action-buttons ms-auto">
-                <button type="button" class="btn btn-light border">수정</button>
-                <button type="button" class="btn btn-dark">삭제</button>
+        <!-- 회원 검색 필드 -->
+        <div class="mb-3 row">
+            <label for="searchUser" class="col-sm-2 col-form-label" style="font-weight: bold;">회원 조회</label>
+            <div class="col-sm-10">
+                <form th:action="@{/admin/userCommit}" method="get" class="input-group">
+                    <input type="text" class="form-control" id="searchUser" name="keyword" placeholder="회원 이름으로 검색">
+                    <button type="submit" class="btn btn-secondary">검색</button>
+                </form>
             </div>
         </div>
 
-        <!-- 페이징 구현-->
-        
+        <!-- 회원 정보 표시 영역 -->
+        <div class="ascl-member-info-container d-flex align-items-center" th:each="user : ${users.content}">
+            <div class="user-id mx-5" th:text="${user.id}">userId</div>
+            <div class="user-details">
+                <p>이름 : <span th:text="${user.name}">username</span></p>
+                <p>가입일 : <span th:text="${#dates.format(user.createdAt, 'yyyy-MM-dd')}">registerDate</span></p>
+                <p>이메일 : <span th:text="${user.email}">userEmail</span></p>
+                <p>전화번호 : <span th:text="${user.phoneNumber}">userPhone</span></p>
+            </div>
+            <div class="ascl-action-buttons ms-auto">
+                <!-- 수정 버튼 -->
+                <form th:action="@{/admin/users/edit}" method="get" style="display: inline;">
+                    <input type="hidden" name="id" th:value="${user.id}">
+                    <button type="submit" class="btn btn-light border">수정</button>
+                </form>
+                <!-- 삭제 버튼 -->
+                <form th:action="@{/admin/users/delete}" method="post" style="display: inline;">
+                    <input type="hidden" name="id" th:value="${user.id}">
+                    <button type="submit" class="btn btn-dark">삭제</button>
+                </form>
+            </div>
+        </div>
 
-
+        <!-- 페이징 영역 -->
+        <div class="d-flex justify-content-center mt-4">
+            <ul class="pagination">
+                <!-- 이전 버튼 -->
+                <li class="page-item" th:classappend="${users.hasPrevious()} ? '' : 'disabled'">
+                    <a class="page-link" th:href="@{/admin/userCommit(keyword=${keyword}, page=${users.number - 1})}">이전</a>
+                </li>
+                <!-- 페이지 번호 -->
+                <li class="page-item" th:each="i : ${#numbers.sequence(0, users.totalPages - 1)}"
+                    th:classappend="${i == users.number} ? 'active'">
+                    <a class="page-link" th:href="@{/admin/userCommit(keyword=${keyword}, page=${i})}" th:text="${i + 1}">1</a>
+                </li>
+                <!-- 다음 버튼 -->
+                <li class="page-item" th:classappend="${users.hasNext()} ? '' : 'disabled'">
+                    <a class="page-link" th:href="@{/admin/userCommit(keyword=${keyword}, page=${users.number + 1})}">다음</a>
+                </li>
+            </ul>
+        </div>
     </div>
-   
-   <!-- 푸터 가져오기 -->
-<th:block th:replace="~{fragments/footer :: footerFragment}"></th:block> 
+
+    <!-- 푸터 -->
+    <th:block th:replace="~{fragments/footer :: footerFragment}"></th:block>
 </body>
 </html>

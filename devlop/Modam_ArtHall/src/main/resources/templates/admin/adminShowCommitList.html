@@ -13,7 +13,7 @@
    <th:block th:replace="~{fragments/header :: headerFragment}"></th:block>
 
     <div class="content"> <!--바디부분-->
-        <div class="container my-5">
+        <div class="container my-5 " style="padding-top: 100px;">
             <h2 class="mb-4">공연관리</h2>
             <div class="table-responsive">
                 <table class="table table-bordered text-center align-middle">
@@ -34,18 +34,19 @@
                             <td th:text="${bbs.createdAt}"></td> <!-- db부분-->
                             <td>
                                 <a class="btn btn-primary btn-sm me-2" th:href="@{/admin/showCommitEdit(id=${bbs.id})}">수정</a>
-                                <a th:href="@{/admin/showCommitDelete(id=${bbs.id})}" 
-                                   class="btn btn-danger btn-sm" 
+                                <a th:href="@{/admin/showCommitDelete(id=${bbs.id})}"
+                                   class="btn btn-danger btn-sm"
+                                   th:if="${bbs.reservationCount == 0}"
                                    onclick="return confirm('정말 삭제하시겠습니까?');">삭제</a>
+                                <a href="#" class="btn btn-danger btn-sm" th:if="${bbs.reservationCount > 0}" onclick="alert('예약이 있는 공연은 삭제가 불가합니다.'); return false;">삭제</a>
                             </td>
                         </tr>
                         <!-- /loop -->
-                        <!-- Repeat similar rows as needed -->
                     </tbody>
                     
                 </table>
             </div>
-            <div class="text-end">
+            <div class="text-end mb-3">
                 <a class="btn btn-secondary mt-3" th:href="@{/admin/showCommitWrite}">등록하기</a>
             </div>
         </div>
@@ -80,4 +81,9 @@
    <!-- 푸터 가져오기 -->
 <th:block th:replace="~{fragments/footer :: footerFragment}"></th:block>  
 </body>
+
+<script th:if="${error}" th:inline="javascript">
+    alert([[${error}]]);
+</script>
+
 </html>

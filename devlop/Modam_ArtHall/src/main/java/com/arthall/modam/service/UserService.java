@@ -5,6 +5,9 @@ import java.util.Optional;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -212,5 +215,48 @@ public class UserService implements UserDetailsService {
     // 아이디와 이메일로 사용자 검색
     public Optional<UserEntity> findByLoginIdAndEmail(String loginId, String email) {
         return userRepository.findByLoginIdAndEmail(loginId, email);
+            adminUser.setStatus(UserEntity.Status.ACTIVE); // 기본 상태 설정
+            userRepository.save(adminUser);
+            System.out.println("관리자 계정 생성 완료");
+        });
+
+    }
+
+    // 회원 ID로 회원 조회
+    public UserEntity getUserById(int userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다. ID: " + userId));
+    }
+
+    // 회원 검색
+    public Page<UserEntity> searchUsers(String keyword, Pageable pageable) {
+        if (keyword == null || keyword.isEmpty()) {
+            return userRepository.findAll(pageable); // 키워드가 없으면 전체 검색
+        } else {
+            return userRepository.findByNameContainingIgnoreCase(keyword, pageable); // 키워드로 검색
+        }
+    }
+
+    // 회원 정보 수정
+    public void updateUser(int userId, String loginId, String name, String email, String phoneNumber, String role,
+            String status) {
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다. ID: " + userId));
+
+        user.setLoginId(loginId);
+        user.setName(name);
+        user.setEmail(email);
+        user.setPhoneNumber(phoneNumber);
+        user.setRole(UserEntity.Role.valueOf(role.toUpperCase())); // 역할 설정 (ADMIN, USER 등)
+        user.setStatus(UserEntity.Status.valueOf(status.toUpperCase())); // 상태 설정 (ACTIVE, BANNED)
+        userRepository.save(user);
+    }
+
+    // 회원 삭제
+    public void deleteUser(int userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new IllegalArgumentException("삭제할 회원 정보를 찾을 수 없습니다. ID: " + userId);
+        }
+        userRepository.deleteById(userId);
     }
 }

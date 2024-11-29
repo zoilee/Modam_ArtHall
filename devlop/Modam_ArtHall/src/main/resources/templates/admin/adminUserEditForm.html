@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원 수정</title>
+    <!-- 기존 adminUserCommit 스타일 가져오기 -->
+    <link rel="stylesheet" th:href="@{/css/layout/style.css}">
+    <link rel="stylesheet" th:href="@{/css/admin/style.css}">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+    <!-- 헤더 가져오기 -->
+    <th:block th:replace="~{fragments/header :: headerFragment}"></th:block>
+
+    <!-- 콘텐츠 영역 -->
+    <div class="content container my-5" style="padding-top: 100px;">
+        <h2 class="mb-4" style="font-weight: bold;">회원 수정</h2>
+
+        <form th:action="@{/admin/users/update}" method="post">
+            <input type="hidden" name="id" th:value="${user.id}">
+            
+            <div class="mb-3">
+                <label for="loginId" class="form-label">로그인 ID</label>
+                <input type="text" class="form-control" id="loginId" name="loginId" th:value="${user.loginId}">
+            </div>
+            
+            <div class="mb-3">
+                <label for="name" class="form-label">이름</label>
+                <input type="text" class="form-control" id="name" name="name" th:value="${user.name}">
+            </div>
+            
+            <div class="mb-3">
+                <label for="email" class="form-label">이메일</label>
+                <input type="email" class="form-control" id="email" name="email" th:value="${user.email}">
+            </div>
+            
+            <div class="mb-3">
+                <label for="phoneNumber" class="form-label">전화번호</label>
+                <input type="text" class="form-control" id="phoneNumber" name="phoneNumber" th:value="${user.phoneNumber}">
+            </div>
+            
+            <div class="mb-3">
+                <label for="role" class="form-label">역할</label>
+                <select class="form-select" id="role" name="role">
+                    <option value="USER" th:selected="${user.role == 'USER'}">USER</option>
+                    <option value="ADMIN" th:selected="${user.role == 'ADMIN'}">ADMIN</option>
+                </select>
+            </div>
+
+            <!-- 상태 선택 추가 -->
+            <div class="mb-3">
+                <label for="status" class="form-label">상태</label>
+                <select class="form-select" id="status" name="status" th:field="*{user.status}">
+                    <option value="ACTIVE">ACTIVE</option>
+                    <option value="BANNED">BANNED</option>
+                </select>
+            </div>
+            
+            
+            
+            
+            <div class="d-flex justify-content-end">
+                <button type="submit" class="btn btn-primary">수정</button>
+                <a th:href="@{/admin/userCommit}" class="btn btn-secondary ms-2">취소</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- 푸터 가져오기 -->
+    <th:block th:replace="~{fragments/footer :: footerFragment}"></th:block>
+</body>
+</html>

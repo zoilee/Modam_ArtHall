@@ -51,21 +51,23 @@ public class FileService {
         return "/" + uniqueFileName;
     }
 
+
+
     public void deleteFile(String filePath) throws IOException {
-        // 실행 디렉토리 가져오기 + 업로드 경로 //File.separator 는 \/ 구분자 제공 ex)windows = \, unix = /
-        String basePath = System.getProperty("user.dir") + File.separator + uploadDir;
-
-        // 상대 경로를 절대 경로로 변환
-
-        // uploadDir을 포함한 경로 생성
-        Path baseDir = Paths.get(basePath, uploadDir).normalize();
-
-        Path absolutePath = Paths.get(basePath, filePath).normalize();
-
-        // 파일 삭제
+        // 절대 경로 생성
+        Path absolutePath = Paths.get(System.getProperty("user.dir"), uploadDir, filePath).normalize();
         System.out.println("삭제할 파일 경로: " + absolutePath);
-
-        Files.deleteIfExists(absolutePath);
+    
+        // 파일 존재 여부 확인 후 삭제
+        if (Files.exists(absolutePath)) {
+            Files.delete(absolutePath);
+            System.out.println("파일 삭제 성공: " + absolutePath);
+        } else {
+            System.err.println("파일이 존재하지 않음: " + absolutePath);
+        }
     }
+    
+
+    
 
 }

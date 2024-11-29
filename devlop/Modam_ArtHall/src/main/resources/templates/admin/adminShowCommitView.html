@@ -24,7 +24,7 @@
                     <!-- 제목 데이터 표시 -->
                     <td colspan="3" th:text="${performance.title}">제목 데이터 없음</td>
                 </tr>
-                <tr>
+                <tr>    
                     <th style="width: 100px;">작성일</th>
                     <!-- 작성일 데이터 표시 -->
                     <td style="width: 200px;" th:text="${#dates.format(performance.createdAt, 'yyyy-MM-dd')}">작성일 데이터 없음</td>

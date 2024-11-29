@@ -9,15 +9,16 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@Table(name="users")
+@Table(name = "users")
 public class UserEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // 자동 증가
     private Integer id;
 
     @Column(nullable = false, unique = true) // NOT NULL 추가
     private String loginId; // 로컬 사용자 로그인 ID
-    
+
     private String password; // 로컬 사용자 비밀번호 (카카오 사용자 NULL 가능)
 
     @Column(nullable = false)
@@ -52,9 +53,5 @@ public class UserEntity {
 
     @Column(name = "created_at", updatable = false)
     private Timestamp createdAt = new Timestamp(System.currentTimeMillis());
-
-    
-
-    
 
 }

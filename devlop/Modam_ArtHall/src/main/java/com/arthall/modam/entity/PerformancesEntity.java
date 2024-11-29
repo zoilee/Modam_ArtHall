@@ -41,6 +41,9 @@ public class PerformancesEntity {
     @Column
     private int age;
 
+    @Column(name = "active")
+    private boolean active = true;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private Timestamp createdAt;

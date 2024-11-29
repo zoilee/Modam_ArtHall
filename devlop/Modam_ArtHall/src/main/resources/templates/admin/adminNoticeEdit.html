@@ -11,94 +11,129 @@
     <link href="/summernote-0.9.0-dist/summernote-bs5.min.css" rel="stylesheet">
 </head>
 <body>
+<!-- 헤더 -->
+<div th:replace="fragments/header :: headerFragment"></div>
 
-    <!-- 헤더 -->
-    <th:block th:replace="~{fragments/header :: headerFragment}"></th:block>
+<!-- 공지사항 수정 Section -->
+<div class="container my-5" style="padding: 120px 0;">
+    <h2 class="mb-4">공지사항 수정</h2>
 
-    <!-- 공지사항 수정 Section -->
-    <div class="container my-5" style="padding: 120px 0;">
-        <h2 class="mb-4">공지사항 수정</h2>
+    <form th:action="@{/admin/noticeEdit}" method="post" enctype="multipart/form-data">
+        <!-- 공지사항 ID 전달 -->
+        <input type="hidden" th:value="${notice.id}" name="id"/>
 
-        <form th:action="@{/admin/noticeEdit}" method="post" enctype="multipart/form-data">
-            <!-- 공지사항 ID 전달 -->
-            <input type="hidden" th:value="${notice.id}" name="id"/>
-
-            <!-- 제목 입력 -->
-            <div class="mb-3 row">
-                <label for="title" class="col-sm-2 col-form-label">제목</label>
-                <div class="col-sm-10">
-                    <input type="text" class="form-control" id="title" name="title" th:value="${notice.title}" required>
-                </div>
+        <!-- 제목 입력 -->
+        <div class="mb-3 row">
+            <label for="title" class="col-sm-2 col-form-label">제목</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="title" name="title" th:value="${notice.title}" required>
             </div>
-        
-            <!-- 내용 입력 -->
-            <div class="mb-3 row">
-                <label for="content" class="col-sm-2 col-form-label">내용</label>
-                <div class="col-sm-10">
-                    <textarea id="summernote" name="content" th:text="${notice.content}">내용을 입력하세요.</textarea>
-                </div>
-            </div>
+        </div>
 
-            <!-- 기존 이미지 미리보기 및 삭제 옵션 -->
-            <div class="mb-3 row" th:if="${notice.imagesEntities != null and !notice.imagesEntities.isEmpty()}">
-                <label for="currentImage" class="col-sm-2 col-form-label">기존 이미지</label>
-                <div class="col-sm-10">
-                    <li th:each="image : ${notice.imagesEntities}">
-                        <img th:src="@{{image}(image=${image.imageUrl})}" alt="이미지" style="max-width: 100%; max-height: 200px;">
+        <!-- 내용 입력 -->
+        <div class="mb-3 row">
+            <label for="content" class="col-sm-2 col-form-label">내용</label>
+            <div class="col-sm-10">
+                <textarea id="summernote" name="content" th:text="${notice.content}">내용을 입력하세요.</textarea>
+            </div>
+        </div>
+
+        <!-- 기존 이미지 삭제 체크박스 -->
+        <div class="mb-3 row" th:if="${notice.imagesEntities != null && !notice.imagesEntities.isEmpty()}">
+            <label for="currentImage" class="col-sm-2 col-form-label">기존 이미지</label>
+            <div class="col-sm-10">
+                <ul th:each="image : ${notice.imagesEntities}">
+                    <li>
+                        <img th:src="@{${image.imageUrl}}" alt="이미지" style="max-width: 100%; max-height: 200px;">
                         <div class="form-check mt-2">
-                            <input class="form-check-input" type="checkbox" name="deleteImage" id="deleteImage">
-                            <label class="form-check-label" for="deleteImage">이미지 삭제</label>
+                            <input class="form-check-input" type="checkbox" name="deleteImageIds" th:value="${image.id}">
+                            <label class="form-check-label">이미지 삭제</label>
                         </div>
                     </li>
-                </div>
+                </ul>
             </div>
+        </div>
 
-        
-            <!-- 파일 첨부 -->
-            <div class="mb-3 row">
-                <label for="fileInput" class="col-sm-2 col-form-label">파일첨부</label>
-                <div class="col-sm-10">
-                    <input type="file" class="form-control" id="fileInput" name="file">
-                </div>
+        <!-- 파일 미리보기 -->
+        <div class="mb-3 row">
+            <div class="col-sm-10 offset-sm-2" id="previewContainer" style="margin-top: 10px;">
+                <!-- 미리보기 이미지가 이곳에 추가됩니다 -->
             </div>
-        
-            <!-- 저장/취소 버튼 -->
-            <div class="text-center mt-4">
-                <button type="submit" class="btn btn-primary me-2">수정하기</button>
-                <a href="/admin/noticeList" class="btn btn-secondary">취소</a>
+        </div>
+
+        <!-- 파일 첨부 -->
+        <div class="mb-3 row">
+            <label for="fileInput" class="col-sm-2 col-form-label">새 파일 추가</label>
+            <div class="col-sm-10">
+                <input type="file" class="form-control" id="fileInput" name="file" multiple onchange="previewImages(event)">
             </div>
-        </form>
-    </div>
+        </div>
 
-    <!-- 푸터 가져오기 -->
-    <th:block th:replace="~{fragments/footer :: footerFragment}"></th:block>
+        <!-- 저장/취소 버튼 -->
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-primary me-2">수정하기</button>
+            <a th:href="@{/admin/noticeList}" class="btn btn-secondary">취소</a>
+        </div>
+    </form>
+</div>
 
-    <!-- jQuery (필수) -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- 푸터 -->
+<div th:replace="fragments/footer :: footerFragment"></div>
 
-    <!-- Summernote JS -->
-    <script src="/summernote-0.9.0-dist/summernote-bs5.min.js"></script>
+<!-- jQuery (필수) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Summernote 초기화 -->
-    <script>
-        $(document).ready(function() {
-            $('#summernote').summernote({
-                placeholder: '내용을 입력하세요.',
-                height: 500,                    // 에디터 높이를 500px로 설정
-                minHeight: 400,                 // 최소 높이 400px
-                maxHeight: 700,                 // 최대 높이 700px
-                focus: true,                    // 페이지 로드 후 자동 포커스
-                lang: 'ko-KR',                  // 한국어 설정
-                toolbar: [                      // 툴바 커스터마이징
-                    ['style', ['bold', 'italic', 'underline']],
-                    ['font', ['fontsize', 'color']],
-                    ['para', ['ul', 'ol', 'paragraph']],
-                    ['insert', ['link', 'picture']],
-                    ['view', ['fullscreen', 'codeview']]
-                ]
-            });
+<!-- Summernote JS -->
+<script src="/summernote-0.9.0-dist/summernote-bs5.min.js"></script>
+
+<!-- Summernote 초기화 -->
+<script>
+    $(document).ready(function() {
+        $('#summernote').summernote({
+            placeholder: '내용을 입력하세요.',
+            height: 500,
+            minHeight: 400,
+            maxHeight: 700,
+            focus: true,
+            lang: 'ko-KR',
+            toolbar: [
+                ['style', ['bold', 'italic', 'underline']],
+                ['font', ['fontsize', 'color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['insert', ['link', 'picture']],
+                ['view', ['fullscreen', 'codeview']]
+            ]
         });
-    </script>
+    });
+</script>
+
+<!-- 파일 미리보기 스크립트 -->
+<script>
+    function previewImages(event) {
+        const previewContainer = document.getElementById('previewContainer');
+        previewContainer.innerHTML = ''; // 기존 미리보기 이미지 초기화
+
+        const files = event.target.files;
+        if (files) {
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.maxWidth = '100%';
+                    img.style.maxHeight = '200px';
+                    img.style.marginTop = '10px';
+                    img.style.marginRight = '10px';
+                    previewContainer.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+    }
+</script>
+
 </body>
 </html>
