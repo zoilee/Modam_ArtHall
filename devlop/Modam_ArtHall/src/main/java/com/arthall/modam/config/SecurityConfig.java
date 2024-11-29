@@ -33,9 +33,9 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())  // Lambda DSL로 CSRF 보호 비활성화
             .authorizeHttpRequests(authorize -> authorize
             // 누구나 접근 가능한 경로
-            .requestMatchers("/","/hallDetail", "/noticeList", "/showList", "/showDetail/{performanceId}", "/register", "/login", "/css/**", "/js/**", "/imgs/**","/error").permitAll()
+            .requestMatchers("/","/hallDetail", "/noticeList", "/showList", "/showListFragment", "/showDetail/{performanceId}", "/register", "/login", "/css/**", "/js/**", "/imgs/**","/error").permitAll()
             // 로그인 사용자만 접근 가능한 경로
-            .requestMatchers("/mypage", "/reservForm", "/seatSelect", "/reservConfirm", "/registeruserEdit").authenticated()
+            .requestMatchers("/mypage", "/mypage/logs", "/reservForm", "/seatSelect", "/reservConfirm", "/registeruserEdit").authenticated()
             // 관리자만 접근 가능한 경로
             .requestMatchers("/admin/**").hasRole("ADMIN")
             // 나머지는 모두 인증 필요

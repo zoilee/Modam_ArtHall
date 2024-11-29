@@ -11,11 +11,12 @@ import java.sql.Date;
 import java.time.LocalDate;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 
 import java.util.Optional;
-
+import java.util.stream.IntStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -23,6 +24,11 @@ import java.util.Calendar;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -41,14 +47,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.arthall.modam.entity.CommentEntity;
+import com.arthall.modam.entity.ImagesEntity;
+import com.arthall.modam.entity.NoticesEntity;
 import com.arthall.modam.entity.PerformancesEntity;
 import com.arthall.modam.entity.ReservationsEntity;
 import com.arthall.modam.entity.RewardsEntity;
 import com.arthall.modam.entity.RewardsLogEntity;
 import com.arthall.modam.entity.UserEntity;
+import com.arthall.modam.repository.NoticesRepository;
 import com.arthall.modam.repository.PerformancesRepository;
 import com.arthall.modam.repository.RewardsRepository;
 import com.arthall.modam.service.CommentService;
+import com.arthall.modam.service.NoticesService;
 import com.arthall.modam.service.PerformanceService;
 import com.arthall.modam.service.ReservationsService;
 import com.arthall.modam.service.RewardsLogService;
@@ -63,6 +73,9 @@ public class HomeController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private PerformancesRepository performancesRepository;
 
     @Autowired
     private PerformanceService performanceService;
@@ -82,11 +95,39 @@ public class HomeController {
     @Autowired
     private RewardsLogService rewardsLogService;
 
-    
+    @Autowired
+    private NoticesService noticesService;
 
+    @Autowired
+    private NoticesRepository noticesRepository;
+
+    
     @GetMapping("/")
-    public String home() {
-        return "main";
+    public String home(Model model) {
+        // 현재 날짜 가져오기
+        Date today = Date.valueOf(LocalDate.now());
+
+        // 현재 상영 중인 공연 리스트 가져오기
+        List<PerformancesEntity> performances = performanceService.getPerformancesByDate(today);
+    
+        // 공연 데이터 형식화
+        performances.forEach(performance -> {
+            if (performance.getStartdate() != null && performance.getEnddate() != null) {
+                performance.setFormattedStartDate(new SimpleDateFormat("yyyy-MM-dd").format(performance.getStartdate()));
+                performance.setFormattedEndDate(new SimpleDateFormat("yyyy-MM-dd").format(performance.getEnddate()));
+            } else {
+                performance.setFormattedStartDate("N/A");
+                performance.setFormattedEndDate("N/A");
+            }
+        });
+    
+        // 최근 공지사항 4개 가져오기
+        List<NoticesEntity> recentNotices = noticesService.getRecentNotices(4);
+
+        model.addAttribute("performances", performances);
+        model.addAttribute("recentNotices", recentNotices);
+    
+        return "main"; // Thymeleaf 템플릿 이름
     }
 
     @GetMapping("/mypage")
@@ -95,42 +136,67 @@ public class HomeController {
         if (authentication == null || !authentication.isAuthenticated()) {
             return "redirect:/login";
         }
-    
+
         Object principal = authentication.getPrincipal();
         String loginId = null;
-    
+
         if (principal instanceof UserDetails) {
             loginId = ((UserDetails) principal).getUsername();
         } else if (principal instanceof OAuth2User) {
             loginId = (String) ((OAuth2User) principal).getAttributes().get("loginId");
         }
-    
+
         if (loginId == null) {
             throw new RuntimeException("사용자를 찾을 수 없습니다.");
         }
-    
+
         UserEntity user = userService.getUserByLoginId(loginId);
         if (user == null) {
             throw new RuntimeException("사용자를 찾을 수 없습니다.");
         }
-    
+
         int userId = user.getId();
-    
+
         // 예약 데이터 조회
         List<ReservationsEntity> upcomingReservations = reservationService.getUpcomingReservations(userId);
         List<ReservationsEntity> pastReservations = reservationService.getPastReservations(userId);
-    
+
+
         model.addAttribute("user", user);
         model.addAttribute("upcomingReservations", upcomingReservations != null ? upcomingReservations : new ArrayList<>());
         model.addAttribute("pastReservations", pastReservations != null ? pastReservations : new ArrayList<>());
-    
+
         // 적립금 정보
         RewardsEntity rewards = rewardsService.getRewardsByUserId(userId);
         model.addAttribute("points", rewards.getTotalPoint());
-    
+
         return "mypage";
     }
-    
+
+    @GetMapping("/mypage/logs")
+    @ResponseBody
+    public Page<RewardsLogEntity> getPagedLogs(
+            @RequestParam("page") int page,
+            @RequestParam("size") int size) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new RuntimeException("Unauthorized");
+        }
+
+        // 현재 사용자 가져오기
+        Object principal = authentication.getPrincipal();
+        String loginId = (principal instanceof UserDetails) ?
+                ((UserDetails) principal).getUsername() : (String) ((OAuth2User) principal).getAttributes().get("loginId");
+
+        UserEntity user = userService.getUserByLoginId(loginId);
+        if (user == null) throw new RuntimeException("사용자를 찾을 수 없습니다.");
+
+        // 페이징 데이터 반환
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        return rewardsLogService.getLogsByUserId(user.getId(), pageable);
+    }
+        
+
     @GetMapping("/registeruserEdit")
     public String registeruserEdit() {
         return "registeruserEdit";
@@ -138,18 +204,43 @@ public class HomeController {
 
     // /showList 매핑
     @GetMapping("/showList")
-    public String showList(Model model) {
-        Date currentDate = Date.valueOf(LocalDate.now());
+    public String showList(@RequestParam(value = "page", defaultValue = "0") int page,
+                           @RequestParam(value = "size", defaultValue = "5") int size,
+                           Model model) {
 
-        List<PerformancesEntity> currentPerformances = performanceService.getUpcomingPerformances(currentDate);
-        List<PerformancesEntity> pastPerformances = performanceService.getFinishedPerformances(currentDate);
+        // Validate and adjust page and size
+        page = Math.max(page, 0);
+        size = Math.max(size, 1);
+        Pageable pageable = PageRequest.of(page, size);
 
-        // 디버깅용 로그 추가
-        System.out.println("Current Performances: " + currentPerformances);
-        System.out.println("Past Performances: " + pastPerformances);
+        // 현재 날짜를 기준으로 공연 데이터 분리
+        List<PerformancesEntity> upcomingPerformances = performanceService.getUpcomingPerformances();
+        Page<PerformancesEntity> pastPerformances = performanceService.getPastPerformances(pageable);
+        
 
-        model.addAttribute("currentPerformances", currentPerformances);
+        // 최근 4개 공연 추출
+        List<PerformancesEntity> top4Performances = upcomingPerformances.stream()
+                .limit(4)
+                .toList();
+        // 나머지 공연 추출
+        List<PerformancesEntity> remainingPerformances = upcomingPerformances.stream()
+                .skip(4)
+                .toList();
+    
+        // Partition remaining performances into chunks of 4
+        List<List<PerformancesEntity>> partitionedPerformances = IntStream.range(0, (remainingPerformances.size() + 3) / 4)
+                .mapToObj(i -> remainingPerformances.subList(i * 4, Math.min((i + 1) * 4, remainingPerformances.size())))
+                .toList();
+
+        model.addAttribute("top4Performances", top4Performances);
+        model.addAttribute("remainingPerformances", remainingPerformances);
+        model.addAttribute("partitionedPerformances", partitionedPerformances);
         model.addAttribute("pastPerformances", pastPerformances);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", pastPerformances.getTotalPages());
+        model.addAttribute("pastPerformances", pastPerformances);
+        model.addAttribute("isFirstPage", pastPerformances.isFirst());
+        model.addAttribute("isLastPage", pastPerformances.isLast());
 
         return "showList";
     }

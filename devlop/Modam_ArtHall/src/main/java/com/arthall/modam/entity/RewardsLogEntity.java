@@ -5,11 +5,16 @@ import java.sql.Timestamp;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -26,20 +31,23 @@ public class RewardsLogEntity {
     private int userId;
 
     @Column(name = "reservations_id", nullable = false)
-    private Integer reservationsId; // reservations 테이블 id
+    private Integer reservationsId;
 
     @Column(name = "total_point", precision = 10, scale = 2, nullable = false)
-    private BigDecimal totalPoint; // 총 적립금
+    private BigDecimal totalPoint;
 
     @Column(name = "change_point", precision = 10, scale = 2, nullable = false)
-    private BigDecimal changePoint; // 변동되는 적립금
+    private BigDecimal changePoint;
 
     @Column(name = "description", length = 255)
-    private String description; // 설명 EARN USE REFUND
+    private String description;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private Timestamp createdAt;
 
-    
+    @ManyToOne
+    @JoinColumn(name = "reservations_id", insertable = false, updatable = false)
+    @JsonIgnore // 순환 참조 방지
+    private ReservationsEntity reservationsEntity;
 }
