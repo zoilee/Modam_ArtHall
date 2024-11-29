@@ -195,11 +195,6 @@ public class HomeController {
         return rewardsLogService.getLogsByUserId(user.getId(), pageable);
     }
 
-    @GetMapping("/registeruserEdit")
-    public String registeruserEdit() {
-        return "registeruserEdit";
-    }
-
     // /showList 매핑
     @GetMapping("/showList")
     public String showList(@RequestParam(value = "page", defaultValue = "0") int page,

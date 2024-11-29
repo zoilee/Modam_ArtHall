@@ -108,7 +108,7 @@ logging:
   level:
     "[org.springframework.security]": DEBUG
 
-
+# 포트원
 api:
   key: "3525653010711283"
   secret: "JPw7v6FxFDnmsWu9D65dg5kb6ffdjlNzG4h6Y5P2rNeBpxZH6Mmj4UfZcgWg44y9DcnpEZkwz9rbatGU"

@@ -22,6 +22,10 @@ public class MailService {
     @Value("${spring.mail.from-address}")
     private String fromAddress;
 
+    String header = "<h1>안녕하세요 ModamArtHall 입니다 </h1>";
+
+    String footer = "<p>모담아트홀 | MODAM Art Hall</p><br><p>서울시 ○○구 ○○○로 ○○번길 123</p><br><p>전화: 02-1234-5678 | 이메일: info@modamarthall.com</p> ";
+
     public void mailSend(MailDto mailDto) throws Exception {
         try {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
@@ -64,10 +68,6 @@ public class MailService {
         return filename.replaceAll("[^a-zA-Z0-9._-]", "_");
     }
 
-    String header = "<h1>안녕하세요 ModamArtHall 입니다 </h1>";
-
-    String footer = "<p>모담아트홀 | MODAM Art Hall</p><br><p>서울시 ○○구 ○○○로 ○○번길 123</p><br><p>전화: 02-1234-5678 | 이메일: info@modamarthall.com</p> ";
-
     // ==========================임시 비밀번호 발급=========================
     public static String generateTemporaryPassword() {
         String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -77,9 +77,7 @@ public class MailService {
         for (int i = 0; i < 10; i++) {
             tempPassword.append(characters.charAt(random.nextInt(characters.length())));
         }
-    }
 
-    public void mailSend(MailDto mailDto) throws Exception {
         return tempPassword.toString();
     }
 
@@ -99,26 +97,6 @@ public class MailService {
                             "<p>로그인 후 반드시 비밀번호를 변경해주세요.</p>",
                     true);
 
-            // 이메일 본문 동적 구성
-            StringBuilder content = new StringBuilder();
-            content.append(header)
-                    .append(mailDto.getMessage())
-                    .append(footer);
-
-            // 첨부파일 추가
-            MultipartFile file = mailDto.getFile();
-            if (file != null && !file.isEmpty()) {
-                String safeFilename = checkFilename(file.getOriginalFilename());
-                helper.addAttachment(safeFilename, new ByteArrayResource(file.getBytes()));
-
-                // 파일이 있을 때만 본문에 안내 추가
-                content.append("<p>첨부된 파일을 확인하세요.</p>");
-            }
-
-            // 이메일 본문 설정
-            helper.setText(content.toString(), true);
-
-            // 이메일 전송
             mailSender.send(mimeMessage);
 
         } catch (Exception e) {
