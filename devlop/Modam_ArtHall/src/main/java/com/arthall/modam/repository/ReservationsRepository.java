@@ -13,10 +13,10 @@ import com.arthall.modam.entity.ReservationsEntity;
 public interface ReservationsRepository extends JpaRepository<ReservationsEntity, Integer> {
 
         @Query(value = "SELECT * FROM reservations r WHERE r.user_id = :userId AND r.reservation_date > :reservationDate", nativeQuery = true)
-        List<ReservationsEntity> findByUserIdAndReservationDateAfter(int userId, Timestamp date);
+        List<ReservationsEntity> findByUserIdAndReservationDateAfter(int userId, @Param("reservationDate") Timestamp date);
 
         @Query(value = "SELECT * FROM reservations r WHERE r.user_id = :userId AND r.reservation_date < :reservationDate", nativeQuery = true)
-        List<ReservationsEntity> findByUserIdAndReservationDateBefore(int userId, Timestamp date);
+        List<ReservationsEntity> findByUserIdAndReservationDateBefore(int userId, @Param("reservationDate") Timestamp date);
 
         // 미래 예약 조회
         @Query("SELECT r FROM ReservationsEntity r WHERE r.userEntity.id = :userId AND r.showEntity.showDate >= :today")

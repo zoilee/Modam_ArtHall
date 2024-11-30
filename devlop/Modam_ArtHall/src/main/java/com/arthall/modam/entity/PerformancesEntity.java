@@ -41,7 +41,7 @@ public class PerformancesEntity {
     @Column
     private int age;
 
-    @Column(name = "active")
+    @Column(name = "active", nullable = false)
     private boolean active = true;
 
     @CreationTimestamp
