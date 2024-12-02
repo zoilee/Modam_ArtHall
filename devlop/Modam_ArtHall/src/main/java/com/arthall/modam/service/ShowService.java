@@ -60,4 +60,8 @@ public class ShowService {
             throw new IllegalArgumentException("해당 회차를 찾을 수 없습니다.");
         }
     }
+
+    public ShowEntity findById(int showId) {
+        return showRepository.findById(showId).orElse(null);
+    }
 }
