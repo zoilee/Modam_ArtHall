@@ -10,6 +10,7 @@ import java.sql.Date;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 
 @Entity
 @Table(name = "performances")
@@ -54,6 +55,7 @@ public class PerformancesEntity {
     private List<ImagesEntity> imagesEntities;
 
     @OneToMany(mappedBy = "performancesEntity", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ToString.Exclude // toString()에서 제외
     private List<ShowEntity> shows;
 
     @Transient
@@ -77,6 +79,5 @@ public class PerformancesEntity {
     public void setFormattedAverageRating(String formattedAverageRating) {
         this.formattedAverageRating = formattedAverageRating;
     }
-
 
 }

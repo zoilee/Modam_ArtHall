@@ -15,6 +15,6 @@ public interface ShowRepository extends JpaRepository<ShowEntity, Integer> {
 
     List<ShowEntity> findByPerformancesEntity_IdAndShowDateAndShowTime(int performanceId, Date showDate, int showTime);
 
-    Optional<ShowEntity> findById(int showId);
+    Optional<ShowEntity> findById(int id);
 
 }

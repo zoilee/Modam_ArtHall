@@ -303,8 +303,8 @@ public class AdminController {
     @PostMapping("/showCommitWrite")
     public String AdminCommitWrite(@ModelAttribute PerformancesDto performanceDto,
             @RequestParam(value = "file", required = false) MultipartFile file,
-            @RequestParam(value = "startDate", required = false) String startDateStr,
-            @RequestParam(value = "endDate", required = false) String endDateStr,
+            @RequestParam(value = "startdate", required = false) String startDateStr,
+            @RequestParam(value = "enddate", required = false) String endDateStr,
             RedirectAttributes redirectAttributes) {
 
         // 1. startDate와 endDate를 String으로 받았으므로, 이를 java.sql.Date로 변환

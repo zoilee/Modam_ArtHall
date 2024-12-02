@@ -69,9 +69,6 @@ public class HomeController {
     private UserService userService;
 
     @Autowired
-    private PerformancesRepository performancesRepository;
-
-    @Autowired
     private PerformanceService performanceService;
 
     @Autowired
@@ -84,9 +81,6 @@ public class HomeController {
     private CommentService commentService;
 
     @Autowired
-    private RewardsRepository rewardsRepository;
-
-    @Autowired
     private RewardsService rewardsService;
 
     @Autowired
@@ -94,9 +88,6 @@ public class HomeController {
 
     @Autowired
     private NoticesService noticesService;
-
-    @Autowired
-    private NoticesRepository noticesRepository;
 
     @GetMapping("/")
     public String home(Model model) {
@@ -490,7 +481,8 @@ public class HomeController {
 
         // 오늘 날짜를 Calendar 객체로 가져오기
         Calendar calendar = Calendar.getInstance();
-        Date today = (Date) calendar.getTime();
+        java.util.Date utilDate = calendar.getTime(); // java.util.Date 가져오기
+        java.sql.Date today = new java.sql.Date(utilDate.getTime()); // java.sql.Date로 변환
 
         // 오늘 날짜를 문자열로 변환하여 모델에 추가
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");

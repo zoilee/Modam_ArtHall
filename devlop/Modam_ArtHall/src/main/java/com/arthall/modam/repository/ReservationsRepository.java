@@ -35,7 +35,7 @@ public interface ReservationsRepository extends JpaRepository<ReservationsEntity
 
         // 공연 ID로 예약 수 카운트하는 메서드 추가
         @Query(value = "SELECT COUNT(*) FROM reservations r " +
-                        "JOIN shows s ON r.show_id = s.show_id " +
+                        "JOIN shows s ON r.show_id = s.id " +
                         "WHERE s.performance_id = :performanceId AND r.status = 'CONFIRMED'", nativeQuery = true)
         int countByPerformanceId(@Param("performanceId") int performanceId);
 

@@ -13,6 +13,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 import lombok.Data;
+import lombok.ToString;
 
 @Entity
 @Table(name = "shows")
@@ -39,6 +40,7 @@ public class ShowEntity {
     // 외래 키
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "performance_id", referencedColumnName = "id")
+    @ToString.Exclude // toString()에서 제외
     private PerformancesEntity performancesEntity;
 
 }
