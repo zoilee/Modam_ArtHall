@@ -2,7 +2,6 @@ package com.arthall.modam.entity;
 
 import java.sql.Date;
 
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -19,10 +18,11 @@ import lombok.Data;
 @Table(name = "shows")
 @Data
 public class ShowEntity {
+
     @Id
-    @Column(name = "show_id")
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int showId;
+    private int id;
 
     @Column(name = "show_date")
     private Date showDate;
@@ -40,10 +40,5 @@ public class ShowEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "performance_id", referencedColumnName = "id")
     private PerformancesEntity performancesEntity;
-
-    public Object getShowId() {
-        throw new UnsupportedOperationException("올바르지 않은 접근입니다. 'getShowId'");
-    }
-
 
 }

@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -19,24 +20,56 @@ import org.springframework.stereotype.Service;
 
 import com.arthall.modam.dto.PerformancesDto;
 import com.arthall.modam.entity.PerformancesEntity;
+import com.arthall.modam.entity.ShowEntity;
 import com.arthall.modam.repository.CommentRepository;
 import com.arthall.modam.repository.PerformancesRepository;
 import com.arthall.modam.repository.ReservationsRepository;
 
 import jakarta.transaction.Transactional;
+import com.arthall.modam.repository.ShowRepository;
 
 @Service
 public class PerformanceService {
-
     private final PerformancesRepository performancesRepository;
     private final CommentRepository commentRepository;
     @Autowired
     private ReservationsRepository reservationsRepository;
+    private final ShowRepository showRepository;
+
+    public void registerShowsWithPerformance(PerformancesEntity performance) {
+        // Show 등록 (startdate ~ enddate 동안 매일 13시, 17시 공연 등록)
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new java.util.Date(performance.getStartdate().getTime())); // java.sql.Date -> java.util.Date
+
+        Date endDate = performance.getEnddate(); // performance.getEnddate()는 java.sql.Date
+
+        while (!calendar.getTime().after(endDate)) {
+            // 매일 13시 회차와 17시 회차를 추가
+            createShowForPerformance(performance, new java.sql.Date(calendar.getTimeInMillis()), 1); // 13시 회차
+            createShowForPerformance(performance, new java.sql.Date(calendar.getTimeInMillis()), 2); // 17시 회차
+
+            // 날짜를 하루씩 증가
+            calendar.add(Calendar.DAY_OF_YEAR, 1);
+        }
+    }
+
+    private void createShowForPerformance(PerformancesEntity performance, Date showDate, int showTime) {
+        ShowEntity show = new ShowEntity();
+        show.setShowDate(showDate);
+        show.setShowTime(showTime); // 1: 13시, 2: 15시
+        show.setSeatLimit(216); // 기본값 216
+        show.setSeatAvailable(216); // 기본값 216
+        show.setPerformancesEntity(performance); // Performance 참조
+
+        showRepository.save(show);
+    }
 
     // 생성자 주입 방식 사용, @Autowired 생략 가능
-    public PerformanceService(PerformancesRepository performanceRepository, CommentRepository commentRepository) {
-        this.performancesRepository = performanceRepository;
+    public PerformanceService(PerformancesRepository performancesRepository, CommentRepository commentRepository,
+            ShowRepository showRepository) {
+        this.performancesRepository = performancesRepository;
         this.commentRepository = commentRepository;
+        this.showRepository = showRepository;
     }
 
     // 스레드-안전한 DateTimeFormatter

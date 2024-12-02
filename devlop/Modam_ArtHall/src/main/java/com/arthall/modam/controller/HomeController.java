@@ -11,8 +11,6 @@ import java.sql.Date;
 import java.time.LocalDate;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 
 import java.util.Optional;
@@ -26,11 +24,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -45,7 +41,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.arthall.modam.entity.CommentEntity;
-import com.arthall.modam.entity.ImagesEntity;
 import com.arthall.modam.entity.NoticesEntity;
 import com.arthall.modam.entity.PerformancesEntity;
 import com.arthall.modam.entity.ReservationsEntity;
@@ -61,6 +56,7 @@ import com.arthall.modam.service.PerformanceService;
 import com.arthall.modam.service.ReservationsService;
 import com.arthall.modam.service.RewardsLogService;
 import com.arthall.modam.service.RewardsService;
+import com.arthall.modam.service.ShowService;
 import com.arthall.modam.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -77,6 +73,9 @@ public class HomeController {
 
     @Autowired
     private PerformanceService performanceService;
+
+    @Autowired
+    private ShowService showService;
 
     @Autowired
     private ReservationsService reservationService;
@@ -390,12 +389,29 @@ public class HomeController {
     }
 
     @GetMapping("/seatSelect")
-    public String seatSelect() {
+    public String showSeatSelection(@RequestParam("showId") int showId, Model model) {
+        // showId에 해당하는 예약된 좌석을 조회
+        List<String> unavailableSeats = reservationService.getUnavailableSeats(showId);
+
+        // unavailableSeats 리스트를 모델에 담아 JSP나 Thymeleaf 템플릿으로 전달
+        model.addAttribute("unavailableSeats", unavailableSeats);
+
+        // showId를 폼에 hidden으로 전달할 수 있도록
+        model.addAttribute("showId", showId);
+
         return "seatSelect";
     }
 
     @GetMapping("/reservConfirm")
-    public String reservConfirm(Model model) {
+    public String reservConfirm(Model model,
+            @RequestParam("performanceId") int performanceId,
+            @RequestParam("performanceTitle") String performanceTitle,
+            @RequestParam("showId") int showId,
+            @RequestParam("showDate") Date showDate,
+            @RequestParam("showTime") int showTime,
+            @RequestParam("numberOfPeople") int numberOfPeople,
+            @RequestParam("seatId1") String seatId1,
+            @RequestParam("seatId2") String seatId2) {
         // 가입폼 체크 이거 service로 만들어주면안되나요?
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -425,10 +441,28 @@ public class HomeController {
         BigDecimal points = userService.getUserPointsById(userId);
         System.out.println("내 포인트는 : " + points);
 
+        // 모델에 값 저장
         int price = 600;
         model.addAttribute("price", price);
         model.addAttribute("points", points.intValue());
         model.addAttribute("userId", userId);
+        model.addAttribute("performanceId", performanceId);
+        model.addAttribute("performanceTitle", performanceTitle);
+        model.addAttribute("showId", showId);
+        model.addAttribute("showDate", showDate);
+        model.addAttribute("showTime", showTime);
+        model.addAttribute("numberOfPeople", numberOfPeople);
+        model.addAttribute("seatId1", seatId1);
+        model.addAttribute("seatId2", seatId2);
+
+        try {
+            showService.updateSeatAvailability(showId, numberOfPeople);
+        } catch (Exception e) {
+            model.addAttribute("error", "예약 처리 중 오류가 발생했습니다.");
+            return "errorPage"; // 오류 페이지로 리다이렉트
+        }
+
+        // 예약 확인 페이지로 이동
         return "reservConfirm";
     }
 

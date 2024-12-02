@@ -32,11 +32,11 @@ public class UtilController {
     public ResponseEntity<Map<String, Object>> getShowId(@RequestParam("performanceId") int performanceId,
                                                           @RequestParam("showDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date showDate,
                                                           @RequestParam("showTime") int showTime) {
-        List<ShowEntity> shows = showRepository.findByPerformancesEntity_IdAndShowDateAndShowTime(performanceId, showDate, showTime);
+        List<ShowEntity> shows = showRepository.findByPerformancesEntity_IdAndShowDateAndShowTime(performanceId, (java.sql.Date) showDate, showTime);
         
         Map<String, Object> response = new HashMap<>();
         if (!shows.isEmpty()) {
-            response.put("showId", shows.get(0).getShowId()); // 첫 번째 결과를 사용
+            response.put("showId", shows.get(0).getId()); // 첫 번째 결과를 사용
             return ResponseEntity.ok(response);
         } else {
             response.put("error", "해당 공연 정보를 찾을 수 없습니다.");
