@@ -358,13 +358,28 @@ public class AdminController {
         return "redirect:showCommitList";
     }
 
-    @GetMapping("/showCommitView")
+    /*@GetMapping("/showCommitView")
     public String showCommitView(@RequestParam("id") int id, Model model) {
         PerformancesEntity performance = bbsService.getPerformancesById(id).orElse(null);
         System.out.println(performance);
         model.addAttribute("performance", performance);
         return "admin/adminShowCommitView";
     }
+    */
+    @GetMapping("/showCommitView")
+public String showCommitView(@RequestParam("id") int id, Model model) {
+    PerformancesEntity performance = bbsService.getPerformancesById(id).orElse(null);
+    
+    if (performance == null) {
+        System.out.println("공연 정보를 찾을 수 없습니다. ID: " + id);
+        model.addAttribute("errorMessage", "공연 정보를 찾을 수 없습니다.");
+        return "errorPage";  // 에러 페이지 또는 에러 메시지 처리
+    }
+
+    System.out.println("공연 설명: " + performance.getDescription());  // description 확인
+    model.addAttribute("performance", performance);
+    return "admin/adminShowCommitView";
+}
 
     @GetMapping("/showCommitEdit")
     public String showAdminCommitWrite(@RequestParam("id") int id, Model model) {

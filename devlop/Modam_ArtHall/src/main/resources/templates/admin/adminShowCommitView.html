@@ -9,13 +9,13 @@
 </head>
 <body>
 
-     <!-- 헤더 -->
-     <th:block th:replace="~{fragments/header :: headerFragment}"></th:block>
+    <!-- 헤더 -->
+    <th:block th:replace="~{fragments/header :: headerFragment}"></th:block>
 
     <!-- 공연관리 상세 Section -->
     <div class="container my-5" style="padding: 100px;">
         <h2 class="mb-4">공연관리</h2>
-        
+
         <!-- 공연관리 제목 및 작성 정보 -->
         <table class="table table-bordered">
             <tbody>
@@ -24,7 +24,7 @@
                     <!-- 제목 데이터 표시 -->
                     <td colspan="3" th:text="${performance.title}">제목 데이터 없음</td>
                 </tr>
-                <tr>    
+                <tr>
                     <th style="width: 100px;">작성일</th>
                     <!-- 작성일 데이터 표시 -->
                     <td style="width: 200px;" th:text="${#dates.format(performance.createdAt, 'yyyy-MM-dd')}">작성일 데이터 없음</td>
@@ -33,15 +33,23 @@
             </tbody>
         </table>
 
-         <!-- 이미지 미리보기 -->
-        <div class="mb-3" th:if="${performance.imagesEntities != null}">
-            <h5>첨부된 이미지</h5>
-            <li th:each="image : ${performance.imagesEntities}">
-                <img th:src="@{{image}(image=${image.imageUrl})}" alt="공연관리 이미지" style="max-width: 100%; max-height: 500px;">
-            </li>
+        <!-- 공연 설명 추가 -->
+        <div class="mb-3">
+            <h5>공연 설명</h5>
+            <p th:text="${performance.description}">공연 설명이 없습니다.</p>
         </div>
 
-        <!-- 공연 날짜-->
+        <!-- 이미지 미리보기 -->
+        <div class="mb-3" th:if="${performance.imagesEntities != null}">
+            <h5>첨부된 이미지</h5>
+            <ul>
+                <li th:each="image : ${performance.imagesEntities}">
+                    <img th:src="@{${image.imageUrl}}" alt="공연관리 이미지" style="max-width: 100%; max-height: 500px;">
+                </li>
+            </ul>
+        </div>
+
+        <!-- 공연 날짜 -->
         <table class="table table-bordered">
             <tbody>
                 <tr>
@@ -55,16 +63,15 @@
             </tbody>
         </table>
 
-        <!-- 공연 장소-->
+        <!-- 공연 장소 -->
         <table class="table table-bordered">
             <tbody>
                 <tr>
                     <th style="width: 100px;">공연 장소</th>
-                    <td th:text="${performance.location}">공연 장소</td>
+                    <td th:text="${performance.location}">공연 장소 데이터 없음</td>
                 </tr>
             </tbody>
         </table>
-
 
         <!-- 첨부 파일 -->
         <table class="table table-bordered">
@@ -81,7 +88,7 @@
             <a href="/admin/showCommitList" class="btn btn-secondary">목록으로</a>
             <div>
                 <a th:href="@{/admin/showCommitEdit(id=${performance.id})}" class="btn btn-primary me-2">수정하기</a>
-                
+
                 <!-- 삭제하기 버튼 -->
                 <form th:action="@{/admin/showCommitDelete}" method="post" style="display: inline;">
                     <input type="hidden" name="id" th:value="${performance.id}" />
@@ -91,22 +98,9 @@
         </div>
     </div>
 
-
-
-
-
-
-
-
-
     <!-- 푸터 가져오기 -->
-<th:block th:replace="~{fragments/footer :: footerFragment}"></th:block>
-<script src="/js/jquery-3.6.0.min.js"></script>
+    <th:block th:replace="~{fragments/footer :: footerFragment}"></th:block>
+    <script src="/js/jquery-3.6.0.min.js"></script>
 
 </body>
-
 </html>
-
-
-
-   
