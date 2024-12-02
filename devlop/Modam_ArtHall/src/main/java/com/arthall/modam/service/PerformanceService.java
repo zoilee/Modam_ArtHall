@@ -2,14 +2,12 @@ package com.arthall.modam.service;
 
 import java.sql.Date;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.time.format.DateTimeFormatter;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,9 +37,9 @@ public class PerformanceService {
     public void registerShowsWithPerformance(PerformancesEntity performance) {
         // Show 등록 (startdate ~ enddate 동안 매일 13시, 17시 공연 등록)
         Calendar calendar = Calendar.getInstance();
-        calendar.setTime(new java.util.Date(performance.getStartdate().getTime())); // java.sql.Date -> java.util.Date
+        calendar.setTime(new java.util.Date(performance.getStartDate().getTime())); // java.sql.Date -> java.util.Date
 
-        Date endDate = performance.getEnddate(); // performance.getEnddate()는 java.sql.Date
+        Date endDate = performance.getEndDate(); // performance.getEnddate()는 java.sql.Date
 
         while (!calendar.getTime().after(endDate)) {
             // 매일 13시 회차와 17시 회차를 추가
@@ -79,11 +77,11 @@ public class PerformanceService {
         // 현재 날짜를 가져와 SQL Date로 변환
         Date currentDate = Date.valueOf(LocalDate.now());
         // 'enddate'가 현재 날짜 이후인 공연 리스트 가져오기
-        List<PerformancesEntity> performances = performancesRepository.findByEnddateAfter(currentDate);
+        List<PerformancesEntity> performances = performancesRepository.findByEndDateAfter(currentDate);
         formatPerformanceDates(performances);
 
         // startdate 기준으로 정렬
-        performances.sort(Comparator.comparing(PerformancesEntity::getStartdate));
+        performances.sort(Comparator.comparing(PerformancesEntity::getStartDate));
         return performances;
 
     }
@@ -91,7 +89,7 @@ public class PerformanceService {
     // 지난 공연 페이징 처리
     public Page<PerformancesEntity> getPastPerformances(Pageable pageable) {
         // Repository에서 데이터 가져오기
-        Page<PerformancesEntity> pastPerformances = performancesRepository.findByEnddateBefore(
+        Page<PerformancesEntity> pastPerformances = performancesRepository.findByEndDateBefore(
                 new java.sql.Date(System.currentTimeMillis()), pageable);
 
         // 디버깅 로그
@@ -99,13 +97,13 @@ public class PerformanceService {
 
         // 날짜 포맷팅
         pastPerformances.getContent().forEach(performance -> {
-            if (performance.getStartdate() != null) {
+            if (performance.getStartDate() != null) {
                 performance.setFormattedStartDate(
-                        dateFormatter.format(performance.getStartdate().toLocalDate()));
+                        dateFormatter.format(performance.getStartDate().toLocalDate()));
             }
-            if (performance.getEnddate() != null) {
+            if (performance.getEndDate() != null) {
                 performance.setFormattedEndDate(
-                        dateFormatter.format(performance.getEnddate().toLocalDate()));
+                        dateFormatter.format(performance.getEndDate().toLocalDate()));
             }
         });
 
@@ -114,11 +112,11 @@ public class PerformanceService {
 
     private void formatPerformanceDates(List<PerformancesEntity> performances) {
         for (PerformancesEntity performance : performances) {
-            if (performance.getStartdate() != null) {
-                performance.setFormattedStartDate(formatDate(performance.getStartdate()));
+            if (performance.getStartDate() != null) {
+                performance.setFormattedStartDate(formatDate(performance.getStartDate()));
             }
-            if (performance.getEnddate() != null) {
-                performance.setFormattedEndDate(formatDate(performance.getEnddate()));
+            if (performance.getEndDate() != null) {
+                performance.setFormattedEndDate(formatDate(performance.getEndDate()));
             }
         }
     }
@@ -165,9 +163,11 @@ public class PerformanceService {
     }
 
     // 최신 공연 리스트를 가져오는 메서드
-    public List<PerformancesEntity> getPerformancesByDate(Date today) {
-        return performancesRepository.findByStartdateBeforeAndEnddateAfter(today, today);
+    public List<PerformancesEntity> getPerformancesByDate(Date startDate, Date endDate) {
+        return performancesRepository.findByStartDateBeforeAndEndDateAfter(startDate, endDate);
     }
+    
+
 
     // 모든 공연의 예약 현황 정보 가져오기 (내림차순 정렬)
     public List<PerformancesDto> getPerformancesWithReservationRate() {

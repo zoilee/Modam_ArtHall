@@ -29,8 +29,8 @@ public class PerformancesDto {
         dto.setId(performancesEntity.getId());
         dto.setTitle(performancesEntity.getTitle());
         dto.setDescription(performancesEntity.getDescription());
-        dto.setStartDate(performancesEntity.getStartdate());
-        dto.setEndDate(performancesEntity.getEnddate());
+        dto.setStartDate(performancesEntity.getStartDate()); // 변경된 필드 이름 반영
+        dto.setEndDate(performancesEntity.getEndDate());     // 변경된 필드 이름 반영
         dto.setTime(performancesEntity.getTime());
         dto.setLocation(performancesEntity.getLocation());
         dto.setCreatedAt(performancesEntity.getCreatedAt());

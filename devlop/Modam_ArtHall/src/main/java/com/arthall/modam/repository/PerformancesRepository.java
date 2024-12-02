@@ -22,19 +22,23 @@ public interface PerformancesRepository extends JpaRepository<PerformancesEntity
 
     Optional<PerformancesEntity> getPerformancesById(int id);
 
-    Page<PerformancesEntity> findByEnddateBefore(Date date, Pageable pageable);
+    // 필드명 수정: endDate로 변경
+    Page<PerformancesEntity> findByEndDateBefore(Date date, Pageable pageable);
 
-    List<PerformancesEntity> findByEnddateAfter(Date date);
+    // 필드명 수정: endDate로 변경
+    List<PerformancesEntity> findByEndDateAfter(Date date);
 
     // 지난 공연 가져오기
-    @Query("SELECT p FROM PerformancesEntity p WHERE p.enddate < CURRENT_DATE")
+    // 필드명 수정: endDate로 변경
+    @Query("SELECT p FROM PerformancesEntity p WHERE p.endDate < CURRENT_DATE")
     Page<PerformancesEntity> findPastPerformances(Pageable pageable);
 
     // 현재 및 미래 공연 가져오기
-    @Query("SELECT p FROM PerformancesEntity p WHERE p.enddate >= CURRENT_DATE ORDER BY p.startdate ASC")
+    // 필드명 수정: endDate와 startDate로 변경
+    @Query("SELECT p FROM PerformancesEntity p WHERE p.endDate >= CURRENT_DATE ORDER BY p.startDate ASC")
     List<PerformancesEntity> findUpcomingPerformances();
 
     // 최신 공연 데이터를 가져오는 메서드
-    List<PerformancesEntity> findByStartdateBeforeAndEnddateAfter(Date startdate, Date enddate);
-
+    // 필드명 수정: startDate와 endDate로 변경
+    List<PerformancesEntity> findByStartDateBeforeAndEndDateAfter(Date startDate, Date endDate);
 }
