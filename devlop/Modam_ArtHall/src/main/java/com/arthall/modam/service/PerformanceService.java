@@ -4,12 +4,12 @@ import java.sql.Date;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import ava.util.ArrayList;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
-import ava.util.stream.Collectors;
+import java.util.stream.Collectors;
 import java.time.format.DateTimeFormatter;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,39 +26,40 @@ import com.arthall.modam.repository.PerformancesRepository;
 import com.arthall.modam.repository.ReservationsRepository;
 
 import jakarta.transaction.Transactional;
-import om.arthall.modam.repository.ShowRepository;
+import com.arthall.modam.repository.ShowRepository;
 
 @Service
 public class PerformanceService {
-    private final PerformancesRepository performanc priate
-    final CommentRepository commentRepository;
+    private final PerformancesRepository performancesRepository;
+    private final CommentRepository commentRepository;
     @Autowired
     private ReservationsRepository reservationsRepository;
     private final ShowRepository showRepository;
 
-    public void registerShowsWithPerformance(Performan    // how 등록 (startdate ~ enddate 동안 매일 13시, 17시 공연 등록)
-    Calendar calendar = Calendar.getInstance();
-    calendar.setTime(new java.util.Date(performance.getSta
-    Date endDate = performance.getEnddate();  //
+    public void registerShowsWithPerformance(PerformancesEntity performance) {
+        // Show 등록 (startdate ~ enddate 동안 매일 13시, 17시 공연 등록)
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new java.util.Date(performance.getStartdate().getTime())); // java.sql.Date -> java.util.Date
 
-        // 매일 13시 회차와 17시 회차를 추가
-            createShowForPerformance(performance, new java.sq
-            createShowForPerformance(performance, n
-        
+        Date endDate = performance.getEnddate(); // performance.getEnddate()는 java.sql.Date
 
-            calendar.add(Calendar.DAY_OF_YEAR, 1 
+        while (!calendar.getTime().after(endDate)) {
+            // 매일 13시 회차와 17시 회차를 추가
+            createShowForPerformance(performance, new java.sql.Date(calendar.getTimeInMillis()), 1); // 13시 회차
+            createShowForPerformance(performance, new java.sql.Date(calendar.getTimeInMillis()), 2); // 17시 회차
 
-        
-            
-            ate
+            // 날짜를 하루씩 증가
+            calendar.add(Calendar.DAY_OF_YEAR, 1);
+        }
+    }
 
-    void createShowForPerformance(PerformancesEntity performance, Date showDate, int showTime) {
-                ShowEntity show = new ShowEntity();
-
-            show.setShowT
-            show.setSeatLimit(216);  // 기본값 216
-         
-            show.setPerformancesEntity(performance);  // Performance 참조
+    private void createShowForPerformance(PerformancesEntity performance, Date showDate, int showTime) {
+        ShowEntity show = new ShowEntity();
+        show.setShowDate(showDate);
+        show.setShowTime(showTime); // 1: 13시, 2: 15시
+        show.setSeatLimit(216); // 기본값 216
+        show.setSeatAvailable(216); // 기본값 216
+        show.setPerformancesEntity(performance); // Performance 참조
 
         showRepository.save(show);
     }
@@ -76,6 +77,10 @@ public class PerformanceService {
 
     public List<PerformancesEntity> getUpcomingPerformances() {
         // 현재 날짜를 가져와 SQL Date로 변환
+        Date currentDate = Date.valueOf(LocalDate.now());
+        // 'enddate'가 현재 날짜 이후인 공연 리스트 가져오기
+        List<PerformancesEntity> performances = performancesRepository.findByEnddateAfter(currentDate);
+        formatPerformanceDates(performances);
 
         // startdate 기준으로 정렬
         performances.sort(Comparator.comparing(PerformancesEntity::getStartdate));

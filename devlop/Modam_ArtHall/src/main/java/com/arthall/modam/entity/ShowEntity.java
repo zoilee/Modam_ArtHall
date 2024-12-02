@@ -40,6 +40,5 @@ public class ShowEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "performance_id", referencedColumnName = "id")
     private PerformancesEntity performancesEntity;
-    
 
 }

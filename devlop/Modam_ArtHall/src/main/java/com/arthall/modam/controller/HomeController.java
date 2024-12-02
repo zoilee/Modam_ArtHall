@@ -11,8 +11,6 @@ import java.sql.Date;
 import java.time.LocalDate;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 
 import java.util.Optional;
@@ -21,16 +19,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import org.springframework.beans.factory.annotation.Autowired;<<<<<<<HEAD
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;=======>>>>>>>feture-seatselect
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -39,14 +35,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.arthall.modam.entity.CommentEntity;
-import com.arthall.modam.entity.ImagesEntity;
 import com.arthall.modam.entity.NoticesEntity;
 import com.arthall.modam.entity.PerformancesEntity;
 import com.arthall.modam.entity.ReservationsEntity;
@@ -409,7 +403,15 @@ public class HomeController {
     }
 
     @GetMapping("/reservConfirm")
-    public String reservConfirm(Model model) {
+    public String reservConfirm(Model model,
+            @RequestParam("performanceId") int performanceId,
+            @RequestParam("performanceTitle") String performanceTitle,
+            @RequestParam("showId") int showId,
+            @RequestParam("showDate") Date showDate,
+            @RequestParam("showTime") int showTime,
+            @RequestParam("numberOfPeople") int numberOfPeople,
+            @RequestParam("seatId1") String seatId1,
+            @RequestParam("seatId2") String seatId2) {
         // 가입폼 체크 이거 service로 만들어주면안되나요?
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -439,24 +441,11 @@ public class HomeController {
         BigDecimal points = userService.getUserPointsById(userId);
         System.out.println("내 포인트는 : " + points);
 
+        // 모델에 값 저장
         int price = 600;
         model.addAttribute("price", price);
         model.addAttribute("points", points.intValue());
         model.addAttribute("userId", userId);
-
-    @PostMapping("/reservConfirm")
-    public String showReservConfirmPage(
-            @RequestParam("performanceId") int performanceId,
-            @RequestParam("performanceTitle") String performanceTitle,
-            @RequestParam("showId") int showId,
-            @RequestParam("showDate") Date showDate,
-            @RequestParam("showTime") int showTime,
-            @RequestParam("numberOfPeople") int numberOfPeople,
-            @RequestParam("seatId1") String seatId1,
-            @RequestParam("seatId2") String seatId2,
-            Model model) {
-
-        // 모델에 값 저장
         model.addAttribute("performanceId", performanceId);
         model.addAttribute("performanceTitle", performanceTitle);
         model.addAttribute("showId", showId);

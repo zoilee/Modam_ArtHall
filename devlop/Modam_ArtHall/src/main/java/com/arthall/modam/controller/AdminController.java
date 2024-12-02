@@ -5,8 +5,8 @@ import com.arthall.modam.dto.PerformancesDto;
 import com.arthall.modam.entity.ImagesEntity;
 import com.arthall.modam.service.BbsService;
 import com.arthall.modam.service.FileService;
-import com.arthall.modam.service.PerformanceService;<<<<<<<HEAD
-import com.arthall.modam.service.UserService;=======>>>>>>>feture-seatselect
+import com.arthall.modam.service.PerformanceService;
+import com.arthall.modam.service.UserService;
 
 import java.io.File;
 import java.io.IOException;
@@ -388,9 +388,6 @@ public class AdminController {
             }
         }
 
-        List<ImagesEntity> images = imagesRepository.findByReferenceIdAndReferenceType(performance.getId(),
-                referenceType);
-
         // 공연 삭제 처리 (이미지 파일과 데이터)
         List<ImagesEntity> images = imagesRepository.findByReferenceIdAndReferenceType(performance.getId(),
                 ImagesEntity.ReferenceType.PERFORMANCE);
@@ -414,10 +411,11 @@ public class AdminController {
 
         if (fileDeleteError) {
             redirectAttributes.addFlashAttribute("message", "이미지 파일 삭제 중 일부 오류가 발생했습니다.");
+        }
         // 메시지 설정
         if (showDeleteError) {
             redirectAttributes.addFlashAttribute("message", "연관된 쇼가 삭제되지 않았습니다.");
-        } else if (filDeleteError) {
+        } else if (fileDeleteError) {
             redirectAttributes.addFlashAttribute("message", "이미지파일이 삭제되지 않았습니다.");
         } else {
             redirectAttributes.addFlashAttribute("message", "공연과 관련된 쇼, 이미지, 공연이 삭제되었습니다.");
