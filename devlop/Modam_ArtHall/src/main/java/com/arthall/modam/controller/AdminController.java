@@ -5,11 +5,14 @@ import com.arthall.modam.dto.PerformancesDto;
 import com.arthall.modam.entity.ImagesEntity;
 import com.arthall.modam.service.BbsService;
 import com.arthall.modam.service.FileService;
-import com.arthall.modam.service.PerformanceService;
-import com.arthall.modam.service.UserService;
+import com.arthall.modam.service.PerformanceService;<<<<<<<HEAD
+import com.arthall.modam.service.UserService;=======>>>>>>>feture-seatselect
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,6 +26,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -34,6 +38,10 @@ import com.arthall.modam.entity.UserEntity;
 import com.arthall.modam.repository.ImagesRepository;
 import com.arthall.modam.repository.PerformancesRepository;
 import com.arthall.modam.repository.ReservationsRepository;
+import com.arthall.modam.entity.ShowEntity;
+import com.arthall.modam.repository.ImagesRepository;
+import com.arthall.modam.repository.PerformancesRepository;
+import com.arthall.modam.repository.ShowRepository;
 
 @Controller
 @RequestMapping("/admin")
@@ -43,7 +51,13 @@ public class AdminController {
     private PerformancesRepository performancesRepository;
 
     @Autowired
+    private PerformanceService performanceService;
+
+    @Autowired
     private ImagesRepository imagesRepository;
+
+    @Autowired
+    private ShowRepository showRepository;
 
     @Autowired
     private BbsService bbsService;
@@ -53,9 +67,6 @@ public class AdminController {
 
     @Autowired
     private UserService userService;
-
-    @Autowired
-    private PerformanceService performanceService;
 
     @Autowired
     private ReservationsRepository reservationRepository;
@@ -279,35 +290,72 @@ public class AdminController {
         return "admin/adminShowCommitWrite";
     }
 
-    @PostMapping("/showComitWrite")
-    public String AdminCommitWrite(PerformancesEntity performancesEntity,
+    // date 형식 바꾸기 메서드
+    public Date convertStringToDate(String dateStr) {
+        try {
+            LocalDate localDate = LocalDate.parse(dateStr);
+            return Date.valueOf(localDate); // LocalDate -> java.sql.Date로 변환
+        } catch (DateTimeParseException e) {
+            return null; // 날짜 변환 실패시 null 반환
+        }
+    }
+
+    @PostMapping("/showCommitWrite")
+    public String AdminCommitWrite(@ModelAttribute PerformancesDto performanceDto,
             @RequestParam(value = "file", required = false) MultipartFile file,
+            @RequestParam(value = "startDate", required = false) String startDateStr,
+            @RequestParam(value = "endDate", required = false) String endDateStr,
             RedirectAttributes redirectAttributes) {
 
-        // 공연데이터가 먼저 생성
-        PerformancesEntity savedPerformance = performancesRepository.save(performancesEntity);
+        // 1. startDate와 endDate를 String으로 받았으므로, 이를 java.sql.Date로 변환
+        Date startDate = convertStringToDate(startDateStr); // 변환된 startDate
+        Date endDate = convertStringToDate(endDateStr); // 변환된 endDate
 
+        // 2. PerformancesEntity 생성 및 값 설정
+        PerformancesEntity performance = new PerformancesEntity();
+        performance.setTitle(performanceDto.getTitle());
+        performance.setDescription(performanceDto.getDescription());
+        performance.setStartdate(startDate); // 변환된 startDate 설정
+        performance.setEnddate(endDate); // 변환된 endDate 설정
+        performance.setTime(performanceDto.getTime());
+        performance.setLocation(performanceDto.getLocation());
+        performance.setAge(performanceDto.getAge());
+
+        // 3. 공연 데이터 저장
+        PerformancesEntity savedPerformance = performancesRepository.save(performance);
+
+        // 4. show 등록
+        try {
+            performanceService.registerShowsWithPerformance(performance);
+            redirectAttributes.addFlashAttribute("message", "공연 정보가 성공적으로 등록되었습니다.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("error", "공연 등록 중 오류가 발생했습니다.");
+            return "redirect:/admin/showCommitWrite"; // 오류 발생 시 폼으로 리다이렉트
+        }
+
+        // 5. 파일 처리 (이미지 저장)
         if (file != null && !file.isEmpty()) {
-            // 파일 저장 로직
             try {
                 String filePath = fileService.saveFile(file); // 파일 저장 후 경로 반환
                 System.out.println(filePath);
+
                 // images 테이블에 데이터 저장
                 ImagesEntity image = new ImagesEntity();
                 image.setImageUrl(filePath);
                 image.setReferenceId(savedPerformance.getId()); // 저장된 공연정보의 ID 사용
                 image.setReferenceType(ImagesEntity.ReferenceType.PERFORMANCE); // 공연정보로 등록
                 imagesRepository.save(image);
-
             } catch (IOException e) {
                 System.err.println("파일 저장 중 오류 발생: " + e.getMessage());
                 e.printStackTrace();
+                redirectAttributes.addFlashAttribute("error", "파일 저장 중 오류가 발생했습니다.");
+                return "redirect:/admin/showCommitWrite"; // 오류 발생 시 폼으로 리다이렉트
             }
         }
 
-        redirectAttributes.addFlashAttribute("message", "공연 정보가 성공적으로 등록되었습니다.");
-
-        return "redirect:showCommitList";
+        // 등록이 끝나면 공연 목록으로 리다이렉트
+        return "redirect:/admin/showCommitList";
     }
 
     @GetMapping("/showCommitDelete")
@@ -327,6 +375,21 @@ public class AdminController {
             redirectAttributes.addFlashAttribute("error", "예약이 있는 공연은 삭제가 불가합니다.");
             return "redirect:showCommitList";
         }
+        // 공연에 관련된 쇼 삭제
+        List<ShowEntity> relatedShows = showRepository.findByPerformancesEntity_Id(id);
+        boolean showDeleteError = false;
+        for (ShowEntity show : relatedShows) {
+            try {
+                showRepository.delete(show);
+                System.out.println("쇼 삭제 성공: " + show.getId());
+            } catch (Exception e) {
+                System.err.println("쇼 삭제 실패: " + show.getId());
+                showDeleteError = true;
+            }
+        }
+
+        List<ImagesEntity> images = imagesRepository.findByReferenceIdAndReferenceType(performance.getId(),
+                referenceType);
 
         // 공연 삭제 처리 (이미지 파일과 데이터)
         List<ImagesEntity> images = imagesRepository.findByReferenceIdAndReferenceType(performance.getId(),
@@ -351,8 +414,13 @@ public class AdminController {
 
         if (fileDeleteError) {
             redirectAttributes.addFlashAttribute("message", "이미지 파일 삭제 중 일부 오류가 발생했습니다.");
+        // 메시지 설정
+        if (showDeleteError) {
+            redirectAttributes.addFlashAttribute("message", "연관된 쇼가 삭제되지 않았습니다.");
+        } else if (filDeleteError) {
+            redirectAttributes.addFlashAttribute("message", "이미지파일이 삭제되지 않았습니다.");
         } else {
-            redirectAttributes.addFlashAttribute("message", "공연이 삭제되었습니다.");
+            redirectAttributes.addFlashAttribute("message", "공연과 관련된 쇼, 이미지, 공연이 삭제되었습니다.");
         }
 
         return "redirect:showCommitList";

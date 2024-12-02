@@ -79,13 +79,20 @@ $(document).on('click', '.seat', function () {
     var seatId = seatButton.val();
     const seatPicked1 = document.querySelector("#seatPicked1");
     const seatPicked2 = document.querySelector("#seatPicked2");
-    
+
+    // numberOfPeople 값 가져오기 (숨겨진 input에서)
+    const numberOfPeople = parseInt($('input[name="numberOfPeople"]').val(), 10);
+
     // 이미 선택된 좌석이 2개 이상일 경우 추가 선택 막기
-    if (selectedSeats.length >= 2 && !seatButton.hasClass('selected')) {
-        alert("최대 2개의 좌석만 선택할 수 있습니다.");
-        return; // 2개 이상 선택했을 때는 아무 작업도 하지 않음
+    if (numberOfPeople === 1 && selectedSeats.length >= 1 && !seatButton.hasClass('selected')) {
+        alert("하나의 좌석만 선택할 수 있습니다.");
+        return; // 1명이 선택일 경우 1개 이상의 좌석만 선택할 수 있도록 제한
     }
-    
+    if (numberOfPeople === 2 && selectedSeats.length >= 2 && !seatButton.hasClass('selected')) {
+        alert("최대 2개의 좌석만 선택할 수 있습니다.");
+        return; // 2명이 선택일 경우 2개 이상의 좌석만 선택할 수 있도록 제한
+    }
+
     if (seatButton.hasClass('selected')) {
         // 선택 해제
         seatButton.removeClass('selected');
@@ -114,7 +121,7 @@ function updateForm() {
     // 기존의 hidden input 제거 (폼 업데이트 시마다 새로 추가)
     const existingInput1 = document.querySelector('input[name="seatId1"]');
     const existingInput2 = document.querySelector('input[name="seatId2"]');
-    
+
     if (existingInput1) existingInput1.remove();
     if (existingInput2) existingInput2.remove();
 
@@ -128,7 +135,6 @@ function updateForm() {
 }
 
 // 폼을 body에 추가하고 제출
-$(document).ready(function() {
-    $('body').append(form);
+$('#toReservConfirm').on('click', function() {
     form.submit();
 });

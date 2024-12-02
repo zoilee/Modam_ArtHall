@@ -28,7 +28,7 @@
                     </div>
                     <div class="col-md-6">
                         <label>공연기간</label>
-                        <p th:text="${performance.start_date} + ' ~ ' + ${performance.end_date}"></p>
+                        <p>공연 기간: <span th:text="${performance.formattedStartDate}">Start Date</span> ~ <span th:text="${performance.formattedEndDate}">End Date</span></p>
                         <label>공연시간</label>
                         <p th:text="${performance.time} + '분'"></p>
                         <label>관람연령</label>
@@ -55,8 +55,8 @@
                     <input type="date" id="calendarInput" name="selectedDate" value="${today}" />
                     <!-- 사용자가 날짜를 선택할 수 있는 input 필드 -->
                     <form action="/reservConfirm" method="post" id="formToReservConfirm">
-                        <input type="hidden" id="PerformanceId" name="PerformanceId" value="${performancesEntity.id}">
-                        <input type="hidden" id="PerformanceTitle" name="PerformanceTitle" value="${performancesEntity.title}">
+                        <input type="hidden" id="PerformanceId" name="PerformanceId" value="${performance.id}">
+                        <input type="hidden" id="PerformanceTitle" name="PerformanceTitle" value="${performance.title}">
                         <input type="hidden" id="showDate" name="showDate" value="${today}" />
                     </form>
                     <form action="/seatSelect" method="post" id="formToseatSelect">
@@ -67,7 +67,7 @@
                     <option value="1">13:00</option>
                     <option value="2">17:00</option>
                 </select>
-                <p>잔여석 : <span id="seatAvailableInput"></span></p>
+                <p>잔여석 : <span id="seatAvailableInput"></span>석</p>
                 <h6>인원</h6>
                 <select class="form-select" name="numberOfPeople" id="numberOfPeople">
                     <option value="1">1명</option>

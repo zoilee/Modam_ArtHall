@@ -47,16 +47,16 @@ function getSeatPrice(seatId) {
     }
 }
 
-// 좌석을 선택하고 가격을 설정하는 함수
+// 선택 좌석의 가격을 설정하는 함수
 function setPriceAndSubmit() {
     const seatId1 = document.querySelector('input[name="seatId1"]').value;
     const seatId2 = document.querySelector('input[name="seatId2"]').value;
     const seatPrice1 = getSeatPrice(seatId1);
     const seatPrice2 = getSeatPrice(seatId2);
 
-    // 선택된 좌석 가격을 해당 input에 할당
-    document.querySelector('input[name="seatPrice1"]').value = seatPrice1;
-    document.querySelector('input[name="seatPrice2"]').value = seatPrice2;
+    // 선택된 좌석 가격을 명세서에 할당
+    document.querySelector('#seatPrice1').textContent = seatPrice1.toLocaleString();
+    document.querySelector('#seatPrice2').textContent = seatPrice2.toLocaleString();
 
     // 전체 금액 계산 및 표시
     const totalPrice = seatPrice1 + seatPrice2;
@@ -65,16 +65,23 @@ function setPriceAndSubmit() {
 // 페이지 로드 후 가격 설정
 window.onload = setPriceAndSubmit
 
-    //selectedTime 시간으로 변환해서 출력
-    function transformToTime(selectedTime){
-        const timeShow = document.querySelector(".selectedTimeConfirm");
-        if(selectedTime == 1){
-            timeShow.append("13:00");
-        }else{
-            timeShow.append("17:00");
-        }
-    };
-    transformToTime(selectedTime);
+
+
+//showTime 시간으로 변환해서 보여주기
+function transformToTime(){
+    // .selectedTimeConfirm 요소에서 showTime 값을 가져옴
+    const timeShow = document.querySelector(".selectedTimeConfirm");
+    const selectedTime = timeShow.getAttribute("data-show-time"); // showTime 값 가져오기
+
+    if (selectedTime == 1) {
+        timeShow.textContent = "13:00"; // 시간 출력
+    } else {
+        timeShow.textContent = "17:00";
+    }
+}
+
+// 페이지 로드 후 실행
+transformToTime();
 
    
 

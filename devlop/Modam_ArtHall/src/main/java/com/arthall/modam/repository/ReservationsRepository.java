@@ -39,4 +39,7 @@ public interface ReservationsRepository extends JpaRepository<ReservationsEntity
                         "WHERE s.performance_id = :performanceId AND r.status = 'CONFIRMED'", nativeQuery = true)
         int countByPerformanceId(@Param("performanceId") int performanceId);
 
+        List<ReservationsEntity> findByUserEntity_IdAndReservationDateBefore(int userId, Timestamp date);
+
+        List<ReservationsEntity> findByShowEntity_Id(int showId);
 }

@@ -21,11 +21,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Autowired;<<<<<<<HEAD
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort;=======>>>>>>>feture-seatselect
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -39,6 +39,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -61,6 +62,7 @@ import com.arthall.modam.service.PerformanceService;
 import com.arthall.modam.service.ReservationsService;
 import com.arthall.modam.service.RewardsLogService;
 import com.arthall.modam.service.RewardsService;
+import com.arthall.modam.service.ShowService;
 import com.arthall.modam.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -77,6 +79,9 @@ public class HomeController {
 
     @Autowired
     private PerformanceService performanceService;
+
+    @Autowired
+    private ShowService showService;
 
     @Autowired
     private ReservationsService reservationService;
@@ -390,7 +395,16 @@ public class HomeController {
     }
 
     @GetMapping("/seatSelect")
-    public String seatSelect() {
+    public String showSeatSelection(@RequestParam("showId") int showId, Model model) {
+        // showId에 해당하는 예약된 좌석을 조회
+        List<String> unavailableSeats = reservationService.getUnavailableSeats(showId);
+
+        // unavailableSeats 리스트를 모델에 담아 JSP나 Thymeleaf 템플릿으로 전달
+        model.addAttribute("unavailableSeats", unavailableSeats);
+
+        // showId를 폼에 hidden으로 전달할 수 있도록
+        model.addAttribute("showId", showId);
+
         return "seatSelect";
     }
 
@@ -429,6 +443,37 @@ public class HomeController {
         model.addAttribute("price", price);
         model.addAttribute("points", points.intValue());
         model.addAttribute("userId", userId);
+
+    @PostMapping("/reservConfirm")
+    public String showReservConfirmPage(
+            @RequestParam("performanceId") int performanceId,
+            @RequestParam("performanceTitle") String performanceTitle,
+            @RequestParam("showId") int showId,
+            @RequestParam("showDate") Date showDate,
+            @RequestParam("showTime") int showTime,
+            @RequestParam("numberOfPeople") int numberOfPeople,
+            @RequestParam("seatId1") String seatId1,
+            @RequestParam("seatId2") String seatId2,
+            Model model) {
+
+        // 모델에 값 저장
+        model.addAttribute("performanceId", performanceId);
+        model.addAttribute("performanceTitle", performanceTitle);
+        model.addAttribute("showId", showId);
+        model.addAttribute("showDate", showDate);
+        model.addAttribute("showTime", showTime);
+        model.addAttribute("numberOfPeople", numberOfPeople);
+        model.addAttribute("seatId1", seatId1);
+        model.addAttribute("seatId2", seatId2);
+
+        try {
+            showService.updateSeatAvailability(showId, numberOfPeople);
+        } catch (Exception e) {
+            model.addAttribute("error", "예약 처리 중 오류가 발생했습니다.");
+            return "errorPage"; // 오류 페이지로 리다이렉트
+        }
+
+        // 예약 확인 페이지로 이동
         return "reservConfirm";
     }
 
