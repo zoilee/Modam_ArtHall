@@ -11,6 +11,10 @@ import java.sql.Date;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.ToString;
+import lombok.experimental.Accessors;
+
+
+
 
 @Entity
 @Table(name = "performances")
@@ -28,10 +32,10 @@ public class PerformancesEntity {
     private String description;
 
     @Column(name = "start_date") // 데이터베이스 컬럼과 매핑
-    private Date startdate;
+    private Date startDate;
 
     @Column(name = "end_date") // 데이터베이스 컬럼과 매핑
-    private Date enddate;
+    private Date endDate;
 
     @Column
     private int time;

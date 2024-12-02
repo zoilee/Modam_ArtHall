@@ -46,9 +46,9 @@ public class FileService {
         // 업로드된 파일을 실제 폴더에 저장
         Files.write(filePath, file.getBytes());
 
-        // 데이터베이스에 저장할 상대 경로
-        // "/uploads/" + uniqueFileName; 경로 조정필요할듯?
-        return "/" + uniqueFileName;
+        
+        // "/uploads/" + uniqueFileName; 경로 조정 1202
+        return "/uploads/" + uniqueFileName;
     }
 
 
