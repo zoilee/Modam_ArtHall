@@ -11,6 +11,8 @@ import com.arthall.modam.service.UserService;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -284,6 +286,16 @@ public String showAdminCommitWrite() {
     return "admin/adminShowCommitWrite";
 }
 
+// date 형식 바꾸기 메서드
+public Date convertStringToDate(String dateStr) {
+    try {
+        LocalDate localDate = LocalDate.parse(dateStr);
+        return Date.valueOf(localDate);  // LocalDate -> java.sql.Date로 변환
+    } catch (DateTimeParseException e) {
+        return null;  // 날짜 변환 실패시 null 반환
+    }
+}
+
 @PostMapping("/showCommitWrite")
 public String AdminCommitWrite(@ModelAttribute PerformancesDto performanceDto, 
         @RequestParam(value = "file", required = false) MultipartFile file,
@@ -299,8 +311,8 @@ public String AdminCommitWrite(@ModelAttribute PerformancesDto performanceDto,
     PerformancesEntity performance = new PerformancesEntity();
     performance.setTitle(performanceDto.getTitle());
     performance.setDescription(performanceDto.getDescription());
-    performance.setStartdate(startDate);  // 변환된 startDate 설정
-    performance.setEnddate(endDate);      // 변환된 endDate 설정
+    performance.setStartDate(startDate);  // 변환된 startDate 설정
+    performance.setEndDate(endDate);      // 변환된 endDate 설정
     performance.setTime(performanceDto.getTime());
     performance.setLocation(performanceDto.getLocation());
     performance.setAge(performanceDto.getAge());
