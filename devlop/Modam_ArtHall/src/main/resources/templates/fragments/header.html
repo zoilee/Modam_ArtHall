@@ -1,4 +1,5 @@
 <header class="header-container container d-flex justify-content-between align-items-center" th:fragment="headerFragment">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
     <div>
         <a th:href="@{/}">
             <img src="/imgs/logo-text-black.png" alt="Modam Art Hall Logo" class="logo-img">
@@ -17,16 +18,32 @@
 
         <!-- 로그인된 사용자 -->
         <div th:if="${#authentication != null and #authentication.authenticated and #authentication.principal != 'anonymousUser'}">
-            <!-- 관리자 -->
-            <div th:if="${userRole == 'ROLE_ADMIN'}">
-                <a th:href="@{/admin/menu}" class="btn btn-outline-dark me-2">관리자모드</a>
-                <a th:href="@{/logout}" class="btn btn-danger">로그아웃</a>
-            </div>
-             <!-- 일반 사용자 -->
-             <div th:if="${userRole == 'ROLE_USER'}">
-                <a th:href="@{/mypage}" class="btn btn-outline-dark me-2">마이페이지</a>
-                <a th:href="@{/logout}" class="btn btn-danger">로그아웃</a>
+            <div class="logged-in-menu d-flex align-items-center">
+                <!-- 관리자 -->
+                <div class="menu d-flex" th:if="${userRole == 'ROLE_ADMIN'}">
+                    <a th:href="@{/admin/menu}" class="btn btn-outline-dark me-2">관리자모드</a>
+                    <a th:href="@{/logout}" class="btn btn-danger">로그아웃</a>
+                </div>
+                <!-- 관리자 아이콘변환 -->
+                <div class="admin-icon d-none" id="adminIcon" th:if="${userRole == 'ROLE_ADMIN'}"><i class="ri-admin-fill"></i></div>
+                <div class="dropdown-menu" id="adminDropdownMenu" th:if="${userRole == 'ROLE_ADMIN'}">
+                    <a th:href="@{/admin/menu}" class="dropdown-item">관리자모드</a>
+                    <a th:href="@{/logout}" class="dropdown-item text-danger">로그아웃</a>
+                </div>
+                <!-- 일반 사용자 -->
+                <div class="menu d-flex" th:if="${userRole == 'ROLE_USER'}">
+                    <a th:href="@{/mypage}" class="btn btn-outline-dark me-2">마이페이지</a>
+                    <a th:href="@{/logout}" class="btn btn-danger">로그아웃</a>
+                </div>
+                <!-- 일반 사용자 아이콘변환 -->
+                <div class="user-icon d-none" id="userIcon" th:if="${userRole == 'ROLE_USER'}"><i class="ri-user-fill"></i></div>
+                <div class="dropdown-menu" id="dropdownMenu" th:if="${userRole == 'ROLE_USER'}">
+                    <a th:href="@{/mypage}" class="dropdown-item">마이페이지</a>
+                    <a th:href="@{/logout}" class="dropdown-item text-danger">로그아웃</a>
+                </div>
             </div>
         </div>
     </div>
+    <!--js 파일 추가-->
+    <script th:src="@{/js/login/script.js}"></script>
 </header>
