@@ -10,7 +10,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: ${DB_URL}
     username: ${DB_USERNAME}
-    password: ${DB_PASSWORD
+    password: ${DB_PASSWORD}
   thymeleaf:
     cache: false
     check-template-location: true
