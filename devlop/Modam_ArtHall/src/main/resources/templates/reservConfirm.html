@@ -44,7 +44,8 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">관람시간</label>
-                        <p class="selectedTimeConfirm"></p>
+                        <p class="selectedTimeConfirm" 
+                            th:text="${showTime == 1 ? '13:00' : showTime == 2 ? '17:00' : ''}"></p>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">티켓 수</label>
@@ -97,7 +98,7 @@
                     <hr>
                     <div class="d-flex justify-content-between align-items-center">
                         <h3>총 결제 금액</h3>
-                        <h3><span id="totalPrice" th:text="${price}"></span><span id="won"> 원</span></h3>
+                        <h3><span id="totalPrice"></span><span id="won"> 원</span></h3>
                     </div>
                     <button class="btn btn-custom mt-3">결제하기</button>
                 </div>
@@ -192,27 +193,9 @@ function setPriceAndSubmit() {
     const totalPrice = seatPrice1 + seatPrice2;
     document.querySelector('#totalPrice').textContent = totalPrice.toLocaleString();
 }
+
 // 페이지 로드 후 가격 설정
-window.onload = setPriceAndSubmit
-
-
-//showTime 시간으로 변환해서 보여주기
-function transformToTime(){
-    /*<![CDATA[*/
-    const showTime = /*[[${showTime}]]*/;  // 서버에서 전달된 showTime 값
-    console.log("showTime 값 : ", showTime);
-    const timeShow = document.querySelector(".selectedTimeConfirm");
-    
-    if (showTime === 1) {
-        timeShow.textContent = "13:00";
-    } else {
-        timeShow.textContent = "17:00";
-    }
-    /*]]>*/
-}
-
-// 페이지 로드 후 실행
-window.onload = transformToTime
+setPriceAndSubmit();
 
    
 
@@ -247,6 +230,8 @@ window.onload = transformToTime
         });
     
 });
+
+
     //티켓생성
     function generateTicketId() {
         // 현재 날짜 yyyyMMdd 형식으로 변환

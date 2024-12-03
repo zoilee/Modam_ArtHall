@@ -224,8 +224,8 @@ function updateForm() {
     
     // 폼 데이터 업데이트
     $('input[name="seatId1"]').val(selectedSeats[0] || '');
-    // numberOfPeople이 1이면 seatId2는 'none'으로 설정, 2이면 선택된 좌석값 설정
-    $('input[name="seatId2"]').val(numberOfPeople === 1 ? 'none' : (selectedSeats[1] || ''));
+    // numberOfPeople이 1이면 seatId2는 'null'으로 설정, 2이면 선택된 좌석값 설정
+    $('input[name="seatId2"]').val(numberOfPeople === 1 ? 'NULL' : (selectedSeats[1] || ''));
     
     // 선택된 좌석 표시 업데이트 (화면에는 실제 선택된 좌석만 표시)
     $('#seatPicked1').text(selectedSeats[0] || '');
@@ -255,29 +255,35 @@ $('#toReservConfirm').on('click', function(e) {
     const numberOfPeople = parseInt($('input[name="numberOfPeople"]').val(), 10);
     
     // 좌석 선택 검증
-    if (numberOfPeople === 1 && !selectedSeats[0]) {
-        alert("좌석을 선택해주세요.");
-        return false; // 명시적으로 false 반환
-    }
-    if (numberOfPeople === 2 && (!selectedSeats[0] || !selectedSeats[1])) {
-        alert("2개의 좌석을 모두 선택해주세요.");
-        return false; // 명시적으로 false 반환
+    if (numberOfPeople === 1) {
+        if (!selectedSeats[0]) {
+            alert("좌석을 선택해주세요.");
+            return false;
+        }
+        // 1인용 예약일 경우 seatId2를 명시적으로 NULL로 설정
+        $('input[name="seatId1"]').val(selectedSeats[0]);
+        $('input[name="seatId2"]').val('NULL');
+    } else if (numberOfPeople === 2) {
+        if (!selectedSeats[0] || !selectedSeats[1]) {
+            alert("2개의 좌석을 모두 선택해주세요.");
+            return false;
+        }
+        // 2인용 예약일 경우 두 좌석 모두 설정
+        $('input[name="seatId1"]').val(selectedSeats[0]);
+        $('input[name="seatId2"]').val(selectedSeats[1]);
     }
     
     try {
-        // 폼 데이터 최종 업데이트
-        $('input[name="seatId1"]').val(selectedSeats[0]);
-        if (numberOfPeople === 2) {
-            $('input[name="seatId2"]').val(selectedSeats[1]);
-        }
+        // 폼 제출 전 모든 필수 데이터가 있는지 확인
+        const requiredFields = ['showId', 'performanceId', 'performanceTitle', 'showDate', 'showTime', 'seatId1'];
+        const missingFields = requiredFields.filter(field => !$(`input[name="${field}"]`).val());
         
-        // 데이터가 제대로 설정되었는지 확인
-        if (!$('input[name="seatId1"]').val()) {
-            throw new Error("좌석 정보가 올바르게 설정되지 않았습니다.");
+        if (missingFields.length > 0) {
+            throw new Error(`필수 데이터가 누락되었습니다: ${missingFields.join(', ')}`);
         }
         
         // 폼 제출
-        $('#formToReservConfirm').submit();
+        document.getElementById('formToReservConfirm').submit();
         
     } catch (error) {
         console.error("폼 제출 중 오류 발생:", error);
