@@ -24,6 +24,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -46,6 +47,7 @@ import com.arthall.modam.entity.PerformancesEntity;
 import com.arthall.modam.entity.ReservationsEntity;
 import com.arthall.modam.entity.RewardsEntity;
 import com.arthall.modam.entity.RewardsLogEntity;
+import com.arthall.modam.entity.ShowEntity;
 import com.arthall.modam.entity.UserEntity;
 import com.arthall.modam.service.CommentService;
 import com.arthall.modam.service.NoticesService;
@@ -383,16 +385,28 @@ public class HomeController {
     }
 
     @GetMapping("/seatSelect")
-    public String showSeatSelection(@RequestParam("showId") int showId, Model model) {
-        // showId에 해당하는 예약된 좌석을 조회
+    public String showSeatSelection(
+        @RequestParam("showId") int showId,
+        @RequestParam("numberOfPeople") int numberOfPeople,
+        @RequestParam("performanceId") int performanceId,
+        @RequestParam("performanceTitle") String performanceTitle,
+        @RequestParam("showDate") Date showDate,
+        @RequestParam("showTime") int showTime,
+        Model model) {
+        
+        // 기존 코드
         List<String> unavailableSeats = reservationService.getUnavailableSeats(showId);
 
         // unavailableSeats 리스트를 모델에 담아 JSP나 Thymeleaf 템플릿으로 전달
         model.addAttribute("unavailableSeats", unavailableSeats);
-
-        // showId를 폼에 hidden으로 전달할 수 있도록
+        //reservConfirm으로 넘어가야 하는 정보들
+        model.addAttribute("numberOfPeople", numberOfPeople);
         model.addAttribute("showId", showId);
-
+        model.addAttribute("performanceId", performanceId);
+        model.addAttribute("performanceTitle", performanceTitle);
+        model.addAttribute("showDate", showDate);
+        model.addAttribute("showTime", showTime);
+        
         return "seatSelect";
     }
 
@@ -449,20 +463,13 @@ public class HomeController {
         model.addAttribute("seatId1", seatId1);
         model.addAttribute("seatId2", seatId2);
 
-        try {
-            showService.updateSeatAvailability(showId, numberOfPeople);
-        } catch (Exception e) {
-            model.addAttribute("error", "예약 처리 중 오류가 발생했습니다.");
-            return "errorPage"; // 오류 페이지로 리다이렉트
-        }
-
         // 예약 확인 페이지로 이동
         return "reservConfirm";
     }
 
     @RequestMapping(value = "/reservForm", method = { RequestMethod.GET, RequestMethod.POST })
     public String showReservationForm(@RequestParam("performanceId") int performanceId,
-            Model model) {
+                            Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         // 로그인되지 않은 경우

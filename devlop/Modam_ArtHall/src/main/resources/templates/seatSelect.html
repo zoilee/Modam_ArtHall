@@ -73,15 +73,26 @@
         <div class="col text-center">
             <h5>선택좌석</h5>
             <p>선택 좌석 1 : <span id="seatPicked1"><!--선택좌석 값 출력--></span></p>
-            <p>선택 좌석 2 : <span id="seatPicked2"><!--선택좌석 값 출력--></span></p>
-            <form action="/reservConfirm" method="post" id="formToReservConform"></form>
+            <p th:if="${numberOfPeople == 2}">선택 좌석 2 : <span id="seatPicked2"><!--선택좌석 값 출력--></span></p>
         </div>
     </div>
 
     <!-- Payment Button -->
     <div class="row mt-4">
         <div class="col text-center">
-            <button class="btn btn-danger btn-lg" onclick="location.href='/reservConfirm'" id="toReservConfirm">결제하기</button>
+            <form action="/reservConfirm" method="get" id="formToReservConfirm">
+                <input type="hidden" name="numberOfPeople" th:value="${numberOfPeople}">
+                <input type="hidden" name="showId" th:value="${showId}">
+                <input type="hidden" name="performanceId" th:value="${param.performanceId}">
+                <input type="hidden" name="performanceTitle" th:value="${param.performanceTitle}">
+                <input type="hidden" name="showDate" th:value="${param.showDate}">
+                <input type="hidden" name="showTime" th:value="${param.showTime}">
+                <input type="hidden" name="seatId1">
+                <input type="hidden" name="seatId2">
+
+                <button class="btn btn-danger btn-lg" type="submit" id="toReservConfirm">결제하기</button>
+            </form>
+            
         </div>
     </div>
 </div>
@@ -209,26 +220,70 @@ const form = document.querySelector("#formToReservConfirm");
 
 // 선택된 좌석 정보를 폼에 추가
 function updateForm() {
-    // 기존의 hidden input 제거 (폼 업데이트 시마다 새로 추가)
-    const existingInput1 = document.querySelector('input[name="seatId1"]');
-    const existingInput2 = document.querySelector('input[name="seatId2"]');
+    const numberOfPeople = parseInt($('input[name="numberOfPeople"]').val(), 10);
+    
+    // 폼 데이터 업데이트
+    $('input[name="seatId1"]').val(selectedSeats[0] || '');
+    // numberOfPeople이 1이면 seatId2는 'none'으로 설정, 2이면 선택된 좌석값 설정
+    $('input[name="seatId2"]').val(numberOfPeople === 1 ? 'none' : (selectedSeats[1] || ''));
+    
+    // 선택된 좌석 표시 업데이트 (화면에는 실제 선택된 좌석만 표시)
+    $('#seatPicked1').text(selectedSeats[0] || '');
+    if (numberOfPeople === 2) {
+        $('#seatPicked2').text(selectedSeats[1] || '');
+    } else {
+        $('#seatPicked2').text('');  // 1인일 경우 두 번째 좌석 표시 안 함
+    }
 
-    if (existingInput1) existingInput1.remove();
-    if (existingInput2) existingInput2.remove();
-
-    // 선택된 좌석을 폼에 추가
-    const selectedSeatsInput1 = $('<input>').attr('type', 'hidden').attr('name', 'seatId1').val(selectedSeats[0] || '');
-    const selectedSeatsInput2 = $('<input>').attr('type', 'hidden').attr('name', 'seatId2').val(selectedSeats[1] || '');
-
-    // 선택된 좌석 정보를 폼에 추가
-    form.append(selectedSeatsInput1);
-    form.append(selectedSeatsInput2);
+    // 폼의 모든 입력값 콘솔에 출력
+    console.log('=== 폼 데이터 현재 상태 ===');
+    console.log('인원수:', $('input[name="numberOfPeople"]').val());
+    console.log('공연 ID:', $('input[name="showId"]').val());
+    console.log('퍼포먼스 ID:', $('input[name="performanceId"]').val());
+    console.log('공연 제목:', $('input[name="performanceTitle"]').val());
+    console.log('공연 날짜:', $('input[name="showDate"]').val());
+    console.log('공연 시간:', $('input[name="showTime"]').val());
+    console.log('좌석1:', $('input[name="seatId1"]').val());
+    console.log('좌석2:', $('input[name="seatId2"]').val());
+    console.log('========================');
 }
 
 // 폼을 body에 추가하고 제출
-$('#toReservConfirm').on('click', function() {
-    $('body').append(form);
-    form.submit();
+$('#toReservConfirm').on('click', function(e) {
+    e.preventDefault();
+    
+    const numberOfPeople = parseInt($('input[name="numberOfPeople"]').val(), 10);
+    
+    // 좌석 선택 검증
+    if (numberOfPeople === 1 && !selectedSeats[0]) {
+        alert("좌석을 선택해주세요.");
+        return false; // 명시적으로 false 반환
+    }
+    if (numberOfPeople === 2 && (!selectedSeats[0] || !selectedSeats[1])) {
+        alert("2개의 좌석을 모두 선택해주세요.");
+        return false; // 명시적으로 false 반환
+    }
+    
+    try {
+        // 폼 데이터 최종 업데이트
+        $('input[name="seatId1"]').val(selectedSeats[0]);
+        if (numberOfPeople === 2) {
+            $('input[name="seatId2"]').val(selectedSeats[1]);
+        }
+        
+        // 데이터가 제대로 설정되었는지 확인
+        if (!$('input[name="seatId1"]').val()) {
+            throw new Error("좌석 정보가 올바르게 설정되지 않았습니다.");
+        }
+        
+        // 폼 제출
+        $('#formToReservConfirm').submit();
+        
+    } catch (error) {
+        console.error("폼 제출 중 오류 발생:", error);
+        alert("좌석 선택 중 오류가 발생했습니다. 다시 시도해주세요.");
+        return false;
+    }
 });
 
 </script>

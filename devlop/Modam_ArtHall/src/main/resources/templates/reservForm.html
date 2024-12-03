@@ -55,13 +55,6 @@
                 <div class="calendar-box">
                     <input type="date" id="calendarInput" name="selectedDate" value="${today}" />
                     <!-- 사용자가 날짜를 선택할 수 있는 input 필드 -->
-                    <form action="/reservConfirm" method="post" id="formToReservConfirm">
-                        <input type="hidden" id="PerformanceId" name="PerformanceId" value="${performance.id}">
-                        <input type="hidden" id="PerformanceTitle" name="PerformanceTitle" value="${performance.title}">
-                        <input type="hidden" id="showDate" name="showDate" value="${today}" />
-                    </form>
-                    <form action="/seatSelect" method="post" id="formToseatSelect">
-                    </form>
                 </div>
                 <h6>회차</h6>
                 <select id="showTime" name="showTime">
@@ -79,7 +72,17 @@
 
         <!-- 좌석 선택 섹션 -->
         <div class="text-center my-5">
-            <button class="center-button" onclick="location.href='/seatSelect'" id="toSeatSelect">좌석선택</button>
+            <form action="/seatSelect" method="GET" id="formToseatSelect">
+                <!-- 필수 파라미터들을 hidden input으로 추가 -->
+                <input type="hidden" id="performanceId" name="performanceId" th:value="${performance.id}">
+                <input type="hidden" name="performanceTitle" th:value="${performance.title}">
+                <input type="hidden" name="showDate" id="showDate">
+                <input type="hidden" name="showTime" id="showTime">
+                <input type="hidden" name="numberOfPeople" id="numberOfPeople">
+                <input type="hidden" name="showId" id="showId">
+                
+                <button type="submit" class="center-button" id="toSeatSelect">좌석선택</button>
+            </form>
         </div>
     </div>
     <!-- 푸터 가져오기 -->

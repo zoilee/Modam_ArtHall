@@ -73,15 +73,17 @@ function transformToTime(){
     const timeShow = document.querySelector(".selectedTimeConfirm");
     const selectedTime = timeShow.getAttribute("data-show-time"); // showTime 값 가져오기
 
-    if (selectedTime == 1) {
-        timeShow.textContent = "13:00"; // 시간 출력
+    if (selectedTime === "1") {
+        timeShow.textContent = "13:00";
     } else {
         timeShow.textContent = "17:00";
     }
 }
 
 // 페이지 로드 후 실행
-transformToTime();
+document.addEventListener('DOMContentLoaded', function() {
+    transformToTime();
+});
 
    
 

@@ -136,5 +136,6 @@ function updateForm() {
 
 // 폼을 body에 추가하고 제출
 $('#toReservConfirm').on('click', function() {
+    $('body').append(form);
     form.submit();
 });
