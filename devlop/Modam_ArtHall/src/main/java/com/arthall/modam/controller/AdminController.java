@@ -275,39 +275,42 @@ public class AdminController {
         return "admin/adminShowCommitList";
     }
     
-    @GetMapping("/showCommitWrite")
-    public String showAdminCommitWrite() {
-        return "admin/adminShowCommitWrite";
-    }
-    
-    @PostMapping("/showComitWrite")
-    public String AdminCommitWrite(PerformancesEntity performancesEntity,
-            @RequestParam(value = "file", required = false) MultipartFile file,
-            RedirectAttributes redirectAttributes) {
-    
-        // 공연 데이터 생성
-        PerformancesEntity savedPerformance = performancesRepository.save(performancesEntity);
-    
-        if (file != null && !file.isEmpty()) {
-            // 파일 저장 로직
-            try {
-                String filePath = fileService.saveFile(file); // 파일 저장 후 경로 반환
-                ImagesEntity image = new ImagesEntity();
-                image.setImageUrl(filePath);
-                image.setReferenceId(savedPerformance.getId());
-                image.setReferenceType(ImagesEntity.ReferenceType.PERFORMANCE); // 공연정보로 등록
-                imagesRepository.save(image);
-    
-            } catch (IOException e) {
-                System.err.println("파일 저장 중 오류 발생: " + e.getMessage());
-                e.printStackTrace();
-            }
+    // 작성 페이지 호출
+@GetMapping("/showCommitWrite")
+public String showAdminCommitWrite() {
+    return "admin/adminShowCommitWrite";
+}
+
+// 작성 데이터 저장
+@PostMapping("/showCommitWrite")
+public String AdminCommitWrite(PerformancesEntity performancesEntity,
+        @RequestParam(value = "file", required = false) MultipartFile file,
+        RedirectAttributes redirectAttributes) {
+
+    // 공연 데이터 생성
+    PerformancesEntity savedPerformance = performancesRepository.save(performancesEntity);
+
+    if (file != null && !file.isEmpty()) {
+        // 파일 저장 로직
+        try {
+            String filePath = fileService.saveFile(file); // 파일 저장 후 경로 반환
+            ImagesEntity image = new ImagesEntity();
+            image.setImageUrl(filePath);
+            image.setReferenceId(savedPerformance.getId());
+            image.setReferenceType(ImagesEntity.ReferenceType.PERFORMANCE); // 공연정보로 등록
+            imagesRepository.save(image);
+
+        } catch (IOException e) {
+            System.err.println("파일 저장 중 오류 발생: " + e.getMessage());
+            e.printStackTrace();
         }
-    
-        redirectAttributes.addFlashAttribute("message", "공연 정보가 성공적으로 등록되었습니다.");
-    
-        return "redirect:showCommitList";
     }
+
+    redirectAttributes.addFlashAttribute("message", "공연 정보가 성공적으로 등록되었습니다.");
+
+    return "redirect:/admin/showCommitList";
+}
+
     
     @GetMapping("/showCommitDelete")
     public String showCommitDelete(@RequestParam("id") int id, RedirectAttributes redirectAttributes) {

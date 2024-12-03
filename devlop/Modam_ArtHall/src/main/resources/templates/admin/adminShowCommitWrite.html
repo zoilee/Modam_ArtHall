@@ -14,29 +14,30 @@
 
     <div class="content container my-5" style="padding-top: 100px;">
         <h2 class="mb-4" style="color: black; font-weight: bold;">공연관리</h2>
-        <form id="showCommitForm" enctype="multipart/form-data" action="/admin/showCommitWrite" method="post">
+        <form id="showCommitForm" enctype="multipart/form-data" th:action="@{/admin/showCommitWrite}" method="post">
+            
             <div class="row mb-3">
                 <label for="showTitle" class="col-sm-2 col-form-label ms-4">공연제목</label>
                 <div class="col-sm-8">
-                    <input type="text" class="form-control" id="showTitle" name="title" >
+                    <input type="text" class="form-control" id="showTitle" name="title" required>
                 </div>
             </div>
 
             <div class="row mb-3">
                 <label for="showPeriodStart" class="col-sm-2 col-form-label ms-4">공연기간</label>
                 <div class="col-sm-3">
-                    <input type="date" class="form-control" id="showPeriodStart" name="startdate">
+                    <input type="date" class="form-control" id="showPeriodStart" name="startDate">
                 </div>
                 <div class="col-sm-2 text-center align-self-center">~</div>
                 <div class="col-sm-3">
-                    <input type="date" class="form-control" id="showPeriodEnd" name="enddate">
+                    <input type="date" class="form-control" id="showPeriodEnd" name="endDate">
                 </div>
             </div>
-
+        
             <div class="row mb-3">
                 <label for="duration" class="col-sm-2 col-form-label ms-4">관람시간</label>
                 <div class="col-sm-4">
-                    <input type="number" class="form-control" id="duration" name="time">
+                    <input type="number" class="form-control" id="duration" name="time" required>
                 </div>
                 <div class="col-sm-1 align-self-center">분</div>
             </div>
@@ -44,7 +45,7 @@
             <div class="row mb-3">
                 <label for="ageLimit" class="col-sm-2 col-form-label ms-4">관람연령</label>
                 <div class="col-sm-4">
-                    <input type="number" class="form-control" id="ageLimit" name="age">
+                    <input type="number" class="form-control" id="ageLimit" name="age" required>
                 </div>
                 <div class="col-sm-1 align-self-center">세</div>
             </div>
@@ -52,7 +53,7 @@
             <div class="row mb-3">
                 <label for="location" class="col-sm-2 col-form-label ms-4">상영관</label>
                 <div class="col-sm-4">
-                    <select class="form-control" id="location" name="location">
+                    <select class="form-control" id="location" name="location" required>
                         <option value="" disabled selected>상영관 선택</option>
                         <option value="theater1">상영관 1</option>
                         <option value="theater2">상영관 2</option>                     
@@ -66,7 +67,6 @@
                     <input type="file" class="form-control" id="fileInput" name="file" onchange="uploadPoster(event)">
                     <img id="preview" alt="이미지 미리보기" style="max-width: 100%; max-height: 200px; margin-top: 10px; display: none;">
                 </div>
-            
             </div>
 
             <div class="d-flex justify-content-center mt-4">
@@ -76,48 +76,31 @@
         </form>
     </div>
 
-   
-
-
-
-
-
-
-
-
-
     <!-- 푸터 가져오기 -->
-<th:block th:replace="~{fragments/footer :: footerFragment}"></th:block>
-<script src="/js/jquery-3.6.0.min.js"></script>
+    <th:block th:replace="~{fragments/footer :: footerFragment}"></th:block>
+    <script src="/js/jquery-3.6.0.min.js"></script>
+
+    <script>
+        function uploadPoster(event) {
+            const preview = $('#preview');
+            const file = event.target.files[0];
+            // 확장자 검사
+            const allowedExtensions = ['image/jpeg', 'image/png', 'image/gif'];
+            if (file && !allowedExtensions.includes(file.type)) {
+                alert('이미지 파일만 업로드 가능합니다 (jpeg, png, gif).');
+                return;
+            }
+
+            // 이미지 미리보기 설정
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.attr('src', e.target.result);
+                    preview.css('display', 'block');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
 </body>
-<script>
-    function uploadPoster(event){
-        const preview = $('#preview');
-        const file = event.target.files[0];
-        //확장자 검사
-        const currentExt  = ['image/jpeg', 'image/png', 'image/gif'];
-        if(file && !currentExt.includes(file.type)){
-            alert('이미지 파일만 업로드 가능합니다(jpeg, png, gif).')
-        }
-
-
-
-
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                preview.attr('src', e.target.result);
-                preview.css('display', 'block');
-            };
-            reader.readAsDataURL(file);
-        }
-    }  
-    
-    const form = document.getElementById('showPeriodStart');
-        form.addEventListener('change', function(e) {
-            const startDate = document.getElementById('showPeriodStart').value;
-    console.log('Start Date:', startDate); // 날짜 문자열 출력
-    console.log('Type of Start Date:', typeof startDate); // 문자열의 타입 출력
-        });
-</script>
 </html>

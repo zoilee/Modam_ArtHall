@@ -33,7 +33,6 @@
             </tbody>
         </table>
 
-    
         <!-- 이미지 미리보기 -->
         <div class="mb-3" th:if="${performance.imagesEntities != null}">
             <h5>첨부된 이미지</h5>
@@ -64,6 +63,26 @@
                 <tr>
                     <th style="width: 100px;">공연 장소</th>
                     <td th:text="${performance.location}">공연 장소 데이터 없음</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- 관람 시간 -->
+        <table class="table table-bordered">
+            <tbody>
+                <tr>
+                    <th style="width: 100px;">관람 시간</th>
+                    <td th:text="${performance.time} + '분'">관람 시간 데이터 없음</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- 관람 연령 -->
+        <table class="table table-bordered">
+            <tbody>
+                <tr>
+                    <th style="width: 100px;">관람 연령</th>
+                    <td th:text="${performance.age} + '세'">관람 연령 데이터 없음</td>
                 </tr>
             </tbody>
         </table>
