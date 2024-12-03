@@ -75,6 +75,7 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+         
         // 비밀번호 확인
         document.getElementById('confirm-password').addEventListener('input', function () {
             const newPassword = document.getElementById('new-password').value;
@@ -154,10 +155,13 @@
             phoneFeedback.textContent = '';
             phoneFeedback.classList.remove('text-danger', 'text-success');
         });
-        const successMessage = /*[[${successMessage}]]*/ null;
-        if (successMessage) {
-            alert(successMessage); // 개인정보 수정 성공 메시지 표시
-        }
+        // 템플릿에서 successMessage를 읽어옴
+        const successMessage = "개인정보가 성공적으로 수정되었습니다.";
+
+// successMessage가 존재할 경우 alert 창 표시
+if (successMessage) {
+    alert(successMessage);
+}
 });
 </script>
 </script>

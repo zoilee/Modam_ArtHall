@@ -170,9 +170,15 @@ public class UserController {
             return "registeruserEdit"; // 에러가 있으면 수정 페이지로 리턴
         }
 
-        userService.updateUser(existingUser);
-        redirectAttributes.addFlashAttribute("successMessage", "개인정보가 성공적으로 수정되었습니다.");
-        return "redirect:/registeruserEdit";
+        try {
+            // 기존 수정 로직 유지
+            userService.updateUser(existingUser);
+            redirectAttributes.addFlashAttribute("successMessage", "개인정보가 성공적으로 수정되었습니다.");
+            return "redirect:/registeruserEdit";
+            } catch (Exception e) {
+                model.addAttribute("errorMessage", "개인정보 수정에 실패했습니다.");
+                return "registeruserEdit";
+        }
     }
 
     @GetMapping("/user/api/check-login-id")
@@ -211,7 +217,7 @@ public class UserController {
             model.addAttribute("errorMessage", "입력한 정보와 일치하는 계정을 찾을 수 없습니다.");
         }
 
-        return "findAccount";
+        return "redirect:/find-id";
     }
 
     @PostMapping("/find-password")
@@ -230,6 +236,6 @@ public class UserController {
             model.addAttribute("errorMessage", "입력한 정보와 일치하는 계정을 찾을 수 없습니다.");
         }
 
-        return "findAccount";
+        return "redirect:/find-password";
     }
 }
