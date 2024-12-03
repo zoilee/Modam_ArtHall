@@ -10,10 +10,6 @@ import com.arthall.modam.service.UserService;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Date;
-import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,7 +22,6 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -286,71 +281,33 @@ public String showAdminCommitWrite() {
     return "admin/adminShowCommitWrite";
 }
 
-// date 형식 바꾸기 메서드
-public Date convertStringToDate(String dateStr) {
-    try {
-        LocalDate localDate = LocalDate.parse(dateStr);
-        return Date.valueOf(localDate);  // LocalDate -> java.sql.Date로 변환
-    } catch (DateTimeParseException e) {
-        return null;  // 날짜 변환 실패시 null 반환
-    }
-}
-
+// 작성 데이터 저장
 @PostMapping("/showCommitWrite")
-public String AdminCommitWrite(@ModelAttribute PerformancesDto performanceDto, 
+public String AdminCommitWrite(PerformancesEntity performancesEntity,
         @RequestParam(value = "file", required = false) MultipartFile file,
-        @RequestParam(value = "startDate", required = false) String startDateStr,
-        @RequestParam(value = "endDate", required = false) String endDateStr,
         RedirectAttributes redirectAttributes) {
 
-    // 1. startDate와 endDate를 String으로 받았으므로, 이를 java.sql.Date로 변환
-    Date startDate = convertStringToDate(startDateStr); // 변환된 startDate
-    Date endDate = convertStringToDate(endDateStr);     // 변환된 endDate
+    // 공연 데이터 생성
+    PerformancesEntity savedPerformance = performancesRepository.save(performancesEntity);
 
-    // 2. PerformancesEntity 생성 및 값 설정
-    PerformancesEntity performance = new PerformancesEntity();
-    performance.setTitle(performanceDto.getTitle());
-    performance.setDescription(performanceDto.getDescription());
-    performance.setStartDate(startDate);  // 변환된 startDate 설정
-    performance.setEndDate(endDate);      // 변환된 endDate 설정
-    performance.setTime(performanceDto.getTime());
-    performance.setLocation(performanceDto.getLocation());
-    performance.setAge(performanceDto.getAge());
-
-    // 3. 공연 데이터 저장
-    PerformancesEntity savedPerformance = performancesRepository.save(performance);
-
-    // 4. show 등록
-    try {
-        performanceService.registerShowsWithPerformance(performance);
-        redirectAttributes.addFlashAttribute("message", "공연 정보가 성공적으로 등록되었습니다.");
-    } catch (Exception e) {
-        e.printStackTrace();
-        redirectAttributes.addFlashAttribute("error", "공연 등록 중 오류가 발생했습니다.");
-        return "redirect:/admin/showCommitWrite"; // 오류 발생 시 폼으로 리다이렉트
-    }
-
-    // 5. 파일 처리 (이미지 저장)
     if (file != null && !file.isEmpty()) {
+        // 파일 저장 로직
         try {
             String filePath = fileService.saveFile(file); // 파일 저장 후 경로 반환
-            System.out.println(filePath);
-            
-            // images 테이블에 데이터 저장
             ImagesEntity image = new ImagesEntity();
             image.setImageUrl(filePath);
-            image.setReferenceId(savedPerformance.getId()); // 저장된 공연정보의 ID 사용
+            image.setReferenceId(savedPerformance.getId());
             image.setReferenceType(ImagesEntity.ReferenceType.PERFORMANCE); // 공연정보로 등록
             imagesRepository.save(image);
+
         } catch (IOException e) {
             System.err.println("파일 저장 중 오류 발생: " + e.getMessage());
             e.printStackTrace();
-            redirectAttributes.addFlashAttribute("error", "파일 저장 중 오류가 발생했습니다.");
-            return "redirect:/admin/showCommitWrite"; // 오류 발생 시 폼으로 리다이렉트
         }
     }
 
-    // 등록이 끝나면 공연 목록으로 리다이렉트
+    redirectAttributes.addFlashAttribute("message", "공연 정보가 성공적으로 등록되었습니다.");
+
     return "redirect:/admin/showCommitList";
 }
 
