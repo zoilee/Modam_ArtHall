@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    if (adminIcon && dropdownMenu) {
+    if (adminIcon && adminDropdownMenu) {
         adminIcon.addEventListener("click", () => {
             adminDropdownMenu.style.display =
                 adminDropdownMenu.style.display === "flex" ? "none" : "flex";

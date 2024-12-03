@@ -26,9 +26,9 @@
                 </div>
                 <!-- 관리자 아이콘변환 -->
                 <div class="admin-icon d-none" id="adminIcon" th:if="${userRole == 'ROLE_ADMIN'}"><i class="ri-admin-fill"></i></div>
-                <div class="dropdown-menu" id="admindropdownMenu" th:if="${userRole == 'ROLE_ADMIN'}">
-                    <a th:href="@{/admin/menu}" class="btn btn-outline-dark me-2">관리자모드</a>
-                    <a th:href="@{/logout}" class="btn btn-danger">로그아웃</a>
+                <div class="dropdown-menu" id="adminDropdownMenu" th:if="${userRole == 'ROLE_ADMIN'}">
+                    <a th:href="@{/admin/menu}" class="dropdown-item">관리자모드</a>
+                    <a th:href="@{/logout}" class="dropdown-item text-danger">로그아웃</a>
                 </div>
                 <!-- 일반 사용자 -->
                 <div class="menu d-flex" th:if="${userRole == 'ROLE_USER'}">
