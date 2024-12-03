@@ -35,7 +35,7 @@ public class SecurityConfig {
                         .requestMatchers("/", "/hallDetail", "/findAccount", "/showDetail", "/user/api/**",
                                 "/noticeList", "/showDetail/{performanceId}", "/register", "/login", "/find-id",
                                 "/find-password", "/css/**", "/js/**", "/imgs/**", "/showList", "/showListFragment",
-                                "/error")
+                                "/error", "/uploads/**")
                         .permitAll()
                         // 로그인 사용자만 접근 가능한 경로
                         .requestMatchers("/mypage", "/mypage/logs", "/reservForm", "/seatSelect", "/reservConfirm",
