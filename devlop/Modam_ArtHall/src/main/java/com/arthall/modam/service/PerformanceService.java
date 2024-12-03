@@ -88,13 +88,12 @@ public class PerformanceService {
 
     // 지난 공연 페이징 처리
     public Page<PerformancesEntity> getPastPerformances(Pageable pageable) {
-        // Repository에서 데이터 가져오기
-        Page<PerformancesEntity> pastPerformances = performancesRepository.findByEndDateBefore(
-                new java.sql.Date(System.currentTimeMillis()), pageable);
-
+        // Repository에서 데이터 가져오기 (이미 최신순 정렬 적용됨)
+        Page<PerformancesEntity> pastPerformances = performancesRepository.findPastPerformances(pageable);
+    
         // 디버깅 로그
         System.out.println("Fetched Performances: " + pastPerformances.getContent().size());
-
+    
         // 날짜 포맷팅
         pastPerformances.getContent().forEach(performance -> {
             if (performance.getStartDate() != null) {
@@ -106,7 +105,7 @@ public class PerformanceService {
                         dateFormatter.format(performance.getEndDate().toLocalDate()));
             }
         });
-
+    
         return pastPerformances;
     }
 
