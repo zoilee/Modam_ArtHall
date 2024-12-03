@@ -8,8 +8,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.arthall.modam.dto.MailDto;
 import com.arthall.modam.entity.PaymentsEntity;
 import com.arthall.modam.entity.ReservationsEntity;
-import com.arthall.modam.entity.RewardsEntity;
+
 import com.arthall.modam.entity.RewardsLogEntity;
 import com.arthall.modam.entity.ShowEntity;
 import com.arthall.modam.entity.UserEntity;
@@ -184,7 +182,7 @@ public class PaymentController {
             if ("CANCEL".equals(thisReservation.getStatus())) {
                 response.put("message", "이미 취소된 예약입니다.");
                 return ResponseEntity.ok(response);
-                
+
             }
 
             // 패널티 check
@@ -249,9 +247,9 @@ public class PaymentController {
                     rewardsService.deductPoints(userId, cancelPoints, resId, "CANCEL");
 
                     System.out.println("적립금 db 반환 및 롤백 성공");
-                    
-                }else{
-                // 받은 적립금 cancel
+
+                } else {
+                    // 받은 적립금 cancel
                     RewardsLogEntity cancelRewardsLog = rewardsLogRepository
                             .findByUserIdAndDescriptionAndReservationsId(userId, "EARN", resId)
                             .orElseThrow(() -> new IllegalArgumentException(
@@ -260,7 +258,7 @@ public class PaymentController {
                     rewardsService.deductPoints(userId, cancelPoints, resId, "CANCEL");
 
                     System.out.println("적립금 db 반환 및 롤백 성공");
-                }    
+                }
                 response.put("message", "환불 성공");
 
                 return ResponseEntity.ok(response);

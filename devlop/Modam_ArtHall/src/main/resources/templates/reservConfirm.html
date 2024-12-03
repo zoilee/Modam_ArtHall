@@ -280,6 +280,7 @@ setPriceAndSubmit();
     const userEmail = /*[[${userEmail}]]*/; 
     const seatId1 = /*[[${seatId1}]]*/; 
     const seatId2 = /*[[${seatId2}]]*/; 
+    const showId = /*[[${showId}]]*/; 
     /*]]>*/
     
 
@@ -367,7 +368,7 @@ setPriceAndSubmit();
                             buyer_tel: rep.buyer_tel,
                             status: 'PAID',
                             imp_uid: rep.imp_uid,
-                            show_id: 1, //show id 넣기
+                            show_id: showId, //show id 넣기
                             user_id: userId, //user id 넣기
                             seat_id1: seatId1, //seat_id1 넣기
                             seat_id2: seatId2, //seat_id2 넣기
