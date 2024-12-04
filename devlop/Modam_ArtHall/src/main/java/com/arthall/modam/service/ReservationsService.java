@@ -40,7 +40,7 @@ public class ReservationsService {
 
     // 예약이 완료된 좌석 가져오기
     public List<String> getUnavailableSeats(int showId) {
-        List<ReservationsEntity> reservations = reservationRepository.findByShowEntity_Id(showId);
+        List<ReservationsEntity> reservations = reservationRepository.findByShowEntity_IdAndStatus(showId, "confirmed");
 
         List<String> unavailableSeats = new ArrayList<>();
         for (ReservationsEntity reservation : reservations) {

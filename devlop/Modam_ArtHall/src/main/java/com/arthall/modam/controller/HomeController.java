@@ -25,6 +25,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -392,7 +393,7 @@ public class HomeController {
             @RequestParam("showTime") int showTime,
             Model model) {
 
-        // 기존 코드
+        // 예약좌석 목록 불러오기
         List<String> unavailableSeats = reservationService.getUnavailableSeats(showId);
 
         // unavailableSeats 리스트를 모델에 담아 JSP나 Thymeleaf 템플릿으로 전달
@@ -406,6 +407,22 @@ public class HomeController {
         model.addAttribute("showTime", showTime);
 
         return "seatSelect";
+    }
+
+    //페이지 넘어가기 전 좌석 가능 여부 체크
+    @GetMapping("/checkSeatsAvailability")
+    @ResponseBody
+    public ResponseEntity<Boolean> checkSeatsAvailability(
+        @RequestParam("showId") int showId,
+        @RequestParam("seats") List<String> seats) {
+        
+        List<String> unavailableSeats = reservationService.getUnavailableSeats(showId);
+        
+        // 선택한 좌석들 중 하나라도 unavailableSeats에 포함되어 있는지 확인
+        boolean isAvailable = seats.stream()
+            .noneMatch(seat -> unavailableSeats.contains(seat));
+        
+        return ResponseEntity.ok(isAvailable);
     }
 
     @GetMapping("/reservConfirm")

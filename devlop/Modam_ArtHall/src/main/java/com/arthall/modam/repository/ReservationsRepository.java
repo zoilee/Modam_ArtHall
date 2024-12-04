@@ -42,4 +42,6 @@ public interface ReservationsRepository extends JpaRepository<ReservationsEntity
         List<ReservationsEntity> findByUserEntity_IdAndReservationDateBefore(int userId, Timestamp date);
 
         List<ReservationsEntity> findByShowEntity_Id(int showId);
+
+        List<ReservationsEntity> findByShowEntity_IdAndStatus(int showId, String status);
 }
