@@ -150,23 +150,30 @@ function setClassBasedOnValue(input) {
 
 // 좌석을 생성하는 함수
 function createSeats() {
-    const rows = 12;  // 세로 12줄
-    const columns = 18;  // 가로 18줄
+    const rows = 12;
+    const columns = 18;
+    
+    // Thymeleaf를 통해 전달된 unavailableSeats를 JavaScript 변수로 변환
+    const unavailableSeats = /*[[${unavailableSeats}]]*/ [];
 
-    // 좌석을 12줄 x 18열로 생성
     for (let i = 0; i < rows; i++) {
         for (let j = 0; j < columns; j++) {
             // input 요소 생성
             const seat = document.createElement('input');
             seat.type = 'button';
-            seat.classList.add('seat');  // 'seat' 클래스 추가
+            seat.classList.add('seat');
 
             // 좌석 번호 매핑
             mapping(seat, i, j);
             // 좌석에 클래스 추가
             setClassBasedOnValue(seat);
+            
+            // 예약 불가능한 좌석 처리
+            if (unavailableSeats && unavailableSeats.includes(seat.value)) {
+                seat.classList.add('unavailable');
+                seat.disabled = true;  // 클릭 불가능하게 설정
+            }
 
-            // 생성된 좌석을 seat-wrapper에 추가
             seatWrapper.appendChild(seat);
         }
     }
@@ -177,6 +184,11 @@ window.onload = createSeats;
 
 // 좌석 선택 이벤트
 $(document).on('click', '.seat', function () {
+    // 예약 불가능한 좌석 클릭 방지
+    if ($(this).hasClass('unavailable')) {
+        return;
+    }
+    
     var seatButton = $(this);
     var seatId = seatButton.val();
     const seatPicked1 = document.querySelector("#seatPicked1");
@@ -253,43 +265,65 @@ $('#toReservConfirm').on('click', function(e) {
     e.preventDefault();
     
     const numberOfPeople = parseInt($('input[name="numberOfPeople"]').val(), 10);
+    const showId = $('input[name="showId"]').val();
     
     // 좌석 선택 검증
-    if (numberOfPeople === 1) {
-        if (!selectedSeats[0]) {
-            alert("좌석을 선택해주세요.");
-            return false;
-        }
-        // 1인용 예약일 경우 seatId2를 명시적으로 NULL로 설정
-        $('input[name="seatId1"]').val(selectedSeats[0]);
-        $('input[name="seatId2"]').val('NULL');
-    } else if (numberOfPeople === 2) {
-        if (!selectedSeats[0] || !selectedSeats[1]) {
-            alert("2개의 좌석을 모두 선택해주세요.");
-            return false;
-        }
-        // 2인용 예약일 경우 두 좌석 모두 설정
-        $('input[name="seatId1"]').val(selectedSeats[0]);
-        $('input[name="seatId2"]').val(selectedSeats[1]);
-    }
-    
-    try {
-        // 폼 제출 전 모든 필수 데이터가 있는지 확인
-        const requiredFields = ['showId', 'performanceId', 'performanceTitle', 'showDate', 'showTime', 'seatId1'];
-        const missingFields = requiredFields.filter(field => !$(`input[name="${field}"]`).val());
-        
-        if (missingFields.length > 0) {
-            throw new Error(`필수 데이터가 누락되었습니다: ${missingFields.join(', ')}`);
-        }
-        
-        // 폼 제출
-        document.getElementById('formToReservConfirm').submit();
-        
-    } catch (error) {
-        console.error("폼 제출 중 오류 발생:", error);
-        alert("좌석 선택 중 오류가 발생했습니다. 다시 시도해주세요.");
+    if (numberOfPeople === 1 && !selectedSeats[0]) {
+        alert("좌석을 선택해주세요.");
         return false;
     }
+    
+    if (numberOfPeople === 2 && (!selectedSeats[0] || !selectedSeats[1])) {
+        alert("2개의 좌석을 모두 선택해주세요.");
+        return false;
+    }
+    
+    // 서버에 선택한 좌석의 가용성 재확인
+    $.ajax({
+        url: '/checkSeatsAvailability',
+        method: 'GET',
+        data: {
+            showId: showId,
+            seats: selectedSeats
+        },
+        success: function(response) {
+            if (response === true) {
+                try {
+                    // 폼 제출 전 모든 필수 데이터가 있는지 확인
+                    const requiredFields = ['showId', 'performanceId', 'performanceTitle', 'showDate', 'showTime', 'seatId1'];
+                    const missingFields = requiredFields.filter(field => !$(`input[name="${field}"]`).val());
+                    
+                    if (missingFields.length > 0) {
+                        throw new Error(`필수 데이터가 누락되었습니다: ${missingFields.join(', ')}`);
+                    }
+                    
+                    // 좌석 정보 업데이트
+                    if (numberOfPeople === 1) {
+                        $('input[name="seatId1"]').val(selectedSeats[0]);
+                        $('input[name="seatId2"]').val('NULL');
+                    } else {
+                        $('input[name="seatId1"]').val(selectedSeats[0]);
+                        $('input[name="seatId2"]').val(selectedSeats[1]);
+                    }
+                    
+                    // 폼 제출
+                    document.getElementById('formToReservConfirm').submit();
+                    
+                } catch (error) {
+                    console.error("폼 제출 중 오류 발생:", error);
+                    alert("좌석 선택 중 오류가 발생했습니다. 다시 시도해주세요.");
+                    return false;
+                }
+            } else {
+                alert("선택하신 좌석이 이미 예약되었습니다. 다른 좌석을 선택해주세요.");
+                location.reload(); // 페이지 새로고침
+            }
+        },
+        error: function() {
+            alert("서버 오류가 발생했습니다. 다시 시도해주세요.");
+            return false;
+        }
+    });
 });
 
 </script>
