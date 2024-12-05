@@ -1,6 +1,7 @@
 package com.arthall.modam.controller;
 
 import com.arthall.modam.entity.NoticesEntity;
+import com.arthall.modam.entity.PaymentsEntity;
 import com.arthall.modam.dto.PerformancesDto;
 import com.arthall.modam.entity.AlramEntitiy;
 import com.arthall.modam.dto.ReservationsDataDto;
@@ -60,6 +61,9 @@ public class AdminController {
 
     @Autowired
     private PerformancesRepository performancesRepository;
+
+    @Autowired
+    private PortOneService portOneService;
 
     @Autowired
     private PerformanceService performanceService;
@@ -265,7 +269,25 @@ public class AdminController {
 
     //////////////////////////////////////////////////////////////////////
     @GetMapping("/menu")
-    public String showAdminMenu(Model model) {
+    public String showAdminMenu(
+        @RequestParam(name = "page", defaultValue = "0") int page,
+        @RequestParam(name = "size", defaultValue = "10") int size,
+        Model model) {
+    // 총 가입자 수 가져오기
+    long totalUsers = userService.getTotalUsers();
+    model.addAttribute("totalUsers", totalUsers);
+
+    // 최근 1주일 동안 가입한 사용자 목록 가져오기
+    Page<UserEntity> recentUsers = userService.getUsersRegisteredInLastWeek(page, size);
+    model.addAttribute("recentUsers", recentUsers.getContent()); // 현재 페이지의 사용자 목록
+    model.addAttribute("currentPage", page);
+    model.addAttribute("totalPages", recentUsers.getTotalPages());
+
+    // 오늘의 매출 가져오기
+    double todaySales = portOneService.getTodayTotalSales();
+    double totalSales = portOneService.getTotalSales();
+    model.addAttribute("todaySales", todaySales);
+    model.addAttribute("totalSales", totalSales);
 
         // 최신 공연 데이터 가져오기
         List<PerformancesEntity> upcomingPerformances = performancesRepository.findUpcomingPerformances();
@@ -587,28 +609,4 @@ public class AdminController {
         model.addAttribute("reservations", reservations);
         return "admin/adminMenu";
     }
-
-    @GetMapping("/menu")
-    public String getAdminMenu(@RequestParam(name = "page", defaultValue = "0") int page,
-                            @RequestParam(name = "size", defaultValue = "10") int size,
-                            Model model) {
-        // 총 가입자 수 가져오기
-        long totalUsers = userService.getTotalUsers();
-        model.addAttribute("totalUsers", totalUsers);
-
-        // 최근 1주일 동안 가입한 사용자 목록 가져오기
-        Page<UserEntity> recentUsers = userService.getUsersRegisteredInLastWeek(page, size);
-        model.addAttribute("recentUsers", recentUsers.getContent()); // 현재 페이지의 사용자 목록
-        model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", recentUsers.getTotalPages());
-
-         // 오늘의 매출 가져오기
-        double todaySales = portOneService.getTodayTotalSales();
-        double totalSales = portOneService.getTotalSales();
-        model.addAttribute("todaySales", todaySales);
-        model.addAttribute("totalSales", totalSales);
-
-        return "admin/adminMenu"; // adminMenu.html로 이동
-    }
-    /******************************관리자 대시보드 모달 창 끝********************************/
 }
