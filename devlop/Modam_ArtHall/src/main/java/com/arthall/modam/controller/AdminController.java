@@ -2,10 +2,13 @@ package com.arthall.modam.controller;
 
 import com.arthall.modam.entity.NoticesEntity;
 import com.arthall.modam.dto.PerformancesDto;
+import com.arthall.modam.dto.ReservationsDataDto;
+import com.arthall.modam.dto.SalesDataDto;
 import com.arthall.modam.entity.ImagesEntity;
 import com.arthall.modam.service.BbsService;
 import com.arthall.modam.service.FileService;
 import com.arthall.modam.service.PerformanceService;
+import com.arthall.modam.service.ReservationsService;
 import com.arthall.modam.service.UserService;
 
 import java.io.File;
@@ -20,7 +23,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Controller;
@@ -30,10 +35,12 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.arthall.modam.entity.PerformancesEntity;
+import com.arthall.modam.entity.ReservationsEntity;
 import com.arthall.modam.entity.UserEntity;
 import com.arthall.modam.repository.ImagesRepository;
 import com.arthall.modam.repository.PerformancesRepository;
@@ -64,6 +71,9 @@ public class AdminController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private ReservationsService reservationsService;
 
     @Autowired
     private ReservationsRepository reservationRepository;
@@ -245,9 +255,19 @@ public class AdminController {
 
     //////////////////////////////////////////////////////////////////////
     @GetMapping("/menu")
-    public String showAdminMenu() {
+    public String showAdminMenu(Model model) {
+        // 최신 공연 데이터 가져오기
+        List<PerformancesEntity> upcomingPerformances = performancesRepository.findUpcomingPerformances();
+
+        // 상위 4개의 데이터만 전달
+        List<PerformancesEntity> top4Performances = upcomingPerformances.stream()
+                .limit(4)
+                .collect(Collectors.toList());
+
+        model.addAttribute("upcomingPerformances", top4Performances);
         return "admin/adminMenu";
     }
+
     
     @GetMapping("/redservView")
     public String reservationStatus(Model model) {
@@ -513,4 +533,17 @@ public String adminCommitEdit(PerformancesEntity performancesEntity,
         return "redirect:/admin/userCommit"; // 수정 후 회원 목록 페이지로 이동
     }
 
+    // 현재 상영 중 또는 미래 공연 중 매출이 있는 공연 데이터 API
+    @GetMapping("/api/sales/current-future")
+    @ResponseBody
+    public List<SalesDataDto> getCurrentOrFuturePerformancesWithSales() {
+        return reservationsService.getCurrentOrFuturePerformancesWithSales();
+    }
+
+    // 최근 5일 예약 현황 데이터 API (현재 상영 중 또는 미래 공연)
+    @GetMapping("/api/reservations/by-show-date")
+    @ResponseBody
+    public List<Map<String, Object>> getReservationsByShowDate() {
+        return reservationsService.getReservationsByShowDate();
+    }
 }

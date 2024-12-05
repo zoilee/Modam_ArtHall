@@ -1,13 +1,19 @@
 package com.arthall.modam.service;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.arthall.modam.dto.ReservationsDataDto;
+import com.arthall.modam.dto.SalesDataDto;
 import com.arthall.modam.entity.ReservationsEntity;
 import com.arthall.modam.repository.ReservationsRepository;
 
@@ -54,4 +60,23 @@ public class ReservationsService {
         return unavailableSeats;
     }
 
+    // 현재 상영 중 또는 미래 공연 중 매출이 있는 데이터
+    public List<SalesDataDto> getCurrentOrFuturePerformancesWithSales() {
+        return reservationRepository.findCurrentOrFuturePerformancesWithSales();
+    }
+
+    // 최근 5일 동안 예약 현황 데이터 (현재 상영 중 또는 미래 공연)
+    public List<Map<String, Object>> getReservationsByShowDate() {
+        Date endDate = Date.valueOf(LocalDate.now().plusDays(7));
+        List<Object[]> results = reservationRepository.findReservationsByShowDate(endDate);
+
+        // 결과를 가공하여 반환
+        return results.stream().map(row -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("showDate", row[0].toString()); // showDate
+            map.put("performanceTitle", row[1]); // performanceTitle
+            map.put("totalReservations", row[2]); // totalReservations
+            return map;
+        }).collect(Collectors.toList());
+    }
 }
