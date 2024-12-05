@@ -29,7 +29,7 @@ public class RewardsEntity {
     @Column(name = "user_id", nullable = false)
     private int userId; // 사용자 ID
 
-    @Column(name = "total_point", precision = 10, scale = 2, nullable = false)
+    @Column(name = "total_point", precision = 10, scale = 2, nullable = false, insertable = false)
     private BigDecimal totalPoint; // 총 적립금
 
     @CreationTimestamp

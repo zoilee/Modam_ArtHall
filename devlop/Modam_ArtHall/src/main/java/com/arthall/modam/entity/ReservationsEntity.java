@@ -44,7 +44,7 @@ public class ReservationsEntity {
     private String seatId2;
 
     @CreationTimestamp
-    @Column(name = "reservation_date", nullable = false, updatable = false)
+    @Column(name = "reservation_date", nullable = false, updatable = false, insertable = false)
     private Timestamp reservationDate;
 
     @Column(name = "total_price", nullable = false, precision = 10, scale = 2)
