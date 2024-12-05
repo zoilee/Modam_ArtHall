@@ -78,6 +78,8 @@ public class ReservationsService {
             map.put("totalReservations", row[2]); // totalReservations
             return map;
         }).collect(Collectors.toList());
+    }
+    
     // 오늘 결제된 예약 목록 가져오기
     public List<ReservationsEntity> getTodayPaidReservations() {
         List<ReservationsEntity> reservations = reservationRepository.findTodayPaidReservations();

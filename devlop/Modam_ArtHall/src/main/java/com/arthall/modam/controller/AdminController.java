@@ -542,21 +542,23 @@ public String adminCommitEdit(PerformancesEntity performancesEntity,
         return reservationsService.getCurrentOrFuturePerformancesWithSales();
     }
 
-    // 최근 5일 예약 현황 데이터 API (현재 상영 중 또는 미래 공연)
+    //예약 현황 데이터 API (현재 상영 중 또는 미래 공연)
     @GetMapping("/api/reservations/by-show-date")
     @ResponseBody
     public List<Map<String, Object>> getReservationsByShowDate() {
         return reservationsService.getReservationsByShowDate();
-     // 오늘의 예약 데이터를 가져와서 모델에 추가
-     @GetMapping("/admin/todayReservations")
-     public String getTodayReservations(Model model) {
-         List<ReservationsEntity> reservations = reservationsService.getTodayPaidReservations();
-         if (reservations == null || reservations.isEmpty()) {
-             System.out.println("No reservations found for today.");
-         } else {
-             System.out.println("Reservations found: " + reservations.size());
-         }
-         model.addAttribute("reservations", reservations);
-         return "admin/adminMenu";
+    }
+
+    // 오늘의 예약 데이터를 가져와서 모델에 추가
+    @GetMapping("/admin/todayReservations")
+    public String getTodayReservations(Model model) {
+        List<ReservationsEntity> reservations = reservationsService.getTodayPaidReservations();
+        if (reservations == null || reservations.isEmpty()) {
+            System.out.println("No reservations found for today.");
+        } else {
+            System.out.println("Reservations found: " + reservations.size());
+        }
+        model.addAttribute("reservations", reservations);
+        return "admin/adminMenu";
     }
 }
