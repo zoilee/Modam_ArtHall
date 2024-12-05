@@ -221,10 +221,13 @@ $(document).on('click', '.seat', function () {
 
     // 선택된 좌석 표시
     seatPicked1.textContent = selectedSeats[0] || ''; // 첫 번째 선택된 좌석
-    seatPicked2.textContent = selectedSeats[1] || ''; // 두 번째 선택된 좌석
+    if (numberOfPeople === 2) {
+        seatPicked2.textContent = selectedSeats[1] || ''; // 두 번째 선택된 좌석
+    }
 
     // 선택된 좌석 정보를 폼에 추가
     updateForm();
+    
 });
 
 // 폼 지정
