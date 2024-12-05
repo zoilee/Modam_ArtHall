@@ -9,6 +9,8 @@
     <!-- 스타일 시트 -->
     <link rel="stylesheet" th:href="@{/css/layout/style.css}">
     <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
+       <!-- Bootstrap JS (Optional) -->
+   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
  <!-- 헤더 -->
@@ -180,9 +182,38 @@
         <!-- Alerts Section -->
         <div class="card mb-3">
             <div class="card-header">관리자 알림</div>
-            <div class="card-body">
-                <p class="text-danger">공연 X가 취소되었습니다.</p>
-                <p class="text-warning">예매 취소율이 평소보다 높습니다.</p>
+            <div class="card-body" >
+                <div th:each="alram : ${alrams}"> 
+                    <p th:class="${alram.type == 'PAYMENT' ? 'text-warning' : 'text-danger'}"
+                        th:text="${alram.log}"
+                        th:attr="data-id=${alram.id}, data-log=${alram.log}"
+                        class="alram-item"
+                        style="cursor: pointer;"
+                        data-bs-toggle="modal" 
+                        data-bs-target="#alramModal"
+                        onclick="a_click(this)">
+                        
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 알람 모달창-->
+     
+    <div class="modal fade" id="alramModal" tabindex="-1" aria-labelledby="alramModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="alramModalLabel">알림 확인</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="alramLog"></p>
+                    <input type="hidden" id="alramId">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                </div>
             </div>
         </div>
     </div>
@@ -213,28 +244,76 @@
         });
 
         // Reservations Chart
-        const reservationsCtx = document.getElementById('reservationsChart').getContext('2d');
-        new Chart(reservationsCtx, {
-            type: 'doughnut',
-            data: {
-                labels: ['예약 완료', '잔여 좌석'],
-                datasets: [{
-                    data: [80, 20],
-                    backgroundColor: ['#28a745', '#dc3545']
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
+        // const reservationsCtx = document.getElementById('reservationsChart').getContext('2d');
+        // new Chart(reservationsCtx, {
+        //     type: 'doughnut',
+        //     data: {
+        //         labels: ['예약 완료', '잔여 좌석'],
+        //         datasets: [{
+        //             data: [80, 20],
+        //             backgroundColor: ['#28a745', '#dc3545']
+        //         }]
+        //     },
+        //     options: {
+        //         responsive: true,
+        //         plugins: {
+        //             legend: {
+        //                 position: 'bottom'
+        //             }
+        //         }
+        //     }
+        // });
+
+
+
+
+
+        /******* 알람스크립트 진행중 **********/
+        let currentElement = null; // 현재 클릭된 알림 항목을 추적
+        async function a_click(element) {
+
+            currentElement = element;
+
+            // 클릭된 요소의 data-id와 data-log 속성 값 가져오기
+            const id = element.getAttribute('data-id');
+            const log = element.getAttribute('data-log');
+
+            // 데이터 확인 (디버깅용)
+            console.log(`ID: ${id}, Log: ${log}`);
+
+            // 모달의 데이터 설정
+            document.getElementById('alramLog').textContent = log; // 로그 내용 설정
+            document.getElementById('alramId').value = id; // 숨겨진 ID 설정
+            // 비동기 요청으로 읽음 처리
+            try {
+                const response = await fetch(`/admin/alarms/${id}/read`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
                     }
+                });
+
+                if (response.ok) {
+                    console.log(`Alarm ${id} marked as read.`);
+                } else {
+                    console.error(`Failed to mark alarm ${id} as read.`);
                 }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+
+
+        }
+        // 모달 닫기 이벤트 처리
+        document.getElementById('alramModal').addEventListener('hidden.bs.modal', () => {
+            if (currentElement) {
+                // 클릭된 알림 항목을 DOM에서 제거
+                currentElement.remove(); // 클릭된 요소 삭제
+                currentElement = null; // 현재 항목 초기화
             }
         });
     </script>
 
-   <!-- Bootstrap JS (Optional) -->
-   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>

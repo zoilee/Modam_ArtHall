@@ -23,17 +23,8 @@ public class AlramService {
     }
 
     // 알람 조회
-    public Optional<AlramEntitiy> findAlramByIdAndReaded(int id, boolean readed) {
-        return alramRepository.findAlramByIdAndReadedOrderByCreatedAtDesc(id, readed);
-    }
-
-    @Transactional
-    // 알람 읽음
-    public void updateReaded(int id, boolean readed) {
-        AlramEntitiy alramEntitiy = alramRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("알람을 찾을 수 없습니다."));
-
-        alramEntitiy.setReaded(readed);
+    public List<AlramEntitiy> findAlramByReaded(boolean readed) {
+        return alramRepository.findAllByReadedOrderByIdDesc(readed);
     }
 
     // 알람 삭제 (일정 시간마다? or 관리자 대시보드 접속시 사라지게)
@@ -42,4 +33,17 @@ public class AlramService {
         alramRepository.deleteAllByReaded(readed);
         System.out.println("삭제된 알람 수: " + deletedAlarms.size());
     }
+
+    @Transactional
+    public boolean markAsRead(int id) {
+        Optional<AlramEntitiy> optionalAlram = alramRepository.findById(id);
+        if (optionalAlram.isPresent()) {
+            AlramEntitiy alram = optionalAlram.get();
+            alram.setReaded(true); // 읽음 처리
+            alramRepository.save(alram);
+            return true;
+        }
+        return false;
+    }
+
 }
