@@ -22,18 +22,22 @@ public class ReservationsService {
     @Autowired
     private ReservationsRepository reservationRepository;
 
+    // 향후 예약 조회
     public List<ReservationsEntity> getUpcomingReservations(int userId) {
-        // 오늘 날짜 가져오기
         LocalDate today = LocalDate.now();
-        // JPA 쿼리 호출
-        return reservationRepository.findUpcomingReservationsByShowDate(userId, today);
+        return reservationRepository.findUpcomingReservationsByShowDate(userId, today)
+                .stream()
+                .filter(reservation -> !"CANCEL".equalsIgnoreCase(reservation.getStatus())) // status 필터링
+                .collect(Collectors.toList());
     }
 
+    // 과거 예약 조회
     public List<ReservationsEntity> getPastReservations(int userId) {
-        // 오늘 날짜 가져오기
         LocalDate today = LocalDate.now();
-        // JPA 쿼리 호출
-        return reservationRepository.findPastReservationsByShowDate(userId, today);
+        return reservationRepository.findPastReservationsByShowDate(userId, today)
+                .stream()
+                .filter(reservation -> !"CANCEL".equalsIgnoreCase(reservation.getStatus())) // status 필터링
+                .collect(Collectors.toList());
     }
 
     public ReservationsEntity createReservation(ReservationsEntity reservationEntity) {
@@ -79,7 +83,7 @@ public class ReservationsService {
             return map;
         }).collect(Collectors.toList());
     }
-    
+
     // 오늘 결제된 예약 목록 가져오기
     public List<ReservationsEntity> getTodayPaidReservations() {
         List<ReservationsEntity> reservations = reservationRepository.findTodayPaidReservations();

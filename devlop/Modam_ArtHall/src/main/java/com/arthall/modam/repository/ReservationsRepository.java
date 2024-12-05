@@ -24,14 +24,12 @@ public interface ReservationsRepository extends JpaRepository<ReservationsEntity
                         @Param("reservationDate") Timestamp date);
 
         // 미래 예약 조회
-        @Query("SELECT r FROM ReservationsEntity r WHERE r.userEntity.id = :userId AND r.showEntity.showDate >= :today")
-        List<ReservationsEntity> findUpcomingReservationsByShowDate(@Param("userId") int userId,
-                        @Param("today") LocalDate today);
+        @Query("SELECT r FROM ReservationsEntity r JOIN r.showEntity s WHERE r.userEntity.id = :userId AND s.showDate >= :today ORDER BY s.showDate ASC")
+        List<ReservationsEntity> findUpcomingReservationsByShowDate(@Param("userId") int userId, @Param("today") LocalDate today);
 
         // 과거 예약 조회
-        @Query("SELECT r FROM ReservationsEntity r WHERE r.userEntity.id = :userId AND r.showEntity.showDate < :today")
-        List<ReservationsEntity> findPastReservationsByShowDate(@Param("userId") int userId,
-                        @Param("today") LocalDate today);
+        @Query("SELECT r FROM ReservationsEntity r JOIN r.showEntity s WHERE r.userEntity.id = :userId AND s.showDate < :today ORDER BY s.showDate DESC")
+        List<ReservationsEntity> findPastReservationsByShowDate(@Param("userId") int userId, @Param("today") LocalDate today);
 
         @Query("SELECT r.ticket FROM ReservationsEntity r WHERE r.id = :id")
         String findTicketById(@Param("id") int id);
