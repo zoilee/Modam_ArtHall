@@ -64,4 +64,13 @@ public interface ReservationsRepository extends JpaRepository<ReservationsEntity
                 "ORDER BY s.showDate, p.title")
         List<Object[]> findReservationsByShowDate(@Param("endDate") Date endDate);
  
+        List<ReservationsEntity> findByShowEntity_IdAndStatus(int showId, String status);
+
+
+        // 조인 쿼리로 오늘의 예약 및 결제된 예약 가져오기
+        @Query(value = "SELECT * FROM reservations r " +
+               "JOIN payments p ON r.id = p.reservation_id " +
+               "WHERE p.status = 'paid' " +
+               "AND DATE(r.reservation_date) = CURDATE()", nativeQuery = true)
+        List<ReservationsEntity> findTodayPaidReservations();
 }

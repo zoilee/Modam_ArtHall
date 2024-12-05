@@ -46,7 +46,7 @@ public class ReservationsService {
 
     // 예약이 완료된 좌석 가져오기
     public List<String> getUnavailableSeats(int showId) {
-        List<ReservationsEntity> reservations = reservationRepository.findByShowEntity_Id(showId);
+        List<ReservationsEntity> reservations = reservationRepository.findByShowEntity_IdAndStatus(showId, "confirmed");
 
         List<String> unavailableSeats = new ArrayList<>();
         for (ReservationsEntity reservation : reservations) {
@@ -78,5 +78,14 @@ public class ReservationsService {
             map.put("totalReservations", row[2]); // totalReservations
             return map;
         }).collect(Collectors.toList());
+    // 오늘 결제된 예약 목록 가져오기
+    public List<ReservationsEntity> getTodayPaidReservations() {
+        List<ReservationsEntity> reservations = reservationRepository.findTodayPaidReservations();
+        if (reservations == null || reservations.isEmpty()) {
+            System.out.println("No reservations found for today.");
+        } else {
+            System.out.println("Reservations found: " + reservations.size());
+        }
+        return reservations;
     }
 }

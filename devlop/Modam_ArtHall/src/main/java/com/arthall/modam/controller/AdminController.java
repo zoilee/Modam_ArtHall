@@ -265,6 +265,8 @@ public class AdminController {
                 .collect(Collectors.toList());
 
         model.addAttribute("upcomingPerformances", top4Performances);
+        // List<ReservationsEntity> reservations = reservationsService.getTodayPaidReservations();
+        // model.addAttribute("reservations", reservations);
         return "admin/adminMenu";
     }
 
@@ -545,5 +547,16 @@ public String adminCommitEdit(PerformancesEntity performancesEntity,
     @ResponseBody
     public List<Map<String, Object>> getReservationsByShowDate() {
         return reservationsService.getReservationsByShowDate();
+     // 오늘의 예약 데이터를 가져와서 모델에 추가
+     @GetMapping("/admin/todayReservations")
+     public String getTodayReservations(Model model) {
+         List<ReservationsEntity> reservations = reservationsService.getTodayPaidReservations();
+         if (reservations == null || reservations.isEmpty()) {
+             System.out.println("No reservations found for today.");
+         } else {
+             System.out.println("Reservations found: " + reservations.size());
+         }
+         model.addAttribute("reservations", reservations);
+         return "admin/adminMenu";
     }
 }
