@@ -128,40 +128,41 @@ public class HomeController {
         if (authentication == null || !authentication.isAuthenticated()) {
             return "redirect:/login";
         }
-
+    
         Object principal = authentication.getPrincipal();
         String loginId = null;
-
+    
         if (principal instanceof UserDetails) {
             loginId = ((UserDetails) principal).getUsername();
         } else if (principal instanceof OAuth2User) {
             loginId = (String) ((OAuth2User) principal).getAttributes().get("loginId");
         }
-
+    
         if (loginId == null) {
             throw new RuntimeException("사용자를 찾을 수 없습니다.");
         }
-
+    
         UserEntity user = userService.getUserByLoginId(loginId);
         if (user == null) {
             throw new RuntimeException("사용자를 찾을 수 없습니다.");
         }
-
+    
         int userId = user.getId();
-
+    
         // 예약 데이터 조회
         List<ReservationsEntity> upcomingReservations = reservationService.getUpcomingReservations(userId);
         List<ReservationsEntity> pastReservations = reservationService.getPastReservations(userId);
-
+    
         model.addAttribute("user", user);
-        model.addAttribute("upcomingReservations",
+        model.addAttribute("upcomingReservations", 
                 upcomingReservations != null ? upcomingReservations : new ArrayList<>());
-        model.addAttribute("pastReservations", pastReservations != null ? pastReservations : new ArrayList<>());
-
+        model.addAttribute("pastReservations", 
+                pastReservations != null ? pastReservations : new ArrayList<>());
+    
         // 적립금 정보
         RewardsEntity rewards = rewardsService.getRewardsByUserId(userId);
         model.addAttribute("points", rewards.getTotalPoint());
-
+    
         return "mypage";
     }
 
