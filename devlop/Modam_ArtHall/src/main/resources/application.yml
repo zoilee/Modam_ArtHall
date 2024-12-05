@@ -4,7 +4,7 @@ server:
 
 
 
-spring: 
+spring:
   #database 연동
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver

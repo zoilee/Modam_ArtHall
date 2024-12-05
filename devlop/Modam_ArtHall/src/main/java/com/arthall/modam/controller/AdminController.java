@@ -6,6 +6,7 @@ import com.arthall.modam.entity.ImagesEntity;
 import com.arthall.modam.service.BbsService;
 import com.arthall.modam.service.FileService;
 import com.arthall.modam.service.PerformanceService;
+import com.arthall.modam.service.ReservationsService;
 import com.arthall.modam.service.UserService;
 
 import java.io.File;
@@ -34,6 +35,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.arthall.modam.entity.PerformancesEntity;
+import com.arthall.modam.entity.ReservationsEntity;
 import com.arthall.modam.entity.UserEntity;
 import com.arthall.modam.repository.ImagesRepository;
 import com.arthall.modam.repository.PerformancesRepository;
@@ -43,6 +45,9 @@ import com.arthall.modam.repository.ShowRepository;
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
+
+    @Autowired
+    private ReservationsService reservationsService;
 
     @Autowired
     private PerformancesRepository performancesRepository;
@@ -245,7 +250,9 @@ public class AdminController {
 
     //////////////////////////////////////////////////////////////////////
     @GetMapping("/menu")
-    public String showAdminMenu() {
+    public String showAdminMenu(Model model) {
+        // List<ReservationsEntity> reservations = reservationsService.getTodayPaidReservations();
+        // model.addAttribute("reservations", reservations);
         return "admin/adminMenu";
     }
     
@@ -513,4 +520,16 @@ public String adminCommitEdit(PerformancesEntity performancesEntity,
         return "redirect:/admin/userCommit"; // 수정 후 회원 목록 페이지로 이동
     }
 
+     // 오늘의 예약 데이터를 가져와서 모델에 추가
+     @GetMapping("/admin/todayReservations")
+     public String getTodayReservations(Model model) {
+         List<ReservationsEntity> reservations = reservationsService.getTodayPaidReservations();
+         if (reservations == null || reservations.isEmpty()) {
+             System.out.println("No reservations found for today.");
+         } else {
+             System.out.println("Reservations found: " + reservations.size());
+         }
+         model.addAttribute("reservations", reservations);
+         return "admin/adminMenu";
+    }
 }
