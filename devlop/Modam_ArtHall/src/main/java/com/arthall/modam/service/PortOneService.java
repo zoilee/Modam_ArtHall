@@ -51,4 +51,16 @@ public class PortOneService {
         return ticket;
     }
 
+    /*********************************관리자 대시보드 모달 창 시작*********************************/
+    //오늘의 매출
+    public double getTodayTotalSales() {
+        Double totalSales = paymentsRepository.findTodayTotalSales();
+        return totalSales != null ? totalSales : 0.0; // null 값 처리
+    }
+    //총 매출
+    public double getTotalSales() {
+        Double totalSales = paymentsRepository.findTotalSales();
+        return totalSales != null ? totalSales : 0.0; // null 값 처리
+    }
+    /*********************************관리자 대시보드 모달 창 끝*********************************/
 }

@@ -1,10 +1,13 @@
 package com.arthall.modam.repository;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.arthall.modam.entity.UserEntity;
 
@@ -24,4 +27,10 @@ public interface UserRepository extends JpaRepository<UserEntity, Integer> {
     
     Page<UserEntity> findByNameContainingIgnoreCase(String name, Pageable pageable);
 
+    // 총 가입자 수 계산
+    @Query("SELECT COUNT(u) FROM UserEntity u")
+    long countTotalUsers();
+    // 최근 가입자 목록 가져오기
+    @Query("SELECT u FROM UserEntity u WHERE u.createdAt >= :oneWeekAgo ORDER BY u.createdAt DESC")
+    Page<UserEntity> findUsersRegisteredInLastWeek(@Param("oneWeekAgo") LocalDateTime oneWeekAgo, Pageable pageable);
 }

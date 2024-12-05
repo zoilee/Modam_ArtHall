@@ -6,6 +6,7 @@ import com.arthall.modam.entity.ImagesEntity;
 import com.arthall.modam.service.BbsService;
 import com.arthall.modam.service.FileService;
 import com.arthall.modam.service.PerformanceService;
+import com.arthall.modam.service.PortOneService;
 import com.arthall.modam.service.ReservationsService;
 import com.arthall.modam.service.UserService;
 
@@ -45,6 +46,9 @@ import com.arthall.modam.repository.ShowRepository;
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
+
+    @Autowired
+    private PortOneService portOneService;
 
     @Autowired
     private ReservationsService reservationsService;
@@ -249,12 +253,12 @@ public class AdminController {
     }
 
     //////////////////////////////////////////////////////////////////////
-    @GetMapping("/menu")
-    public String showAdminMenu(Model model) {
-        // List<ReservationsEntity> reservations = reservationsService.getTodayPaidReservations();
-        // model.addAttribute("reservations", reservations);
-        return "admin/adminMenu";
-    }
+    // @GetMapping("/menu")
+    // public String showAdminMenu(Model model) {
+    //      List<ReservationsEntity> reservations = reservationsService.getTodayPaidReservations();
+    //      model.addAttribute("reservations", reservations);
+    //     return "admin/adminMenu";
+    // }
     
     @GetMapping("/redservView")
     public String reservationStatus(Model model) {
@@ -520,8 +524,9 @@ public String adminCommitEdit(PerformancesEntity performancesEntity,
         return "redirect:/admin/userCommit"; // 수정 후 회원 목록 페이지로 이동
     }
 
+    /******************************관리자 대시보드 모달 창 시작********************************/
      // 오늘의 예약 데이터를 가져와서 모델에 추가
-     @GetMapping("/admin/todayReservations")
+     @GetMapping("/todayReservations")
      public String getTodayReservations(Model model) {
          List<ReservationsEntity> reservations = reservationsService.getTodayPaidReservations();
          if (reservations == null || reservations.isEmpty()) {
@@ -532,4 +537,28 @@ public String adminCommitEdit(PerformancesEntity performancesEntity,
          model.addAttribute("reservations", reservations);
          return "admin/adminMenu";
     }
+
+    @GetMapping("/menu")
+    public String getAdminMenu(@RequestParam(name = "page", defaultValue = "0") int page,
+                            @RequestParam(name = "size", defaultValue = "10") int size,
+                            Model model) {
+        // 총 가입자 수 가져오기
+        long totalUsers = userService.getTotalUsers();
+        model.addAttribute("totalUsers", totalUsers);
+
+        // 최근 1주일 동안 가입한 사용자 목록 가져오기
+        Page<UserEntity> recentUsers = userService.getUsersRegisteredInLastWeek(page, size);
+        model.addAttribute("recentUsers", recentUsers.getContent()); // 현재 페이지의 사용자 목록
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", recentUsers.getTotalPages());
+
+         // 오늘의 매출 가져오기
+        double todaySales = portOneService.getTodayTotalSales();
+        double totalSales = portOneService.getTotalSales();
+        model.addAttribute("todaySales", todaySales);
+        model.addAttribute("totalSales", totalSales);
+
+        return "admin/adminMenu"; // adminMenu.html로 이동
+    }
+    /******************************관리자 대시보드 모달 창 끝********************************/
 }

@@ -28,14 +28,14 @@
             <div class="col-md-3">
                 <div class="card mb-3" data-bs-toggle="modal" data-bs-target="#userModal">
                     <div class="card-body" style="cursor: pointer;">
-                        <h5 class="card-title">총 사용자<i class="ri-group-line"></i></h5>
+                        <h5 class="card-title">홈페이지 가입자 수<i class="ri-group-line"></i></h5>
                     </div>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="card mb-3" data-bs-toggle="modal" data-bs-target="#salesModal">
                     <div class="card-body" style="cursor: pointer;">
-                        <h5 class="card-title">오늘의 매출<i class="ri-coins-line"></i></h5>
+                        <h5 class="card-title">매출 현황<i class="ri-coins-line"></i></h5>
                     </div>
                 </div>
             </div>
@@ -92,31 +92,78 @@
             </div>
         </div>
 
-        <!-- 총 사용자 모달 -->
+        <!-- 총 가입자 및 최근 1주일 가입자 모달 -->
         <div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="userModalLabel">총 사용자</h5>
+                        <h5 class="modal-title" id="userModalLabel">홈페이지 가입자 정보</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        현재 총 사용자는 15명입니다.
+                        <!-- 총 가입자 수 -->
+                        <p>홈페이지 총 가입자 수는 <strong th:text="${totalUsers}">0</strong> 명입니다.</p>
+
+                        <!-- 최근 가입자 목록 -->
+                        <h6 class="mt-4">최근 1주일 가입자 목록</h6>
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>이름</th>
+                                    <th>이메일</th>
+                                    <th>가입일</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="user : ${recentUsers}">
+                                    <td th:text="${user.name}"></td>
+                                    <td th:text="${user.email}"></td>
+                                    <td th:text="${#dates.format(user.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                                </tr>
+                            </tbody>
+                            <tfoot th:if="${#lists.isEmpty(recentUsers)}">
+                                <tr>
+                                    <td colspan="3" class="text-center">최근 1주일 동안 가입한 사용자가 없습니다.</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+
+                        <!-- 페이징 처리 -->
+                        <nav th:if="${totalPages > 1}">
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                                    <a class="page-link" th:href="@{/menu(page=${currentPage - 1}, size=${10})}" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                                <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                                    th:classappend="${currentPage == i} ? 'active'">
+                                    <a class="page-link" th:href="@{/menu(page=${i}, size=${10})}" th:text="${i + 1}"></a>
+                                </li>
+                                <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                                    <a class="page-link" th:href="@{/menu(page=${currentPage + 1}, size=${10})}" aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
                     </div>
                 </div>
             </div>
         </div>
+
 
         <!-- 오늘의 매출 모달 -->
         <div class="modal fade" id="salesModal" tabindex="-1" aria-labelledby="salesModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="salesModalLabel">오늘의 매출</h5>
+                        <h5 class="modal-title" id="salesModalLabel">매출 현황</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        오늘의 매출은 ₩1,200,000입니다.
+                        <p>오늘의 매출: ₩<strong th:text="${#numbers.formatInteger(todaySales, 0)}">0</strong></p>
+                        <p>총 매출: ₩<strong th:text="${#numbers.formatInteger(totalSales, 0)}">0</strong></p>
                     </div>
                 </div>
             </div>
