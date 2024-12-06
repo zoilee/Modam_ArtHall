@@ -8,26 +8,28 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.arthall.modam.dto.MailDto;
+import com.arthall.modam.entity.AlramEntitiy;
 import com.arthall.modam.entity.PaymentsEntity;
 import com.arthall.modam.entity.ReservationsEntity;
-import com.arthall.modam.entity.RewardsEntity;
+
 import com.arthall.modam.entity.RewardsLogEntity;
 import com.arthall.modam.entity.ShowEntity;
 import com.arthall.modam.entity.UserEntity;
+import com.arthall.modam.repository.AlramRepository;
 import com.arthall.modam.repository.PaymentsRepository;
 import com.arthall.modam.repository.ReservationsRepository;
 import com.arthall.modam.repository.RewardsLogRepository;
 import com.arthall.modam.repository.RewardsRepository;
 import com.arthall.modam.repository.ShowRepository;
 import com.arthall.modam.repository.UserRepository;
+import com.arthall.modam.service.AlramService;
 import com.arthall.modam.service.MailService;
+import com.arthall.modam.service.PerformanceService;
 import com.arthall.modam.service.PortOneService;
 import com.arthall.modam.service.RewardsService;
 import com.siot.IamportRestClient.request.CancelData;
@@ -43,22 +45,32 @@ public class PaymentController {
 
     @Autowired
     PortOneService portOneService;
+    // Repository service로 바꾸기
     @Autowired
     PaymentsRepository paymentsRepository;
+    // Repository service로 바꾸기
     @Autowired
     ReservationsRepository reservationsRepository;
     @Autowired
     MailService mailService;
+    // Repository service로 바꾸기
     @Autowired
     ShowRepository showRepository;
     @Autowired
     UserRepository userRepository;
+    // Repository service로 바꾸기
     @Autowired
     RewardsRepository rewardsRepository;
     @Autowired
     RewardsService rewardsService;
+
+    // Repository service로 바꾸기
     @Autowired
     RewardsLogRepository rewardsLogRepository;
+    @Autowired
+    AlramService alramService;
+    @Autowired
+    PerformanceService performanceService;
 
     @Transactional
     @PostMapping("/payments/process")
@@ -142,6 +154,20 @@ public class PaymentController {
                 System.out.println("메일 전송 성공");
                 response.put("message", "결제 성공");
 
+                // 관리자 알람 보내기
+
+                String alramTitle = showEntity.getPerformancesEntity().getTitle();
+                String alramDate = showEntity.getShowDate().toString();
+                String alramSeat1 = thisReservation.getSeatId1().toString();
+                String alramSeat2 = thisReservation.getSeatId2().toString();
+                String alramLog = alramDate + " 일자의 " + alramTitle + " " + alramSeat1 + ", " + alramSeat2
+                        + " 가 예약되었습니다.";
+
+                AlramEntitiy alramEntitiy = new AlramEntitiy();
+                alramEntitiy.setType("PAYMENT");
+                alramEntitiy.setLog(alramLog);
+                alramService.createdAlram(alramEntitiy);
+
                 return ResponseEntity.ok(response);
 
             } else {
@@ -184,7 +210,7 @@ public class PaymentController {
             if ("CANCEL".equals(thisReservation.getStatus())) {
                 response.put("message", "이미 취소된 예약입니다.");
                 return ResponseEntity.ok(response);
-                
+
             }
 
             // 패널티 check
@@ -249,9 +275,9 @@ public class PaymentController {
                     rewardsService.deductPoints(userId, cancelPoints, resId, "CANCEL");
 
                     System.out.println("적립금 db 반환 및 롤백 성공");
-                    
-                }else{
-                // 받은 적립금 cancel
+
+                } else {
+                    // 받은 적립금 cancel
                     RewardsLogEntity cancelRewardsLog = rewardsLogRepository
                             .findByUserIdAndDescriptionAndReservationsId(userId, "EARN", resId)
                             .orElseThrow(() -> new IllegalArgumentException(
@@ -260,7 +286,21 @@ public class PaymentController {
                     rewardsService.deductPoints(userId, cancelPoints, resId, "CANCEL");
 
                     System.out.println("적립금 db 반환 및 롤백 성공");
-                }    
+                }
+
+                // 관리자 알람 전송
+                String alramTitle = thisReservation.getShowEntity().getPerformancesEntity().getTitle();
+                String alramDate = thisReservation.getShowEntity().getShowDate().toString();
+                String alramSeat1 = thisReservation.getSeatId1().toString();
+                String alramSeat2 = thisReservation.getSeatId2().toString();
+                String alramLog = alramDate + " 일자의 " + alramTitle + " " + alramSeat1 + ", " + alramSeat2
+                        + " 가 취소되었습니다.";
+
+                AlramEntitiy alramEntitiy = new AlramEntitiy();
+                alramEntitiy.setType("REFUND");
+                alramEntitiy.setLog(alramLog);
+                alramService.createdAlram(alramEntitiy);
+
                 response.put("message", "환불 성공");
 
                 return ResponseEntity.ok(response);

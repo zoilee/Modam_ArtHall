@@ -4,9 +4,10 @@ import java.util.Optional;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -242,5 +243,16 @@ public class UserService implements UserDetailsService {
             throw new IllegalArgumentException("삭제할 회원 정보를 찾을 수 없습니다. ID: " + userId);
         }
         userRepository.deleteById(userId);
+    }
+
+    //총 가입자 수 조회
+    public long getTotalUsers() {
+        return userRepository.countTotalUsers();
+    }
+    //최근 1주일 동안 가입한 사용자 조회
+    public Page<UserEntity> getUsersRegisteredInLastWeek(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        LocalDateTime oneWeekAgo = LocalDateTime.now().minusDays(7);
+        return userRepository.findUsersRegisteredInLastWeek(oneWeekAgo, pageable);
     }
 }

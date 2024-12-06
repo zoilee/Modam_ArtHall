@@ -2,35 +2,51 @@ package com.arthall.modam.controller;
 
 import com.arthall.modam.entity.NoticesEntity;
 import com.arthall.modam.dto.PerformancesDto;
+import com.arthall.modam.entity.AlramEntitiy;
 import com.arthall.modam.entity.ImagesEntity;
+import com.arthall.modam.service.AlramService;
 import com.arthall.modam.service.BbsService;
 import com.arthall.modam.service.FileService;
 import com.arthall.modam.service.PerformanceService;
 import com.arthall.modam.service.QnaService;
+import com.arthall.modam.service.PortOneService;
+import com.arthall.modam.service.ReservationsService;
 import com.arthall.modam.service.UserService;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.arthall.modam.entity.PerformancesEntity;
 import com.arthall.modam.entity.QnaEntity;
+import com.arthall.modam.entity.ReservationsEntity;
 import com.arthall.modam.entity.UserEntity;
 import com.arthall.modam.repository.ImagesRepository;
 import com.arthall.modam.repository.PerformancesRepository;
@@ -43,6 +59,9 @@ public class AdminController {
 
     @Autowired
     private PerformancesRepository performancesRepository;
+
+    @Autowired
+    private PortOneService portOneService;
 
     @Autowired
     private PerformanceService performanceService;
@@ -63,10 +82,14 @@ public class AdminController {
     private UserService userService;
 
     @Autowired
+    private ReservationsService reservationsService;
+
+    @Autowired
     private ReservationsRepository reservationRepository;
 
     @Autowired
     private QnaService qnaService;
+    private AlramService alramService;
 
     // 공지사항 목록 조회 (페이지네이션 적용)
     @GetMapping("/noticeList")
@@ -245,8 +268,56 @@ public class AdminController {
 
     //////////////////////////////////////////////////////////////////////
     @GetMapping("/menu")
-    public String showAdminMenu() {
+    public String showAdminMenu(
+        @RequestParam(name = "page", defaultValue = "0") int page,
+        @RequestParam(name = "size", defaultValue = "10") int size,
+        Model model) {
+    // 총 가입자 수 가져오기
+    long totalUsers = userService.getTotalUsers();
+    model.addAttribute("totalUsers", totalUsers);
+
+    // 최근 1주일 동안 가입한 사용자 목록 가져오기
+    Page<UserEntity> recentUsers = userService.getUsersRegisteredInLastWeek(page, size);
+    model.addAttribute("recentUsers", recentUsers.getContent()); // 현재 페이지의 사용자 목록
+    model.addAttribute("currentPage", page);
+    model.addAttribute("totalPages", recentUsers.getTotalPages());
+
+    // 오늘의 매출 가져오기
+    double todaySales = portOneService.getTodayTotalSales();
+    double totalSales = portOneService.getTotalSales();
+    model.addAttribute("todaySales", todaySales);
+    model.addAttribute("totalSales", totalSales);
+
+        // 최신 공연 데이터 가져오기
+        List<PerformancesEntity> upcomingPerformances = performancesRepository.findUpcomingPerformances();
+
+        // 상위 4개의 데이터만 전달
+        List<PerformancesEntity> top4Performances = upcomingPerformances.stream()
+                .limit(4)
+                .collect(Collectors.toList());
+
+        model.addAttribute("upcomingPerformances", top4Performances);
+        // List<ReservationsEntity> reservations =
+        // reservationsService.getTodayPaidReservations();
+        // model.addAttribute("reservations", reservations);
+
+        // 알람 처리
+        List<AlramEntitiy> alrams = alramService.findAlramByReaded(false);
+        model.addAttribute("alrams", alrams);
+
         return "admin/adminMenu";
+    }
+
+    @PutMapping("/alarms/{id}/read")
+    @ResponseBody
+    public ResponseEntity<Void> markAlramAsRead(@PathVariable("id") int id) {
+        System.out.println("경로로 들어왔습니당");
+        boolean success = alramService.markAsRead(id); // 읽음 처리
+        if (success) {
+            return ResponseEntity.ok().build(); // 성공 시 200 응답
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 실패 시 404 응답
+        }
     }
 
     @GetMapping("/redservView")
@@ -285,7 +356,7 @@ public class AdminController {
     public String showAdminCommitWrite() {
         return "admin/adminShowCommitWrite";
     }
-
+/* 
     // 작성 데이터 저장
     @PostMapping("/showCommitWrite")
     public String AdminCommitWrite(PerformancesEntity performancesEntity,
@@ -314,6 +385,73 @@ public class AdminController {
 
         redirectAttributes.addFlashAttribute("message", "공연 정보가 성공적으로 등록되었습니다.");
 
+    }
+*/
+    // date 형식 바꾸기 메서드
+    public Date convertStringToDate(String dateStr) {
+        try {
+            LocalDate localDate = LocalDate.parse(dateStr);
+            return Date.valueOf(localDate); // LocalDate -> java.sql.Date로 변환
+        } catch (DateTimeParseException e) {
+            return null; // 날짜 변환 실패시 null 반환
+        }
+    }
+
+    @PostMapping("/showCommitWrite")
+    public String AdminCommitWrite(@ModelAttribute PerformancesDto performanceDto,
+            @RequestParam(value = "file", required = false) MultipartFile file,
+            @RequestParam(value = "startDate", required = false) String startDateStr,
+            @RequestParam(value = "endDate", required = false) String endDateStr,
+            RedirectAttributes redirectAttributes) {
+
+        // 1. startDate와 endDate를 String으로 받았으므로, 이를 java.sql.Date로 변환
+        Date startDate = convertStringToDate(startDateStr); // 변환된 startDate
+        Date endDate = convertStringToDate(endDateStr); // 변환된 endDate
+
+        // 2. PerformancesEntity 생성 및 값 설정
+        PerformancesEntity performance = new PerformancesEntity();
+        performance.setTitle(performanceDto.getTitle());
+        performance.setDescription(performanceDto.getDescription());
+        performance.setStartDate(startDate); // 변환된 startDate 설정
+        performance.setEndDate(endDate); // 변환된 endDate 설정
+        performance.setTime(performanceDto.getTime());
+        performance.setLocation(performanceDto.getLocation());
+        performance.setAge(performanceDto.getAge());
+
+        // 3. 공연 데이터 저장
+        PerformancesEntity savedPerformance = performancesRepository.save(performance);
+
+        // 4. show 등록
+        try {
+            performanceService.registerShowsWithPerformance(performance);
+            redirectAttributes.addFlashAttribute("message", "공연 정보가 성공적으로 등록되었습니다.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("error", "공연 등록 중 오류가 발생했습니다.");
+            return "redirect:/admin/showCommitWrite"; // 오류 발생 시 폼으로 리다이렉트
+        }
+
+        // 5. 파일 처리 (이미지 저장)
+        if (file != null && !file.isEmpty()) {
+            try {
+                String filePath = fileService.saveFile(file); // 파일 저장 후 경로 반환
+                System.out.println(filePath);
+
+                // images 테이블에 데이터 저장
+                ImagesEntity image = new ImagesEntity();
+                image.setImageUrl(filePath);
+                image.setReferenceId(savedPerformance.getId()); // 저장된 공연정보의 ID 사용
+                image.setReferenceType(ImagesEntity.ReferenceType.PERFORMANCE); // 공연정보로 등록
+                imagesRepository.save(image);
+            } catch (IOException e) {
+                System.err.println("파일 저장 중 오류 발생: " + e.getMessage());
+                e.printStackTrace();
+                redirectAttributes.addFlashAttribute("error", "파일 저장 중 오류가 발생했습니다.");
+                return "redirect:/admin/showCommitWrite"; // 오류 발생 시 폼으로 리다이렉트
+            }
+        }
+
+        // 등록이 끝나면 공연 목록으로 리다이렉트
         return "redirect:/admin/showCommitList";
     }
 
@@ -474,7 +612,7 @@ public class AdminController {
         return "redirect:/admin/userCommit"; // 수정 후 회원 목록 페이지로 이동
     }
 
-    /****************************** 공지사항***************************** */
+/**************QnA**************** */
 
     @Controller
 @RequestMapping("/admin")
@@ -504,6 +642,34 @@ public class QnaController {
         return "redirect:/userQnaList";
     }
 
+    }
+
+/***************************************************************************/
+    // 현재 상영 중 또는 미래 공연 중 매출이 있는 공연 데이터 API
+    @GetMapping("/api/sales")
+    @ResponseBody
+    public List<Map<String, Object>> getPerformanceSales() {
+        return reservationsService.getPerformancesWithTotalSales();
+    }
+
+    // 예약 현황 데이터 API (현재 상영 중 또는 미래 공연)
+    @GetMapping("/api/reservations/by-show-date")
+    @ResponseBody
+    public List<Map<String, Object>> getReservationsByShowDate() {
+        return reservationsService.getReservationsByShowDate();
+    }
+
+    // 오늘의 예약 데이터를 가져와서 모델에 추가
+    @GetMapping("/admin/todayReservations")
+    public String getTodayReservations(Model model) {
+        List<ReservationsEntity> reservations = reservationsService.getTodayPaidReservations();
+        if (reservations == null || reservations.isEmpty()) {
+            System.out.println("No reservations found for today.");
+        } else {
+            System.out.println("Reservations found: " + reservations.size());
+        }
+        model.addAttribute("reservations", reservations);
+        return "admin/adminMenu";
     }
 
 }

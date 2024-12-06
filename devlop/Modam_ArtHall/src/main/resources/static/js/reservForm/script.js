@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    const calendarInput = $('#calendarInput');
+    const calendarInput = $('#calendar');
     const selectDate = $('#showDate');
     const showTimeSelect = $('#showTime');
     const performanceIdField = $('#performanceId');
@@ -11,6 +11,16 @@ $(document).ready(function () {
     // 페이지가 처음 로드될 때 초기 값 설정
     const today = calendarInput.val();
     selectDate.val(today);
+
+    //날짜선택 캘린더
+    $("#calendar").datepicker({
+        dateFormat: 'yy-mm-dd',
+        monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+        dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
+        showMonthAfterYear: true,
+        yearSuffix: '년',
+        minDate: 0
+    });
 
     // 날짜가 선택될 때마다 hidden input에 선택된 날짜 반영
     calendarInput.on('change', function () {

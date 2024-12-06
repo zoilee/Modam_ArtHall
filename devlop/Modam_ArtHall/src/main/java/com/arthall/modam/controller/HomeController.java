@@ -25,6 +25,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -92,14 +93,14 @@ public class HomeController {
     public String home(Model model) {
         // 현재 날짜 가져오기
         Date today = Date.valueOf(LocalDate.now());
-    
+
         // 시작일과 종료일 설정 (예: 현재부터 30일 후까지의 공연)
         Date startDate = Date.valueOf(LocalDate.now().minusDays(30));
         Date endDate = today;
-    
+
         // 현재 상영 중인 공연 리스트 가져오기
         List<PerformancesEntity> performances = performanceService.getPerformancesByDate(startDate, endDate);
-    
+
         // 공연 데이터 형식화
         performances.forEach(performance -> {
             if (performance.getStartDate() != null && performance.getEndDate() != null) {
@@ -111,17 +112,15 @@ public class HomeController {
                 performance.setFormattedEndDate("N/A");
             }
         });
-    
+
         // 최근 공지사항 4개 가져오기
         List<NoticesEntity> recentNotices = noticesService.getRecentNotices(4);
-    
+
         model.addAttribute("performances", performances);
         model.addAttribute("recentNotices", recentNotices);
-    
+
         return "main"; // Thymeleaf 템플릿 이름
     }
-    
-
 
     @GetMapping("/mypage")
     public String mypage(Model model) {
@@ -129,40 +128,41 @@ public class HomeController {
         if (authentication == null || !authentication.isAuthenticated()) {
             return "redirect:/login";
         }
-
+    
         Object principal = authentication.getPrincipal();
         String loginId = null;
-
+    
         if (principal instanceof UserDetails) {
             loginId = ((UserDetails) principal).getUsername();
         } else if (principal instanceof OAuth2User) {
             loginId = (String) ((OAuth2User) principal).getAttributes().get("loginId");
         }
-
+    
         if (loginId == null) {
             throw new RuntimeException("사용자를 찾을 수 없습니다.");
         }
-
+    
         UserEntity user = userService.getUserByLoginId(loginId);
         if (user == null) {
             throw new RuntimeException("사용자를 찾을 수 없습니다.");
         }
-
+    
         int userId = user.getId();
-
+    
         // 예약 데이터 조회
         List<ReservationsEntity> upcomingReservations = reservationService.getUpcomingReservations(userId);
         List<ReservationsEntity> pastReservations = reservationService.getPastReservations(userId);
-
+    
         model.addAttribute("user", user);
-        model.addAttribute("upcomingReservations",
+        model.addAttribute("upcomingReservations", 
                 upcomingReservations != null ? upcomingReservations : new ArrayList<>());
-        model.addAttribute("pastReservations", pastReservations != null ? pastReservations : new ArrayList<>());
-
+        model.addAttribute("pastReservations", 
+                pastReservations != null ? pastReservations : new ArrayList<>());
+    
         // 적립금 정보
         RewardsEntity rewards = rewardsService.getRewardsByUserId(userId);
         model.addAttribute("points", rewards.getTotalPoint());
-
+    
         return "mypage";
     }
 
@@ -386,28 +386,44 @@ public class HomeController {
 
     @GetMapping("/seatSelect")
     public String showSeatSelection(
-        @RequestParam("showId") int showId,
-        @RequestParam("numberOfPeople") int numberOfPeople,
-        @RequestParam("performanceId") int performanceId,
-        @RequestParam("performanceTitle") String performanceTitle,
-        @RequestParam("showDate") Date showDate,
-        @RequestParam("showTime") int showTime,
-        Model model) {
-        
-        // 기존 코드
+            @RequestParam("showId") int showId,
+            @RequestParam("numberOfPeople") int numberOfPeople,
+            @RequestParam("performanceId") int performanceId,
+            @RequestParam("performanceTitle") String performanceTitle,
+            @RequestParam("showDate") Date showDate,
+            @RequestParam("showTime") int showTime,
+            Model model) {
+
+        // 예약좌석 목록 불러오기
         List<String> unavailableSeats = reservationService.getUnavailableSeats(showId);
 
         // unavailableSeats 리스트를 모델에 담아 JSP나 Thymeleaf 템플릿으로 전달
         model.addAttribute("unavailableSeats", unavailableSeats);
-        //reservConfirm으로 넘어가야 하는 정보들
+        // reservConfirm으로 넘어가야 하는 정보들
         model.addAttribute("numberOfPeople", numberOfPeople);
         model.addAttribute("showId", showId);
         model.addAttribute("performanceId", performanceId);
         model.addAttribute("performanceTitle", performanceTitle);
         model.addAttribute("showDate", showDate);
         model.addAttribute("showTime", showTime);
-        
+
         return "seatSelect";
+    }
+
+    //페이지 넘어가기 전 좌석 가능 여부 체크
+    @GetMapping("/checkSeatsAvailability")
+    @ResponseBody
+    public ResponseEntity<Boolean> checkSeatsAvailability(
+        @RequestParam("showId") int showId,
+        @RequestParam("seats") List<String> seats) {
+        
+        List<String> unavailableSeats = reservationService.getUnavailableSeats(showId);
+        
+        // 선택한 좌석들 중 하나라도 unavailableSeats에 포함되어 있는지 확인
+        boolean isAvailable = seats.stream()
+            .noneMatch(seat -> unavailableSeats.contains(seat));
+        
+        return ResponseEntity.ok(isAvailable);
     }
 
     @GetMapping("/reservConfirm")
@@ -445,13 +461,14 @@ public class HomeController {
         }
 
         int userId = user.getId();
-
+        String userName = user.getName();
+        String userNum = user.getPhoneNumber();
         BigDecimal points = userService.getUserPointsById(userId);
+        String userEmail = user.getEmail();
+
         System.out.println("내 포인트는 : " + points);
 
         // 모델에 값 저장
-        int price = 600;
-        model.addAttribute("price", price);
         model.addAttribute("points", points.intValue());
         model.addAttribute("userId", userId);
         model.addAttribute("performanceId", performanceId);
@@ -462,14 +479,16 @@ public class HomeController {
         model.addAttribute("numberOfPeople", numberOfPeople);
         model.addAttribute("seatId1", seatId1);
         model.addAttribute("seatId2", seatId2);
-
+        model.addAttribute("userName", userName);
+        model.addAttribute("userNum", userNum);
+        model.addAttribute("userEmail", userEmail);
         // 예약 확인 페이지로 이동
         return "reservConfirm";
     }
 
     @RequestMapping(value = "/reservForm", method = { RequestMethod.GET, RequestMethod.POST })
     public String showReservationForm(@RequestParam("performanceId") int performanceId,
-                            Model model) {
+            Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         // 로그인되지 않은 경우

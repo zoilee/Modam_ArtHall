@@ -43,7 +43,7 @@ public class PaymentsEntity {
     private String status; // 상태 (예: 'pending', 'completed')
 
     @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false, insertable = false)
     private Timestamp createdAt;
 
     @Column(name = "reAmount", nullable = false, precision = 10, scale = 2)

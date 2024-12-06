@@ -44,7 +44,8 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">관람시간</label>
-                        <p class="selectedTimeConfirm"></p>
+                        <p class="selectedTimeConfirm" 
+                            th:text="${showTime == 1 ? '13:00' : showTime == 2 ? '17:00' : ''}"></p>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">티켓 수</label>
@@ -97,7 +98,8 @@
                     <hr>
                     <div class="d-flex justify-content-between align-items-center">
                         <h3>총 결제 금액</h3>
-                        <h3><span id="totalPrice" th:text="${price}"></span><span id="won"> 원</span></h3>
+                        <h3><span id="totalPrice"></span><span id="won"> 원</span></h3>
+                        <input type="hidden" id="tp"/>
                     </div>
                     <button class="btn btn-custom mt-3">결제하기</button>
                 </div>
@@ -105,23 +107,37 @@
         </div>
         
     </div>
-    <div id="successMessage" style="display: none;">
-        <h3>결제가 성공적으로 완료되었습니다!</h3>
-        <p>티켓 번호: <strong id="ticketId"></strong></p>
-        <p>적립된 금액: <strong id="rewardPoints"></strong> 원</p>
-        <a href="">확인</a>
+    
+    <!-- 모달 -->
+    <div class="modal fade" id="successMessageModal" tabindex="-1" aria-labelledby="successMessageLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="successMessageLabel">결제 완료</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+            <h3>결제가 성공적으로 완료되었습니다!</h3>
+            <p>티켓 번호: <strong id="ticketId"></strong></p>
+            <p>적립된 금액: <strong id="rewardPoints"></strong> 원</p>
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">확인</button>
+            </div>
+        </div>
+        </div>
     </div>
-
+    
 
     <!-- 푸터 가져오기 -->
 <th:block th:replace="~{fragments/footer :: footerFragment}"></th:block> 
 <script th:inline="javascript">
     $(document).ready(function(){
     //좌석가격지정
-    const vipValue = 200000;
-    const rValue = 100000;
-    const sValue = 80000;
-    const aValue = 60000;
+    const vipValue = 200;
+    const rValue = 100;
+    const sValue = 800;
+    const aValue = 600;
     const noneValue = 0;
 
 
@@ -191,28 +207,11 @@ function setPriceAndSubmit() {
     // 전체 금액 계산 및 표시
     const totalPrice = seatPrice1 + seatPrice2;
     document.querySelector('#totalPrice').textContent = totalPrice.toLocaleString();
+    document.querySelector('#tp').value = totalPrice;
 }
+
 // 페이지 로드 후 가격 설정
-window.onload = setPriceAndSubmit
-
-
-//showTime 시간으로 변환해서 보여주기
-function transformToTime(){
-    /*<![CDATA[*/
-    const showTime = /*[[${showTime}]]*/;  // 서버에서 전달된 showTime 값
-    console.log("showTime 값 : ", showTime);
-    const timeShow = document.querySelector(".selectedTimeConfirm");
-    
-    if (showTime === 1) {
-        timeShow.textContent = "13:00";
-    } else {
-        timeShow.textContent = "17:00";
-    }
-    /*]]>*/
-}
-
-// 페이지 로드 후 실행
-window.onload = transformToTime
+setPriceAndSubmit();
 
    
 
@@ -247,6 +246,8 @@ window.onload = transformToTime
         });
     
 });
+
+
     //티켓생성
     function generateTicketId() {
         // 현재 날짜 yyyyMMdd 형식으로 변환
@@ -274,15 +275,26 @@ window.onload = transformToTime
      /*<![CDATA[*/
     const userPoints = /*[[${points}]]*/; // 서버에서 전달된 포인트 값
     const userId = /*[[${userId}]]*/; // 서버에서 전달된 로그인 사용자 ID
-    const basePrice = /*[[${price}]]*/; // 서버에서 전달된 기본 결제 금액
+    const userName = /*[[${userName}]]*/;
+    const userNum = /*[[${userNum}]]*/;
+    const userEmail = /*[[${userEmail}]]*/; 
+    const seatId1 = /*[[${seatId1}]]*/; 
+    const seatId2 = /*[[${seatId2}]]*/; 
+    const showId = /*[[${showId}]]*/; 
     /*]]>*/
+    
+
+    console.log("User Name:", userName);
+    console.log("User Num:", userNum);
+    console.log("User Email:", userEmail);
     console.log("User Points:", userPoints);
     console.log("User ID:", userId);
     $(document).ready(function () {
         
+
         var IMP = window.IMP; 
         IMP.init("imp82757082");
-       
+        const basePrice = document.querySelector('#tp').value;
         // 적립금 적용 버튼 클릭 이벤트
         $("#applyPointsButton").click(function () {
             const usedPoints = parseFloat($("#usedPointsInput").val()) || 0;
@@ -304,7 +316,7 @@ window.onload = transformToTime
             if (totalPrice < 0) {
                 alert("결제 금액은 0원보다 커야 합니다.");
                 return;
-            }
+            } 
 
             // 화면 업데이트
             $("#usedPointsDisplay").text(`-${usedPoints.toLocaleString()} 원`);
@@ -319,6 +331,9 @@ window.onload = transformToTime
             const ticket = generateTicketId(); //티켓번호
             const finalAmount = basePrice - usedPoints;
 
+            console.log(seatId1);
+            console.log(seatId2);
+
             if (finalAmount <= 0) {
                 alert("결제 금액은 0원보다 커야 합니다.");
                 return;
@@ -332,8 +347,8 @@ window.onload = transformToTime
                 name: "공연 티켓 결제",
                 amount: finalAmount,                         
                 buyer_email: "ohsj2337@naver.com",
-                buyer_name: "홍길동",
-                buyer_tel: "010-4242-4242",
+                buyer_name: userName,
+                buyer_tel: userNum
                 
             }, function(rep){
                 const {status, err_msg} = rep;
@@ -353,10 +368,10 @@ window.onload = transformToTime
                             buyer_tel: rep.buyer_tel,
                             status: 'PAID',
                             imp_uid: rep.imp_uid,
-                            show_id: 1, //show id 넣기
+                            show_id: showId, //show id 넣기
                             user_id: userId, //user id 넣기
-                            seat_id1: 'A1', //seat_id1 넣기
-                            seat_id2: "A2", //seat_id2 넣기
+                            seat_id1: seatId1, //seat_id1 넣기
+                            seat_id2: seatId2, //seat_id2 넣기
                             myPoint: usedPoints // 사용한 적립금
                             
                         }),
@@ -364,14 +379,17 @@ window.onload = transformToTime
                             console.log(response); // JSON 전체 출력
                             const rewardPoints = response.rewardPoints;
                             const message = response.message;
-                            $("#successMessage").show();
+
                             $("#ticketId").text(ticket);
                             if (response.rewardPoints) {
                                 $("#rewardPoints").text(parseFloat(rewardPoints).toLocaleString());
                             } else {
                                 $("#rewardPoints").text("0");
                             }
-                            alert(message.toLocaleString());
+
+                            // 모달 띄우기
+                            const successModal = new bootstrap.Modal(document.getElementById('successMessageModal'));
+                            successModal.show();
                         },
                         error: function(xhr, status, error){
                             alert("서버 처리 오류" + xhr.responseText);

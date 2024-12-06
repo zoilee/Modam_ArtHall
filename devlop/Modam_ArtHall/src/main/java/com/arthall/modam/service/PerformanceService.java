@@ -88,9 +88,8 @@ public class PerformanceService {
 
     // 지난 공연 페이징 처리
     public Page<PerformancesEntity> getPastPerformances(Pageable pageable) {
-        // Repository에서 데이터 가져오기
-        Page<PerformancesEntity> pastPerformances = performancesRepository.findByEndDateBefore(
-                new java.sql.Date(System.currentTimeMillis()), pageable);
+        // Repository에서 데이터 가져오기 (이미 최신순 정렬 적용됨)
+        Page<PerformancesEntity> pastPerformances = performancesRepository.findPastPerformances(pageable);
 
         // 디버깅 로그
         System.out.println("Fetched Performances: " + pastPerformances.getContent().size());
@@ -166,8 +165,6 @@ public class PerformanceService {
     public List<PerformancesEntity> getPerformancesByDate(Date startDate, Date endDate) {
         return performancesRepository.findByStartDateBeforeAndEndDateAfter(startDate, endDate);
     }
-    
-
 
     // 모든 공연의 예약 현황 정보 가져오기 (내림차순 정렬)
     public List<PerformancesDto> getPerformancesWithReservationRate() {
@@ -219,4 +216,10 @@ public class PerformanceService {
         }
     }
 
+    public String findTitleById(int id) {
+        PerformancesEntity performance = performancesRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("공연을 찾을 수 없습니당"));
+        String title = performance.getTitle();
+        return title;
+    }
 }

@@ -9,7 +9,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(@SuppressWarnings("null") ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:C:/springboot/Modam_ArtHall/uploads/");
+                .addResourceLocations("file:///C:/upload/");
         
         registry.addResourceHandler("/**")
                 .addResourceLocations("classpath:/static/");
