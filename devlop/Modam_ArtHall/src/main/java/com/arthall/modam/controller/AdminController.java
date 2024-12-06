@@ -584,10 +584,10 @@ public class AdminController {
     }
 
     // 현재 상영 중 또는 미래 공연 중 매출이 있는 공연 데이터 API
-    @GetMapping("/api/sales/current-future")
+    @GetMapping("/api/sales")
     @ResponseBody
-    public List<SalesDataDto> getCurrentOrFuturePerformancesWithSales() {
-        return reservationsService.getCurrentOrFuturePerformancesWithSales();
+    public List<Map<String, Object>> getPerformanceSales() {
+        return reservationsService.getPerformancesWithTotalSales();
     }
 
     // 예약 현황 데이터 API (현재 상영 중 또는 미래 공연)
