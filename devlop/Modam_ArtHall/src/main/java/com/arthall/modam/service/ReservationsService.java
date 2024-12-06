@@ -15,12 +15,16 @@ import org.springframework.stereotype.Service;
 import com.arthall.modam.dto.ReservationsDataDto;
 import com.arthall.modam.dto.SalesDataDto;
 import com.arthall.modam.entity.ReservationsEntity;
+import com.arthall.modam.repository.PaymentsRepository;
 import com.arthall.modam.repository.ReservationsRepository;
 
 @Service
 public class ReservationsService {
     @Autowired
     private ReservationsRepository reservationRepository;
+
+    @Autowired
+    private PaymentsRepository paymentsRepository;
 
     // 향후 예약 조회
     public List<ReservationsEntity> getUpcomingReservations(int userId) {
@@ -65,8 +69,17 @@ public class ReservationsService {
     }
 
     // 현재 상영 중 또는 미래 공연 중 매출이 있는 데이터
-    public List<SalesDataDto> getCurrentOrFuturePerformancesWithSales() {
-        return reservationRepository.findCurrentOrFuturePerformancesWithSales();
+    public List<Map<String, Object>> getPerformancesWithTotalSales() {
+        // Repository에서 데이터 가져오기
+        List<Object[]> results = paymentsRepository.findPerformancesWithTotalSales();
+
+        // 결과 가공
+        return results.stream().map(result -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("performanceTitle", result[0]); // 공연 제목
+            map.put("totalSales", result[1]); // 총 매출
+            return map;
+        }).collect(Collectors.toList());
     }
 
     // 최근 5일 동안 예약 현황 데이터 (현재 상영 중 또는 미래 공연)

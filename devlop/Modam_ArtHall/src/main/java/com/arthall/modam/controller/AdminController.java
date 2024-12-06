@@ -1,16 +1,14 @@
 package com.arthall.modam.controller;
 
 import com.arthall.modam.entity.NoticesEntity;
-import com.arthall.modam.entity.PaymentsEntity;
 import com.arthall.modam.dto.PerformancesDto;
 import com.arthall.modam.entity.AlramEntitiy;
-import com.arthall.modam.dto.ReservationsDataDto;
-import com.arthall.modam.dto.SalesDataDto;
 import com.arthall.modam.entity.ImagesEntity;
 import com.arthall.modam.service.AlramService;
 import com.arthall.modam.service.BbsService;
 import com.arthall.modam.service.FileService;
 import com.arthall.modam.service.PerformanceService;
+import com.arthall.modam.service.QnaService;
 import com.arthall.modam.service.PortOneService;
 import com.arthall.modam.service.ReservationsService;
 import com.arthall.modam.service.UserService;
@@ -29,7 +27,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -48,6 +45,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.arthall.modam.entity.PerformancesEntity;
+import com.arthall.modam.entity.QnaEntity;
 import com.arthall.modam.entity.ReservationsEntity;
 import com.arthall.modam.entity.UserEntity;
 import com.arthall.modam.repository.ImagesRepository;
@@ -90,6 +88,7 @@ public class AdminController {
     private ReservationsRepository reservationRepository;
 
     @Autowired
+    private QnaService qnaService;
     private AlramService alramService;
 
     // 공지사항 목록 조회 (페이지네이션 적용)
@@ -357,7 +356,37 @@ public class AdminController {
     public String showAdminCommitWrite() {
         return "admin/adminShowCommitWrite";
     }
+/* 
+    // 작성 데이터 저장
+    @PostMapping("/showCommitWrite")
+    public String AdminCommitWrite(PerformancesEntity performancesEntity,
+            @RequestParam(value = "file", required = false) MultipartFile file,
+            RedirectAttributes redirectAttributes) {
 
+        // 공연 데이터 생성
+
+        PerformancesEntity savedPerformance = performancesRepository.save(performancesEntity);
+
+        if (file != null && !file.isEmpty()) {
+            // 파일 저장 로직
+            try {
+                String filePath = fileService.saveFile(file); // 파일 저장 후 경로 반환
+                ImagesEntity image = new ImagesEntity();
+                image.setImageUrl(filePath);
+                image.setReferenceId(savedPerformance.getId());
+                image.setReferenceType(ImagesEntity.ReferenceType.PERFORMANCE); // 공연정보로 등록
+                imagesRepository.save(image);
+
+            } catch (IOException e) {
+                System.err.println("파일 저장 중 오류 발생: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+
+        redirectAttributes.addFlashAttribute("message", "공연 정보가 성공적으로 등록되었습니다.");
+
+    }
+*/
     // date 형식 바꾸기 메서드
     public Date convertStringToDate(String dateStr) {
         try {
@@ -583,11 +612,44 @@ public class AdminController {
         return "redirect:/admin/userCommit"; // 수정 후 회원 목록 페이지로 이동
     }
 
+/**************QnA**************** */
+
+    @Controller
+@RequestMapping("/admin")
+public class QnaController {
+
+    // 질문 답변 작성.
+    @GetMapping("/qnaEdit")
+    public String getQnaEdit(@RequestParam(name = "id") Integer id, Model model) {
+        QnaEntity qnaEntity = qnaService.getQnaById(id);
+        model.addAttribute("qna", qnaEntity);
+        return "admin/adminQnaEdit";
+    }
+
+    // 질문 답변 작성
+    @PostMapping("/qnaEdit")
+    public String postQnaEdit(@RequestParam(name = "id") Integer id,
+                              @RequestParam(name = "answer") String answer) {
+        QnaEntity qnaEntity = qnaService.getQnaById(id);
+        qnaEntity.setAnswer(answer);
+        qnaService.updateQna(qnaEntity);
+        return "redirect:/userQnaList";
+    }
+
+    @PostMapping("/qnaDelete")
+    public String deleteQna(@RequestParam(name = "qnaId") Integer id) {
+        qnaService.deleteQna(id);
+        return "redirect:/userQnaList";
+    }
+
+    }
+
+/***************************************************************************/
     // 현재 상영 중 또는 미래 공연 중 매출이 있는 공연 데이터 API
-    @GetMapping("/api/sales/current-future")
+    @GetMapping("/api/sales")
     @ResponseBody
-    public List<SalesDataDto> getCurrentOrFuturePerformancesWithSales() {
-        return reservationsService.getCurrentOrFuturePerformancesWithSales();
+    public List<Map<String, Object>> getPerformanceSales() {
+        return reservationsService.getPerformancesWithTotalSales();
     }
 
     // 예약 현황 데이터 API (현재 상영 중 또는 미래 공연)
@@ -609,4 +671,5 @@ public class AdminController {
         model.addAttribute("reservations", reservations);
         return "admin/adminMenu";
     }
+
 }

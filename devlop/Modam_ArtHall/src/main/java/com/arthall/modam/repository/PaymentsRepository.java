@@ -1,5 +1,7 @@
 package com.arthall.modam.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -17,4 +19,16 @@ public interface PaymentsRepository extends JpaRepository<PaymentsEntity, Intege
     // 총 매출
     @Query("SELECT SUM(p.amount) FROM PaymentsEntity p WHERE p.transactionType = 'PAYMENT'")
     Double findTotalSales();
+
+    
+    @Query("SELECT p.title, SUM(pmt.reAmount) " +
+            "FROM PaymentsEntity pmt " +
+            "JOIN pmt.reservation r " +
+            "JOIN r.showEntity s " +
+            "JOIN s.performancesEntity p " +
+            "WHERE p.endDate >= CURRENT_DATE " +
+            "AND pmt.transactionType = 'PAYMENT' " +
+            "GROUP BY p.title " +
+            "HAVING SUM(pmt.reAmount) > 0")
+    List<Object[]> findPerformancesWithTotalSales();
 }

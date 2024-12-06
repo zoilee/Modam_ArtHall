@@ -8,9 +8,9 @@ spring:
   #database 연동
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: jdbc:mysql://localhost:3306/modam?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
+    username: root
+    password: z1z2z3z4
   thymeleaf:
     cache: false
     check-template-location: true

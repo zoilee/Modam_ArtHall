@@ -44,15 +44,6 @@ public interface ReservationsRepository extends JpaRepository<ReservationsEntity
 
         List<ReservationsEntity> findByShowEntity_Id(int showId);
 
-
-        @Query("SELECT new com.arthall.modam.dto.SalesDataDto(p.title, SUM(r.totalPrice)) " +
-                "FROM ReservationsEntity r " +
-                "JOIN r.showEntity s " +
-                "JOIN s.performancesEntity p " +
-                "WHERE p.endDate >= CURRENT_DATE " +
-                "GROUP BY p.title HAVING SUM(r.totalPrice) > 0")
-        List<SalesDataDto> findCurrentOrFuturePerformancesWithSales();
-
         @Query("SELECT s.showDate AS showDate, p.title AS performanceTitle, COUNT(r.id) AS totalReservations " +
                 "FROM ReservationsEntity r " +
                 "JOIN r.showEntity s " +

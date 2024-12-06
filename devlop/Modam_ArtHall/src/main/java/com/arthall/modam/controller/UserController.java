@@ -9,8 +9,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 
+import java.security.Principal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,9 +25,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.arthall.modam.dto.UserDto;
 import com.arthall.modam.entity.UserEntity;
 import com.arthall.modam.service.MailService;
-
-import com.arthall.modam.dto.UserDto;
+import com.arthall.modam.service.QnaService;
 import com.arthall.modam.entity.NoticesEntity;
+import com.arthall.modam.entity.QnaEntity;
 import com.arthall.modam.service.BbsService;
 import com.arthall.modam.service.UserService;
 
@@ -34,8 +37,12 @@ public class UserController {
     private final PasswordEncoder passwordEncoder;
     private final UserService userService;
     private final MailService mailService;
+
     @Autowired
     private BbsService bbsService;
+
+    @Autowired
+    private QnaService qnaService;
 
     // 생성자 주입
     public UserController(PasswordEncoder passwordEncoder, UserService userService, MailService mailService) {
@@ -244,7 +251,9 @@ public class UserController {
         return "findAccount";
     }
 
-    // 일반 사용자용 공지사항 목록 조회 (페이지네이션 적용)
+    /*********************
+     * 일반 사용자용 공지사항 목록 조회 (페이지네이션 적용)
+     *********************************************/
     @GetMapping("/userNoticeList")
     public String showUserNoticeList(Model model, @RequestParam(name = "page", defaultValue = "0") int page) {
         int pageSize = 5; // 페이지당 표시할 공지사항 수
@@ -266,6 +275,92 @@ public class UserController {
         }
         model.addAttribute("notice", notice);
         return "userNoticeView"; // 일반 사용자용 템플릿 반환
+    }
+
+    /**************************** QnA*********************************** */
+
+    // QnA 목록 조회 (사용자)
+    @GetMapping("/userQnaList")
+    public String showUserQnaList(@RequestParam(value = "page", defaultValue = "0") int page, Model model) {
+        int pageSize = 5; // 페이지당 글 개수 설정
+
+        PageRequest pageRequest = PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "createdAt")); // 최신순 정렬
+                                                                                                             // 추가
+        Page<QnaEntity> qnaPage = qnaService.getPagedQnaList(pageRequest);
+        model.addAttribute("qnaList", qnaPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", qnaPage.getTotalPages());
+        model.addAttribute("totalElements", qnaPage.getTotalElements());
+        model.addAttribute("pageSize", pageSize);
+
+        return "userQnaList"; // 사용자용 QnA 리스트 템플릿
+    }
+
+    // QnA 상세 조회 (사용자)
+    @GetMapping("/user/qnaView")
+    public String showUserQnaView(@RequestParam("id") int id, Model model) {
+        QnaEntity qna = qnaService.getQnaById(id);
+        if (qna == null) {
+            return "redirect:/userQnaList"; // QnA가 없는 경우 리스트로 리다이렉트
+        }
+        model.addAttribute("qna", qna);
+        return "userQnaView"; // 사용자용 QnA 상세보기 템플릿
+    }
+
+    // QnA 작성 페이지 (사용자)
+    @GetMapping("/user/qnaWrite")
+    public String showCreateQnaForm(Model model, Principal principal) {
+        if (principal != null) {
+            model.addAttribute("userId", principal.getName());
+        }
+        model.addAttribute("qna", new QnaEntity());
+        return "userQnaWrite"; // 작성 페이지 템플릿 이름을 반환
+    }
+
+    @PostMapping("/user/qnaWrite")
+    public String saveUserQna(@ModelAttribute QnaEntity qna, Principal principal) {
+        qna.setUserId(principal.getName()); // 사용자 ID를 저장 (username 또는 이메일)
+        qnaService.createQna(qna);
+        return "redirect:/userQnaList";
+    }
+
+    // QnA 수정 페이지 (사용자)
+    @GetMapping("/userQnaEdit")
+    public String showQnaEditForm(@RequestParam("id") int id, Model model, Principal principal) {
+        QnaEntity qna = qnaService.getQnaById(id);
+        if (qna == null || !qna.getUserId().equals(principal.getName())) {
+            return "redirect:/userQnaList"; // QnA가 없거나 사용자와 작성자가 일치하지 않는 경우
+        }
+        model.addAttribute("qna", qna);
+        return "userQnaEdit"; // 사용자용 QnA 수정 템플릿
+    }
+
+    @PostMapping("/user/qnaEdit")
+    public String updateUserQna(@ModelAttribute QnaEntity qna, Principal principal,
+            RedirectAttributes redirectAttributes) {
+        // 현재 로그인된 사용자의 아이디 설정
+        qna.setUserId(principal.getName());
+
+        qnaService.updateQna(qna);
+        redirectAttributes.addFlashAttribute("message", "QnA가 성공적으로 수정되었습니다.");
+        return "redirect:/userQnaList";
+    }
+
+    // QnA 삭제 처리 (사용자)
+    @PostMapping("/user/qnaDelete")
+    public String deleteUserQna(@RequestParam("qnaId") int qnaId, Principal principal,
+            RedirectAttributes redirectAttributes) {
+        QnaEntity qna = qnaService.getQnaById(qnaId);
+
+        // 본인의 질문인지 확인
+        if (qna != null && principal != null && qna.getUserId().equals(principal.getName())) {
+            qnaService.deleteQna(qnaId);
+            redirectAttributes.addFlashAttribute("message", "QnA가 성공적으로 삭제되었습니다.");
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "질문을 삭제할 권한이 없습니다.");
+        }
+
+        return "redirect:/userQnaList";
     }
 
 }
