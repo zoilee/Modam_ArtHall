@@ -257,6 +257,7 @@
             </div>
         </div>
     </div>
+     
     <!-- 알람 모달창-->
      
     <div class="modal fade" id="alramModal" tabindex="-1" aria-labelledby="alramModalLabel" aria-hidden="true">
@@ -274,18 +275,10 @@
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
                 </div>
             </div>
-            <div class="col-6 col-md-3 text-center mb-4">
-                <a th:href="@{/userQnaList}" class="text-decoration-none">
-                    <div class="border rounded py-4 bg-light">
-                        <div class="mb-2">
-                            <img src="공지사항_아이콘.png" alt="공지사항 아이콘" class="img-fluid" style="width: 60px; height: 60px;">
-                        </div>
-                        <p class="mt-3">QnA</p>
-                    </div>
-                </a>
-            </div>
-        </div>
+        </div>  
     </div>
+
+
    <!-- 푸터 가져오기 -->
    <th:block th:replace="~{fragments/footer :: footerFragment}"></th:block> 
    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -358,107 +351,101 @@
                 alert('매출 데이터를 불러오는 중 오류가 발생했습니다.');
             });
 
+            // 최근 5일 예약 데이터 가져오기
             fetch('/admin/api/reservations/by-show-date')
-    .then(response => response.json())
-    .then(data => {
-        console.log('API 응답 데이터:', data); // API 데이터 확인
+            .then(response => response.json())
+            .then(data => {
+                console.log('API 응답 데이터:', data); // API 데이터 확인
 
-        // 날짜와 공연별 예약 데이터를 초기화
-        const showDates = [];
-        const performances = {};
+                // 날짜와 공연별 예약 데이터를 초기화
+                const showDates = [];
+                const performances = {};
 
-        // API 데이터를 처리
-        data.forEach(item => {
-            const { showDate, performanceTitle, totalReservations } = item;
+                // API 데이터를 처리
+                data.forEach(item => {
+                    const { showDate, performanceTitle, totalReservations } = item;
 
-            // showDate 추가
-            if (!showDates.includes(showDate)) {
-                showDates.push(showDate);
-            }
-
-            // 공연별 데이터 초기화
-            if (!performances[performanceTitle]) {
-                performances[performanceTitle] = {};
-            }
-
-            // 날짜와 예약 수 매핑
-            performances[performanceTitle][showDate] = totalReservations;
-        });
-
-        console.log('공연별 원본 데이터:', performances);
-
-        // 공연 데이터를 showDates에 맞게 정렬 및 0으로 채움
-        Object.keys(performances).forEach(title => {
-            const fixedData = showDates.map(date => performances[title][date] || 0);
-            performances[title] = fixedData;
-        });
-
-        console.log('정렬된 공연별 예약 데이터:', performances);
-
-        // Chart.js 데이터셋 구성
-        const datasets = Object.keys(performances).map(title => ({
-            label: title, // 공연 제목
-            data: performances[title], // 날짜별 예약 수
-            borderColor: getRandomColor(),
-            borderWidth: 2,
-            pointRadius: 5,
-            fill: false,
-            tension: 0.3
-        }));
-
-        console.log('Chart.js 데이터셋:', datasets);
-
-        // 랜덤 색상 생성 함수
-        function getRandomColor() {
-            const letters = '0123456789ABCDEF';
-            let color = '#';
-            for (let i = 0; i < 6; i++) {
-                color += letters[Math.floor(Math.random() * 16)];
-            }
-            return color;
-        }
-
-        // 차트 생성
-        const ctx = document.getElementById('reservationsChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: showDates, // X축: showDate
-                datasets: datasets // Y축: 공연별 예약 수
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                        labels: {
-                            usePointStyle: true
-                        }
-                    },
-                    title: {
-                        display: true,
-                        text: '공연 날짜별 예약 현황'
+                    // showDate 추가
+                    if (!showDates.includes(showDate)) {
+                        showDates.push(showDate);
                     }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: '예약 수'
-                        }
-                    },
-                    x: {
-                        title: {
-                            display: true,
-                            text: '공연 날짜'
-                        }
+
+                    // 공연별 데이터 초기화
+                    if (!performances[performanceTitle]) {
+                        performances[performanceTitle] = Array(showDates.length).fill(0);
                     }
+
+                    // 날짜와 공연 데이터를 매핑
+                    const dateIndex = showDates.indexOf(showDate);
+                    if (dateIndex !== -1) {
+                        performances[performanceTitle][dateIndex] = totalReservations;
+                    }
+                });
+
+                console.log('공연별 예약 데이터:', performances);
+
+                // Chart.js 데이터셋 구성
+                const datasets = Object.keys(performances).map(title => ({
+                    label: title, // 공연 제목
+                    data: performances[title], // 날짜별 예약 수
+                    borderColor: getRandomColor(),
+                    fill: false,
+                    tension: 0.3
+                }));
+
+                console.log('Chart.js 데이터셋:', datasets);
+
+                // 랜덤 색상 생성 함수
+                function getRandomColor() {
+                    const letters = '0123456789ABCDEF';
+                    let color = '#';
+                    for (let i = 0; i < 6; i++) {
+                        color += letters[Math.floor(Math.random() * 16)];
+                    }
+                    return color;
                 }
-            }
-        });
-    })
-    .catch(error => console.error('API 호출 실패:', error));
+
+                // 차트 생성
+                const ctx = document.getElementById('reservationsChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: showDates, // X축: showDate
+                        datasets: datasets // Y축: 공연별 예약 수
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                                labels: {
+                                    usePointStyle: true
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: '공연 날짜별 예약 현황'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: '예약 수'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: '공연 날짜'
+                                }
+                            }
+                        }
+                    }
+                });
+            })
+            .catch(error => console.error('API 호출 실패:', error));
         });
 
         // Reservations Chart
