@@ -226,6 +226,7 @@ public class PaymentController {
                 BigDecimal penaltycancelAmount = cancelAmount.multiply(BigDecimal.valueOf(0.5));
                 CancelData cancelPenaltyData = new CancelData(merchant_uid, false, penaltycancelAmount);
                 refund = portOneService.getRefundByImpuid(cancelPenaltyData);
+                System.out.println("캔슬데이터 확인" + cancelPenaltyData);
                 System.out.println("패널티 기간이므로 사용한 적립금은 환불X");
             } else if (daysBetween == 0) {
                 // 공연 당일 환불 불가
@@ -249,8 +250,16 @@ public class PaymentController {
 
                 // 결제정보 db
                 PaymentsEntity thispayment = paymentsRepository.findByReservation(thisReservation);
+
+                BigDecimal originalAmount = thispayment.getAmount(); // 결제된 총 금액
+                BigDecimal refundedAmount = cancelAmount; // 이번에 환불된 금액
+                if (daysBetween >= 1 && daysBetween <= 6) {
+                    refundedAmount = cancelAmount.multiply(BigDecimal.valueOf(0.5));
+                }
+                BigDecimal remainingAmount = originalAmount.subtract(refundedAmount); // 환불 후 남은 금액
+
                 thispayment.setStatus("REFUND");
-                thispayment.setReAmount(BigDecimal.ZERO);
+                thispayment.setReAmount(remainingAmount);
                 thispayment.setTransactionType(PaymentsEntity.TransactionType.REFUND);
                 paymentsRepository.save(thispayment);
                 int userId = thisReservation.getUserEntity().getId();

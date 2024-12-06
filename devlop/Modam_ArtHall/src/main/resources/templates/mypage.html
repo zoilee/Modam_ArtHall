@@ -277,9 +277,11 @@ document.getElementById("rewardsLogModal").addEventListener("shown.bs.modal", ()
                 dataType: "json",
                 success: function (response) {
                     alert(response.message);
+                    location.reload(); 
                 },
                 error: function (error) {
                     alert(response.message);
+                    location.reload(); 
                 },
             });
         });

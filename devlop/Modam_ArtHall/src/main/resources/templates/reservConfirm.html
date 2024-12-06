@@ -114,7 +114,7 @@
         <div class="modal-content">
             <div class="modal-header">
             <h5 class="modal-title" id="successMessageLabel">결제 완료</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            //<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
             <h3>결제가 성공적으로 완료되었습니다!</h3>
@@ -122,7 +122,7 @@
             <p>적립된 금액: <strong id="rewardPoints"></strong> 원</p>
             </div>
             <div class="modal-footer">
-            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">확인</button>
+            <a th:href="@{/mypage}" type="button" class="btn btn-primary">확인</a>
             </div>
         </div>
         </div>
@@ -399,8 +399,10 @@ setPriceAndSubmit();
                 }
             })
            
-            //끝
+            
         })
+        //끝
+
     });
 </script>
 </body>
