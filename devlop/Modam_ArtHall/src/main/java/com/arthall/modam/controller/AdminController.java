@@ -89,6 +89,8 @@ public class AdminController {
 
     @Autowired
     private QnaService qnaService;
+
+    @Autowired
     private AlramService alramService;
 
     // 공지사항 목록 조회 (페이지네이션 적용)
