@@ -257,14 +257,12 @@
         function renderTable(data) {
             const container = document.querySelector("#showList-tableBody");
             container.innerHTML = data
-                .map(
-                    item => `
+                .map(item => `
                     <tr>
                         <td><a href="/showDetail/${item.id}">${item.title}</a></td>
-                        <td>${item.formattedStartDate} ~ ${item.formattedEndDate}</td>
+                        <td>${item.startDate || '데이터 없음'} ~ ${item.endDate || '데이터 없음'}</td>
                     </tr>
-                `
-                )
+                `)
                 .join("");
         }
 
@@ -272,18 +270,16 @@
             fetch(`/showListFragment?page=${page}&size=5`)
                 .then(response => response.json())
                 .then(data => {
-                    renderTable(data.content);
-                    totalPages = data.totalPages;
-                    currentPage = page;
-                    updatePagination();
+                    console.log("Fetched data:", data.content); // 데이터 확인
+                    renderTable(data.content); // 테이블 렌더링
+                    totalPages = data.totalPages; // 총 페이지 수
+                    currentPage = page; // 현재 페이지 설정
+                    updatePagination(); // 페이지네이션 업데이트
                 })
                 .catch(error => console.error("Fetch error:", error));
         }
     
         function updatePagination() {
-            if (!totalPages || isNaN(totalPages)) totalPages = 1;
-            if (!currentPage || isNaN(currentPage)) currentPage = 0;
-
             const pageNumbersContainer = document.querySelector("#showList-pageNumbers");
             const prevGroupButton = document.querySelector("#showList-prevGroupButton");
             const nextGroupButton = document.querySelector("#showList-nextGroupButton");
