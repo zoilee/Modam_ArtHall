@@ -307,6 +307,9 @@ public class AdminController {
         List<AlramEntitiy> alrams = alramService.findAlramByReaded(false);
         model.addAttribute("alrams", alrams);
 
+        // 미처리 문의 가져오기
+        List<QnaEntity> unansweredQuestions = qnaService.getUnansweredQuestions();
+        model.addAttribute("unansweredQuestions", unansweredQuestions);
         return "admin/adminMenu";
     }
 

@@ -174,14 +174,37 @@
 
         <!-- 미처리 문의 모달 -->
         <div class="modal fade" id="inquiryModal" tabindex="-1" aria-labelledby="inquiryModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-lg"> <!-- modal-lg 클래스로 가로 크기 확장 -->
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="inquiryModalLabel">미처리 문의</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        현재 미처리 문의는 15건입니다.
+                        <h6>미처리 문의 목록</h6>
+                        <div th:if="${!#lists.isEmpty(unansweredQuestions)}">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>문의 제목</th>
+                                        <th>문의 내용</th>
+                                        <th>작성자</th>
+                                        <th>작성일</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="qna : ${unansweredQuestions}">
+                                        <td th:text="${qna.title}"></td>
+                                        <td th:text="${qna.contents}"></td>
+                                        <td th:text="${qna.userId}"></td>
+                                        <td th:text="${#dates.format(qna.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div th:if="${#lists.isEmpty(unansweredQuestions)}">
+                            <p class="text-center">현재 미처리 문의가 없습니다.</p>
+                        </div>
                     </div>
                 </div>
             </div>
