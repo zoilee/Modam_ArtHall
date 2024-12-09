@@ -46,7 +46,7 @@ public interface ReservationsRepository extends JpaRepository<ReservationsEntity
                 "FROM ReservationsEntity r " +
                 "JOIN r.showEntity s " +
                 "JOIN s.performancesEntity p " +
-                "WHERE s.showDate BETWEEN CURRENT_DATE AND :endDate " +
+                "WHERE r.status <> 'CANCEL' AND s.showDate BETWEEN CURRENT_DATE AND :endDate " +
                 "GROUP BY s.showDate, p.title " +
                 "ORDER BY s.showDate, p.title")
         List<Object[]> findReservationsByShowDate(@Param("endDate") Date endDate);

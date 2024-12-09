@@ -27,8 +27,9 @@ public class QnaEntity {
     @Column(name = "user_id", nullable = false)
     private String userId; // 사용자 ID
 
+    @CreationTimestamp
     @Column(name = "created_at", updatable = false)
-    private Timestamp createdAt = new Timestamp(System.currentTimeMillis());
+    private Timestamp createdAt; // TIMESTAMP 필드
 
     @Column(name = "title", nullable = false)
     private String title;

@@ -193,44 +193,45 @@ public class HomeController {
     // /showList 매핑
     @GetMapping("/showList")
     public String showList(@RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "5") int size,
-            Model model) {
-
+                           @RequestParam(value = "size", defaultValue = "5") int size,
+                           Model model) {
+    
         // Validate and adjust page and size
         page = Math.max(page, 0);
         size = Math.max(size, 1);
         Pageable pageable = PageRequest.of(page, size);
-
+    
         // 현재 날짜를 기준으로 공연 데이터 분리
         List<PerformancesEntity> upcomingPerformances = performanceService.getUpcomingPerformances();
-        Page<PerformancesEntity> pastPerformances = performanceService.getPastPerformances(pageable);
-
+        Page<Map<String, Object>> pastPerformances = performanceService.getPastPerformances(pageable);
+    
         // 최근 4개 공연 추출
         List<PerformancesEntity> top4Performances = upcomingPerformances.stream()
                 .limit(4)
                 .toList();
+    
         // 나머지 공연 추출
         List<PerformancesEntity> remainingPerformances = upcomingPerformances.stream()
                 .skip(4)
                 .toList();
-
+    
         // Partition remaining performances into chunks of 4
         List<List<PerformancesEntity>> partitionedPerformances = IntStream
                 .range(0, (remainingPerformances.size() + 3) / 4)
                 .mapToObj(
                         i -> remainingPerformances.subList(i * 4, Math.min((i + 1) * 4, remainingPerformances.size())))
                 .toList();
-
+    
+        // 모델에 데이터 추가
         model.addAttribute("top4Performances", top4Performances);
         model.addAttribute("remainingPerformances", remainingPerformances);
         model.addAttribute("partitionedPerformances", partitionedPerformances);
-        model.addAttribute("pastPerformances", pastPerformances);
+        model.addAttribute("pastPerformances", pastPerformances.getContent()); // 가공된 데이터
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", pastPerformances.getTotalPages());
-        model.addAttribute("pastPerformances", pastPerformances);
         model.addAttribute("isFirstPage", pastPerformances.isFirst());
         model.addAttribute("isLastPage", pastPerformances.isLast());
-
+    
         return "showList";
     }
 

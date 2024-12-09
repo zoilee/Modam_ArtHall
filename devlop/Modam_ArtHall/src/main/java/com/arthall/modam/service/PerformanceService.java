@@ -5,8 +5,10 @@ import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.time.format.DateTimeFormatter;
 
@@ -87,26 +89,22 @@ public class PerformanceService {
     }
 
     // 지난 공연 페이징 처리
-    public Page<PerformancesEntity> getPastPerformances(Pageable pageable) {
-        // Repository에서 데이터 가져오기 (이미 최신순 정렬 적용됨)
+    public Page<Map<String, Object>> getPastPerformances(Pageable pageable) {
         Page<PerformancesEntity> pastPerformances = performancesRepository.findPastPerformances(pageable);
-
-        // 디버깅 로그
-        System.out.println("Fetched Performances: " + pastPerformances.getContent().size());
-
-        // 날짜 포맷팅
-        pastPerformances.getContent().forEach(performance -> {
-            if (performance.getStartDate() != null) {
-                performance.setFormattedStartDate(
-                        dateFormatter.format(performance.getStartDate().toLocalDate()));
-            }
-            if (performance.getEndDate() != null) {
-                performance.setFormattedEndDate(
-                        dateFormatter.format(performance.getEndDate().toLocalDate()));
-            }
+    
+        // 필요한 필드만 추출하여 Page<Map> 형태로 변환
+        return pastPerformances.map(performance -> {
+            Map<String, Object> performanceMap = new HashMap<>();
+            performanceMap.put("id", performance.getId());
+            performanceMap.put("title", performance.getTitle());
+            performanceMap.put("startDate", performance.getStartDate() != null
+                    ? dateFormatter.format(performance.getStartDate().toLocalDate())
+                    : "데이터 없음");
+            performanceMap.put("endDate", performance.getEndDate() != null
+                    ? dateFormatter.format(performance.getEndDate().toLocalDate())
+                    : "데이터 없음");
+            return performanceMap;
         });
-
-        return pastPerformances;
     }
 
     private void formatPerformanceDates(List<PerformancesEntity> performances) {

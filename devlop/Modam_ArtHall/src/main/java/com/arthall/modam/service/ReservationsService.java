@@ -94,11 +94,11 @@ public class ReservationsService {
         }).collect(Collectors.toList());
     }
 
-    // 최근 5일 동안 예약 현황 데이터 (현재 상영 중 또는 미래 공연)
+    // 최근 7일 동안 예약 현황 데이터 (현재 상영 중 또는 미래 공연)
     public List<Map<String, Object>> getReservationsByShowDate() {
         Date endDate = Date.valueOf(LocalDate.now().plusDays(7));
         List<Object[]> results = reservationRepository.findReservationsByShowDate(endDate);
-
+    
         // 결과를 가공하여 반환
         return results.stream().map(row -> {
             Map<String, Object> map = new HashMap<>();
