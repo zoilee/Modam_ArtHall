@@ -61,7 +61,7 @@
                 </form>
 
                 <!-- 관리자에게 모든 질문의 답변 수정 권한 부여 -->
-                <a th:if="${#authentication.authorities.?[authority=='ROLE_ADMIN'].size() > 0}" th:href="@{/admin/qnaEdit(id=${qna.id})}" class="btn btn-warning me-2">답변 수정</a>
+                <a th:if="${#authentication.authorities.?[authority=='ROLE_ADMIN'].size() > 0}" th:href="@{/admin/qnaEdit(id=${qna.id})}" class="btn btn-warning me-2">답변 작성</a>
             </div>
 
             <!-- 목록으로 돌아가기 버튼 -->
