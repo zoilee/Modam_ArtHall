@@ -20,18 +20,17 @@ import com.arthall.modam.entity.ReservationsEntity;
 import com.arthall.modam.entity.RewardsLogEntity;
 import com.arthall.modam.entity.ShowEntity;
 import com.arthall.modam.entity.UserEntity;
-import com.arthall.modam.repository.AlramRepository;
-import com.arthall.modam.repository.PaymentsRepository;
-import com.arthall.modam.repository.ReservationsRepository;
-import com.arthall.modam.repository.RewardsLogRepository;
-import com.arthall.modam.repository.RewardsRepository;
-import com.arthall.modam.repository.ShowRepository;
-import com.arthall.modam.repository.UserRepository;
+
 import com.arthall.modam.service.AlramService;
 import com.arthall.modam.service.MailService;
+import com.arthall.modam.service.PaymentsService;
 import com.arthall.modam.service.PerformanceService;
 import com.arthall.modam.service.PortOneService;
+import com.arthall.modam.service.ReservationsService;
+import com.arthall.modam.service.RewardsLogService;
 import com.arthall.modam.service.RewardsService;
+import com.arthall.modam.service.ShowService;
+import com.arthall.modam.service.UserService;
 import com.siot.IamportRestClient.request.CancelData;
 import com.siot.IamportRestClient.response.IamportResponse;
 import com.siot.IamportRestClient.response.Payment;
@@ -45,28 +44,28 @@ public class PaymentController {
 
     @Autowired
     PortOneService portOneService;
-    // Repository service로 바꾸기
+
     @Autowired
-    PaymentsRepository paymentsRepository;
-    // Repository service로 바꾸기
+    PaymentsService paymentsService;
+
     @Autowired
-    ReservationsRepository reservationsRepository;
+    ReservationsService reservationsService;
+
     @Autowired
     MailService mailService;
-    // Repository service로 바꾸기
+
     @Autowired
-    ShowRepository showRepository;
+    ShowService showService;
+
     @Autowired
-    UserRepository userRepository;
-    // Repository service로 바꾸기
-    @Autowired
-    RewardsRepository rewardsRepository;
+    UserService userService;
+
     @Autowired
     RewardsService rewardsService;
 
-    // Repository service로 바꾸기
     @Autowired
-    RewardsLogRepository rewardsLogRepository;
+    RewardsLogService rewardsLogService;
+
     @Autowired
     AlramService alramService;
     @Autowired
@@ -93,12 +92,12 @@ public class PaymentController {
                 BigDecimal total_price = payment.getResponse().getAmount(); // 결제 가격
                 BigDecimal usedPoints = new BigDecimal(paymentData.get("myPoint").toString()); // 사용한 적립금
                 int userId = Integer.parseInt(paymentData.get("user_id").toString());
+                int showId = Integer.parseInt(paymentData.get("show_id").toString());
                 // 예약정보 db
                 ReservationsEntity newReservation = new ReservationsEntity();
-                ShowEntity showEntity = showRepository.findById(Integer.parseInt(paymentData.get("show_id").toString()))
-                        .orElseThrow(() -> new IllegalArgumentException("Invalid show ID"));
-                UserEntity userEntity = userRepository.findById(Integer.parseInt(paymentData.get("user_id").toString()))
-                        .orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
+                ShowEntity showEntity = showService.findById(showId);
+
+                UserEntity userEntity = userService.findById(userId);
 
                 newReservation.setSeatId1(paymentData.get("seat_id1").toString()); // 좌석id1
                 newReservation.setSeatId2(paymentData.get("seat_id2").toString()); // 좌석id2
@@ -108,13 +107,13 @@ public class PaymentController {
                 newReservation.setUserEntity(userEntity); // 예약한유저
                 newReservation.setTicket(ticket); // 티켓
 
-                reservationsRepository.save(newReservation);
+                reservationsService.saveReservation(newReservation);
+
                 System.out.println("예약정보 db 저장 성공");
                 // 결제정보 db
 
-                ReservationsEntity thisReservation = reservationsRepository.findById(newReservation.getId())
-                        .orElseThrow(() -> new IllegalArgumentException(
-                                "Invalid reservation ID: " + newReservation.getId()));
+                ReservationsEntity thisReservation = reservationsService.findById(newReservation);
+
                 PaymentsEntity paymentsEntity = new PaymentsEntity();
                 paymentsEntity.setAmount(total_price);
                 paymentsEntity.setReAmount(total_price);
@@ -123,19 +122,22 @@ public class PaymentController {
                 paymentsEntity.setTransactionType(PaymentsEntity.TransactionType.PAYMENT);
                 paymentsEntity.setReservation(thisReservation);
 
-                paymentsRepository.save(paymentsEntity);
+                paymentsService.savePayments(paymentsEntity);
                 System.out.println("결제정보db 저장 성공");
                 Integer reservationId = newReservation.getId(); // 바로 ID 값 가져오기
                 System.out.println("Reservation ID: " + reservationId);
 
                 // 좌석 가용성 업데이트
                 int reservedSeatsCount = 0;
-                if (newReservation.getSeatId1() != null && !newReservation.getSeatId1().equals("NULL")) reservedSeatsCount++;
-                if (newReservation.getSeatId2() != null && !newReservation.getSeatId2().isEmpty() && !newReservation.getSeatId2().equals("NULL")) reservedSeatsCount++;
-                
+                if (newReservation.getSeatId1() != null && !newReservation.getSeatId1().equals("NULL"))
+                    reservedSeatsCount++;
+                if (newReservation.getSeatId2() != null && !newReservation.getSeatId2().isEmpty()
+                        && !newReservation.getSeatId2().equals("NULL"))
+                    reservedSeatsCount++;
+
                 ShowEntity updatedShow = showEntity;
                 updatedShow.setSeatAvailable(showEntity.getSeatAvailable() - reservedSeatsCount);
-                showRepository.save(updatedShow);
+                showService.saveShow(updatedShow);
                 System.out.println("좌석 가용성 업데이트 성공");
 
                 // 적립금 차감 처리
@@ -212,8 +214,7 @@ public class PaymentController {
             cancelData.setReason("환불요청");
 
             // 해당 예약
-            ReservationsEntity thisReservation = reservationsRepository.findById(resId)
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid res ID"));
+            ReservationsEntity thisReservation = reservationsService.findById(resId);
 
             // 환불 조건
             // 환불체크
@@ -254,22 +255,25 @@ public class PaymentController {
                 // 예약정보 db
 
                 thisReservation.setStatus("CANCEL");
-                reservationsRepository.save(thisReservation);
+                reservationsService.saveReservation(thisReservation);
 
                 System.out.println("예약정보 db 캔슬로 저장 성공");
 
                 // 좌석 가용성 복구
                 ShowEntity show = thisReservation.getShowEntity();
                 int canceledSeatsCount = 0;
-                if (thisReservation.getSeatId1() != null && !thisReservation.getSeatId1().equals("NULL")) canceledSeatsCount++;
-                if (thisReservation.getSeatId2() != null && !thisReservation.getSeatId2().isEmpty() && !thisReservation.getSeatId2().equals("NULL")) canceledSeatsCount++;
-                
+                if (thisReservation.getSeatId1() != null && !thisReservation.getSeatId1().equals("NULL"))
+                    canceledSeatsCount++;
+                if (thisReservation.getSeatId2() != null && !thisReservation.getSeatId2().isEmpty()
+                        && !thisReservation.getSeatId2().equals("NULL"))
+                    canceledSeatsCount++;
+
                 show.setSeatAvailable(show.getSeatAvailable() + canceledSeatsCount);
-                showRepository.save(show);
+                showService.saveShow(show);
                 System.out.println("좌석 가용성 복구 성공");
 
                 // 결제정보 db
-                PaymentsEntity thispayment = paymentsRepository.findByReservation(thisReservation);
+                PaymentsEntity thispayment = paymentsService.findPaymentsByReservation(thisReservation);
 
                 BigDecimal originalAmount = thispayment.getAmount(); // 결제된 총 금액
                 BigDecimal refundedAmount = cancelAmount; // 이번에 환불된 금액
@@ -281,13 +285,12 @@ public class PaymentController {
                 thispayment.setStatus("REFUND");
                 thispayment.setReAmount(remainingAmount);
                 thispayment.setTransactionType(PaymentsEntity.TransactionType.REFUND);
-                paymentsRepository.save(thispayment);
+                paymentsService.savePayments(thispayment);
                 int userId = thisReservation.getUserEntity().getId();
                 // 패널티 없는 환불만
                 if (daysBetween >= 7) {
                     // 적립금 db rollbackPoints(int userId, BigDecimal points, int reservationId)
-                    Optional<RewardsLogEntity> useRewardsLogOpt = rewardsLogRepository
-                            .findByUserIdAndDescriptionAndReservationsId(userId, "USE", resId);
+                    Optional<RewardsLogEntity> useRewardsLogOpt = rewardsLogService.findLogByUSE(userId, resId);
                     if (useRewardsLogOpt.isPresent()) {
                         RewardsLogEntity thisRewardsLog = useRewardsLogOpt.get();
                         BigDecimal rollbackPoints = thisRewardsLog.getChangePoint().abs(); // abs 메서드로 절대값 변환
@@ -296,10 +299,7 @@ public class PaymentController {
                         System.out.println("적립금 사용 로그가 없습니다. userId: " + userId + ", reservationId: " + resId);
                     }
                     // 받은 적립금 cancel
-                    RewardsLogEntity cancelRewardsLog = rewardsLogRepository
-                            .findByUserIdAndDescriptionAndReservationsId(userId, "EARN", resId)
-                            .orElseThrow(() -> new IllegalArgumentException(
-                                    "Invalid reservation ID: " + thisReservation.getId())); // EARN인 로그가져오기
+                    RewardsLogEntity cancelRewardsLog = rewardsLogService.findLogByEARN(userId, resId); // EARN인 로그가져오기
                     BigDecimal cancelPoints = cancelRewardsLog.getChangePoint();
                     rewardsService.deductPoints(userId, cancelPoints, resId, "CANCEL");
 
@@ -307,10 +307,7 @@ public class PaymentController {
 
                 } else {
                     // 받은 적립금 cancel
-                    RewardsLogEntity cancelRewardsLog = rewardsLogRepository
-                            .findByUserIdAndDescriptionAndReservationsId(userId, "EARN", resId)
-                            .orElseThrow(() -> new IllegalArgumentException(
-                                    "Invalid reservation ID: " + thisReservation.getId())); // EARN인 로그가져오기
+                    RewardsLogEntity cancelRewardsLog = rewardsLogService.findLogByEARN(userId, resId); // EARN인 로그가져오기
                     BigDecimal cancelPoints = cancelRewardsLog.getChangePoint();
                     rewardsService.deductPoints(userId, cancelPoints, resId, "CANCEL");
 

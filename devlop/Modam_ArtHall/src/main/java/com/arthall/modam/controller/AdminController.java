@@ -7,6 +7,7 @@ import com.arthall.modam.entity.ImagesEntity;
 import com.arthall.modam.service.AlramService;
 import com.arthall.modam.service.BbsService;
 import com.arthall.modam.service.FileService;
+import com.arthall.modam.service.ImagesService;
 import com.arthall.modam.service.PerformanceService;
 import com.arthall.modam.service.QnaService;
 import com.arthall.modam.service.PortOneService;
@@ -48,7 +49,7 @@ import com.arthall.modam.entity.PerformancesEntity;
 import com.arthall.modam.entity.QnaEntity;
 import com.arthall.modam.entity.ReservationsEntity;
 import com.arthall.modam.entity.UserEntity;
-import com.arthall.modam.repository.ImagesRepository;
+
 import com.arthall.modam.repository.PerformancesRepository;
 import com.arthall.modam.repository.ReservationsRepository;
 import com.arthall.modam.repository.ShowRepository;
@@ -67,10 +68,7 @@ public class AdminController {
     private PerformanceService performanceService;
 
     @Autowired
-    private ImagesRepository imagesRepository;
-
-    @Autowired
-    private ShowRepository showRepository;
+    private ImagesService imagesService;
 
     @Autowired
     private BbsService bbsService;
@@ -134,7 +132,7 @@ public class AdminController {
                 image.setImageUrl(filePath);
                 image.setReferenceId(savedNotice.getId()); // 저장된 공지사항의 ID 사용
                 image.setReferenceType(ImagesEntity.ReferenceType.NOTICE); // 공지사항임을 표시
-                imagesRepository.save(image);
+                imagesService.saveImg(image);
 
             } catch (IOException e) {
                 System.err.println("파일 저장 중 오류 발생: " + e.getMessage());
@@ -177,12 +175,12 @@ public class AdminController {
 
             // 이미지 삭제 처리 (트랜잭션 내부에서 실행)
             if (deleteImageIds != null && !deleteImageIds.isEmpty()) {
-                List<ImagesEntity> imagesToDelete = imagesRepository.findAllById(deleteImageIds);
+                List<ImagesEntity> imagesToDelete = imagesService.findAllById(deleteImageIds);
                 for (ImagesEntity image : imagesToDelete) {
                     try {
                         // 파일 삭제
                         fileService.deleteFile(image.getImageUrl());
-                        imagesRepository.delete(image); // 데이터베이스에서 삭제
+                        imagesService.deleteImg(image); // 데이터베이스에서 삭제
                     } catch (IOException e) {
                         System.err.println("이미지 삭제 중 오류 발생: " + image.getImageUrl());
                         throw new RuntimeException("이미지 삭제 중 오류가 발생했습니다.");
@@ -197,7 +195,7 @@ public class AdminController {
                 newImage.setImageUrl(filePath);
                 newImage.setReferenceId(id);
                 newImage.setReferenceType(ImagesEntity.ReferenceType.NOTICE);
-                imagesRepository.save(newImage);
+                imagesService.saveImg(newImage);
             }
 
             // 공지사항 저장
@@ -225,7 +223,7 @@ public class AdminController {
 
         if (notice != null) {
             // 공지사항에 연결된 이미지 가져오기
-            List<ImagesEntity> images = imagesRepository.findByReferenceIdAndReferenceType(id,
+            List<ImagesEntity> images = imagesService.findByReferenceIdAndReferenceType(id,
                     ImagesEntity.ReferenceType.NOTICE);
 
             // 이미지 파일 삭제
@@ -240,7 +238,7 @@ public class AdminController {
             }
 
             // 이미지 데이터 삭제
-            imagesRepository.deleteAll(images);
+            imagesService.deleteAllImg(images);
 
             // 공지사항 삭제
             bbsService.deleteNotice(id);
@@ -271,24 +269,24 @@ public class AdminController {
     //////////////////////////////////////////////////////////////////////
     @GetMapping("/menu")
     public String showAdminMenu(
-        @RequestParam(name = "page", defaultValue = "0") int page,
-        @RequestParam(name = "size", defaultValue = "10") int size,
-        Model model) {
-    // 총 가입자 수 가져오기
-    long totalUsers = userService.getTotalUsers();
-    model.addAttribute("totalUsers", totalUsers);
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size,
+            Model model) {
+        // 총 가입자 수 가져오기
+        long totalUsers = userService.getTotalUsers();
+        model.addAttribute("totalUsers", totalUsers);
 
-    // 최근 1주일 동안 가입한 사용자 목록 가져오기
-    Page<UserEntity> recentUsers = userService.getUsersRegisteredInLastWeek(page, size);
-    model.addAttribute("recentUsers", recentUsers.getContent()); // 현재 페이지의 사용자 목록
-    model.addAttribute("currentPage", page);
-    model.addAttribute("totalPages", recentUsers.getTotalPages());
+        // 최근 1주일 동안 가입한 사용자 목록 가져오기
+        Page<UserEntity> recentUsers = userService.getUsersRegisteredInLastWeek(page, size);
+        model.addAttribute("recentUsers", recentUsers.getContent()); // 현재 페이지의 사용자 목록
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", recentUsers.getTotalPages());
 
-    // 오늘의 매출 가져오기
-    double todaySales = portOneService.getTodayTotalSales();
-    double totalSales = portOneService.getTotalSales();
-    model.addAttribute("todaySales", todaySales);
-    model.addAttribute("totalSales", totalSales);
+        // 오늘의 매출 가져오기
+        double todaySales = portOneService.getTodayTotalSales();
+        double totalSales = portOneService.getTotalSales();
+        model.addAttribute("todaySales", todaySales);
+        model.addAttribute("totalSales", totalSales);
 
         // 최신 공연 데이터 가져오기
         List<PerformancesEntity> upcomingPerformances = performancesRepository.findUpcomingPerformances();
@@ -361,37 +359,7 @@ public class AdminController {
     public String showAdminCommitWrite() {
         return "admin/adminShowCommitWrite";
     }
-/* 
-    // 작성 데이터 저장
-    @PostMapping("/showCommitWrite")
-    public String AdminCommitWrite(PerformancesEntity performancesEntity,
-            @RequestParam(value = "file", required = false) MultipartFile file,
-            RedirectAttributes redirectAttributes) {
 
-        // 공연 데이터 생성
-
-        PerformancesEntity savedPerformance = performancesRepository.save(performancesEntity);
-
-        if (file != null && !file.isEmpty()) {
-            // 파일 저장 로직
-            try {
-                String filePath = fileService.saveFile(file); // 파일 저장 후 경로 반환
-                ImagesEntity image = new ImagesEntity();
-                image.setImageUrl(filePath);
-                image.setReferenceId(savedPerformance.getId());
-                image.setReferenceType(ImagesEntity.ReferenceType.PERFORMANCE); // 공연정보로 등록
-                imagesRepository.save(image);
-
-            } catch (IOException e) {
-                System.err.println("파일 저장 중 오류 발생: " + e.getMessage());
-                e.printStackTrace();
-            }
-        }
-
-        redirectAttributes.addFlashAttribute("message", "공연 정보가 성공적으로 등록되었습니다.");
-
-    }
-*/
     // date 형식 바꾸기 메서드
     public Date convertStringToDate(String dateStr) {
         try {
@@ -447,7 +415,7 @@ public class AdminController {
                 image.setImageUrl(filePath);
                 image.setReferenceId(savedPerformance.getId()); // 저장된 공연정보의 ID 사용
                 image.setReferenceType(ImagesEntity.ReferenceType.PERFORMANCE); // 공연정보로 등록
-                imagesRepository.save(image);
+                imagesService.saveImg(image);
             } catch (IOException e) {
                 System.err.println("파일 저장 중 오류 발생: " + e.getMessage());
                 e.printStackTrace();
@@ -474,7 +442,7 @@ public class AdminController {
             return "redirect:showCommitList";
         }
 
-        List<ImagesEntity> images = imagesRepository.findByReferenceIdAndReferenceType(performance.getId(),
+        List<ImagesEntity> images = imagesService.findByReferenceIdAndReferenceType(performance.getId(),
                 ImagesEntity.ReferenceType.PERFORMANCE);
         boolean fileDeleteError = false;
 
@@ -486,8 +454,7 @@ public class AdminController {
                 fileDeleteError = true;
             }
         }
-
-        imagesRepository.deleteAll(images);
+        imagesService.deleteAllImg(images);
         performancesRepository.deleteById(id);
 
         if (fileDeleteError) {
@@ -536,7 +503,7 @@ public class AdminController {
 
             // 삭제할 이미지가 있는 경우 처리
             if (deleteImageIds != null && !deleteImageIds.isEmpty()) {
-                List<ImagesEntity> images = imagesRepository.findAllById(deleteImageIds);
+                List<ImagesEntity> images = imagesService.findAllById(deleteImageIds);
                 for (ImagesEntity image : images) {
                     try {
                         fileService.deleteFile(image.getImageUrl());
@@ -544,7 +511,7 @@ public class AdminController {
                         System.err.println("파일 삭제 중 예외 발생: " + image.getImageUrl());
                     }
                 }
-                imagesRepository.deleteAll(images);
+                imagesService.deleteAllImg(images);
             }
 
             // 새 파일이 업로드된 경우 처리
@@ -554,7 +521,7 @@ public class AdminController {
                 image.setImageUrl(filePath);
                 image.setReferenceId(existingEntity.getId());
                 image.setReferenceType(ImagesEntity.ReferenceType.PERFORMANCE);
-                imagesRepository.save(image);
+                imagesService.saveImg(image);
             }
 
             redirectAttributes.addFlashAttribute("message", "공연 정보가 성공적으로 업데이트되었습니다.");
@@ -617,39 +584,39 @@ public class AdminController {
         return "redirect:/admin/userCommit"; // 수정 후 회원 목록 페이지로 이동
     }
 
-/**************QnA**************** */
+    /************** QnA**************** */
 
     @Controller
-@RequestMapping("/admin")
-public class QnaController {
+    @RequestMapping("/admin")
+    public class QnaController {
 
-    // 질문 답변 작성.
-    @GetMapping("/qnaEdit")
-    public String getQnaEdit(@RequestParam(name = "id") Integer id, Model model) {
-        QnaEntity qnaEntity = qnaService.getQnaById(id);
-        model.addAttribute("qna", qnaEntity);
-        return "admin/adminQnaEdit";
+        // 질문 답변 작성.
+        @GetMapping("/qnaEdit")
+        public String getQnaEdit(@RequestParam(name = "id") Integer id, Model model) {
+            QnaEntity qnaEntity = qnaService.getQnaById(id);
+            model.addAttribute("qna", qnaEntity);
+            return "admin/adminQnaEdit";
+        }
+
+        // 질문 답변 작성
+        @PostMapping("/qnaEdit")
+        public String postQnaEdit(@RequestParam(name = "id") Integer id,
+                @RequestParam(name = "answer") String answer) {
+            QnaEntity qnaEntity = qnaService.getQnaById(id);
+            qnaEntity.setAnswer(answer);
+            qnaService.updateQna(qnaEntity);
+            return "redirect:/userQnaList";
+        }
+
+        @PostMapping("/qnaDelete")
+        public String deleteQna(@RequestParam(name = "qnaId") Integer id) {
+            qnaService.deleteQna(id);
+            return "redirect:/userQnaList";
+        }
+
     }
 
-    // 질문 답변 작성
-    @PostMapping("/qnaEdit")
-    public String postQnaEdit(@RequestParam(name = "id") Integer id,
-                              @RequestParam(name = "answer") String answer) {
-        QnaEntity qnaEntity = qnaService.getQnaById(id);
-        qnaEntity.setAnswer(answer);
-        qnaService.updateQna(qnaEntity);
-        return "redirect:/userQnaList";
-    }
-
-    @PostMapping("/qnaDelete")
-    public String deleteQna(@RequestParam(name = "qnaId") Integer id) {
-        qnaService.deleteQna(id);
-        return "redirect:/userQnaList";
-    }
-
-    }
-
-/***************************************************************************/
+    /***************************************************************************/
     // 현재 상영 중 또는 미래 공연 중 매출이 있는 공연 데이터 API
     @GetMapping("/api/sales")
     @ResponseBody

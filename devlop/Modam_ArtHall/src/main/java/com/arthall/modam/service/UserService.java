@@ -42,6 +42,11 @@ public class UserService implements UserDetailsService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    // id로 찾기찾기
+    public UserEntity findById(int id) {
+        return userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
+    }
+
     // ==================================회원가입 처리====================================
     // 아이디 중복 체크
     public boolean isLoginIdDuplicate(String loginId) {

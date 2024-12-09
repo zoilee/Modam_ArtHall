@@ -12,10 +12,10 @@ import com.arthall.modam.repository.ShowRepository;
 
 @Service
 public class ShowService {
-    
+
     @Autowired
     private ShowRepository showRepository;
-    
+
     // 전체 목록 검색
     public List<ShowEntity> findAll() {
         return showRepository.findAll();
@@ -36,24 +36,24 @@ public class ShowService {
         return showRepository.findByPerformancesEntity_IdAndShowDateAndShowTime(performanceId, showDate, showTime);
     }
 
-    //예약 시 예약가능좌석 차감
+    // 예약 시 예약가능좌석 차감
     public void updateSeatAvailability(int showId, int numberOfPeople) {
         // 해당 showId에 해당하는 show_entity를 DB에서 가져옴
         Optional<ShowEntity> showEntityOptional = showRepository.findById(showId);
-        
+
         if (showEntityOptional.isPresent()) {
             ShowEntity showEntity = showEntityOptional.get();
-    
+
             int currentAvailableSeats = showEntity.getSeatAvailable();
-    
+
             // 좌석이 부족한 경우 예외 처리
             if (currentAvailableSeats < numberOfPeople) {
                 throw new IllegalArgumentException("예약할 수 있는 좌석이 부족합니다.");
             }
-    
+
             // 좌석 수 차감
             showEntity.setSeatAvailable(currentAvailableSeats - numberOfPeople);
-    
+
             // 변경된 값 저장
             showRepository.save(showEntity);
         } else {
@@ -62,6 +62,10 @@ public class ShowService {
     }
 
     public ShowEntity findById(int showId) {
-        return showRepository.findById(showId).orElse(null);
+        return showRepository.findById(showId).orElseThrow(() -> new IllegalArgumentException("Invalid show ID"));
+    }
+
+    public void saveShow(ShowEntity showEntity) {
+        showRepository.save(showEntity);
     }
 }
