@@ -9,8 +9,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.arthall.modam.dto.ReservationsDataDto;
-import com.arthall.modam.dto.SalesDataDto;
 import com.arthall.modam.entity.ReservationsEntity;
 
 public interface ReservationsRepository extends JpaRepository<ReservationsEntity, Integer> {

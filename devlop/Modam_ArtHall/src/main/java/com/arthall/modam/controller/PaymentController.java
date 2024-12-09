@@ -128,6 +128,16 @@ public class PaymentController {
                 Integer reservationId = newReservation.getId(); // 바로 ID 값 가져오기
                 System.out.println("Reservation ID: " + reservationId);
 
+                // 좌석 가용성 업데이트
+                int reservedSeatsCount = 0;
+                if (newReservation.getSeatId1() != null && !newReservation.getSeatId1().equals("NULL")) reservedSeatsCount++;
+                if (newReservation.getSeatId2() != null && !newReservation.getSeatId2().isEmpty() && !newReservation.getSeatId2().equals("NULL")) reservedSeatsCount++;
+                
+                ShowEntity updatedShow = showEntity;
+                updatedShow.setSeatAvailable(showEntity.getSeatAvailable() - reservedSeatsCount);
+                showRepository.save(updatedShow);
+                System.out.println("좌석 가용성 업데이트 성공");
+
                 // 적립금 차감 처리
                 if (usedPoints.compareTo(BigDecimal.ZERO) > 0) {
                     rewardsService.deductPoints(userId, usedPoints, reservationId, "USE");
@@ -247,6 +257,16 @@ public class PaymentController {
                 reservationsRepository.save(thisReservation);
 
                 System.out.println("예약정보 db 캔슬로 저장 성공");
+
+                // 좌석 가용성 복구
+                ShowEntity show = thisReservation.getShowEntity();
+                int canceledSeatsCount = 0;
+                if (thisReservation.getSeatId1() != null && !thisReservation.getSeatId1().equals("NULL")) canceledSeatsCount++;
+                if (thisReservation.getSeatId2() != null && !thisReservation.getSeatId2().isEmpty() && !thisReservation.getSeatId2().equals("NULL")) canceledSeatsCount++;
+                
+                show.setSeatAvailable(show.getSeatAvailable() + canceledSeatsCount);
+                showRepository.save(show);
+                System.out.println("좌석 가용성 복구 성공");
 
                 // 결제정보 db
                 PaymentsEntity thispayment = paymentsRepository.findByReservation(thisReservation);
