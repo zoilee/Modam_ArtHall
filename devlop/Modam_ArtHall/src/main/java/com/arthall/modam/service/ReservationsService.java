@@ -24,6 +24,20 @@ public class ReservationsService {
     @Autowired
     private PaymentsRepository paymentsRepository;
 
+    public void saveReservation(ReservationsEntity reservation) {
+        reservationRepository.save(reservation);
+    }
+
+    // 인터페이스 처리해야할듯?
+    public ReservationsEntity findById(ReservationsEntity reservation) {
+        return reservationRepository.findById(reservation.getId()).orElseThrow(() -> new IllegalArgumentException(
+                "Invalid reservation ID: " + reservation.getId()));
+    }
+
+    public ReservationsEntity findById(int id) {
+        return reservationRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid res ID"));
+    }
+
     // 향후 예약 조회
     public List<ReservationsEntity> getUpcomingReservations(int userId) {
         LocalDate today = LocalDate.now();
