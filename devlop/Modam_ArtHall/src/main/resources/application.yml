@@ -8,9 +8,9 @@ spring:
   #database 연동
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ${RDS_URL}
-    username: ${RDS_USERNAME}
-    password: ${RDS_PASSWORD}
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
   thymeleaf:
     cache: false
     check-template-location: true

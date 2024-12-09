@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QnA 상세보기</title>
+    <title>QnA 상세 보기</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- 스타일 시트 -->
@@ -14,45 +14,64 @@
     <!-- 헤더 -->
     <th:block th:replace="~{fragments/header :: headerFragment}"></th:block>
 
-    <!-- QnA 상세보기 Section -->
     <div class="container my-5" style="padding-top: 100px;">
-        <h2 class="mb-4">QnA 상세보기</h2>
+        <!-- 접근 권한이 없는 경우 -->
+        <script th:if="${!isAuthorized}">
+            alert("이 글은 비밀글입니다. 작성자와 관리자만 볼 수 있습니다.");
+            window.location.href = /*[[@{/userQnaList}]]*/ "/userQnaList";
+        </script>
 
-        <!-- QnA 제목 및 작성 정보 -->
-        <table class="table table-bordered">
-            <tbody>
-                <tr>
-                    <th style="width: 100px;">제목</th>
-                    <td colspan="3" th:text="${qna.title}">제목 데이터 없음</td>
-                </tr>
-                <tr>
-                    <th style="width: 100px;">작성일</th>
-                    <td th:text="${#dates.format(qna.createdAt, 'yyyy-MM-dd')}">작성일 데이터 없음</td>
+        <!-- 접근 권한이 있는 경우 -->
+        <div th:if="${isAuthorized}">
+            <!-- QnA 제목 -->
+            <div class="mb-4">
+                <h2 class="mb-4">QnA 상세 보기</h2>
 
-                    <th style="width: 100px;">작성자</th>
-                    <td th:text="${qna.userId}">작성자 데이터 없음</td>
-                </tr>
-            </tbody>
-        </table>
+                <label for="title" class="form-label fw-bold">제목</label>
+                <p id="title" class="form-control" style="height: auto;" th:text="${qna.title}">QnA 제목</p>
+            </div>
 
-        <!-- QnA 내용 -->
-        <div class="mb-3 p-3" style="border: 1px solid #ddd; background-color: #f8f9fa;">
-            <p th:text="${qna.contents}">내용 데이터 없음</p>
-        </div>
+            <!-- 작성자와 작성일 -->
+            <div class="mb-4">
+                <label class="form-label fw-bold">작성자</label>
+                <p class="form-control" style="height: auto;" th:text="${qna.userId}">작성자</p>
 
-        <!-- 관리자의 답변 -->
-        <div class="mb-3 p-3" style="border: 1px solid #ddd; background-color: #e9ecef;">
-            <h5>관리자 답변</h5>
-            <p th:text="${qna.answer != null ? qna.answer : '답변이 아직 등록되지 않았습니다.'}">답변 데이터 없음</p>
-        </div>
+                <label class="form-label fw-bold mt-3">작성일</label>
+                <p class="form-control" style="height: auto;" th:text="${#dates.format(qna.createdAt, 'yyyy-MM-dd HH:mm')}">작성일</p>
+            </div>
 
-        <!-- 목록으로 돌아가기 버튼 -->
-        <div class="text-start mt-4">
-            <a th:href="@{/userQnaList}" class="btn btn-secondary">목록으로</a>
+            <!-- QnA 내용 -->
+            <div class="mb-4">
+                <label for="contents" class="form-label fw-bold">내용</label>
+                <p id="contents" class="form-control" style="height: auto; min-height: 150px;" th:text="${qna.contents}">QnA 내용</p>
+            </div>
+
+            <!-- 관리자 답변 -->
+            <div class="mb-4" th:if="${qna.answer != null}">
+                <label for="answer" class="form-label fw-bold">관리자 답변</label>
+                <p id="answer" class="form-control" style="height: auto; min-height: 150px;" th:text="${qna.answer}">답변 내용</p>
+            </div>
+
+            <!-- 수정/삭제 버튼 (작성자와 관리자만 표시) -->
+            <div class="text-end">
+                <a th:if="${#authentication.name.equals(qna.userId)}" th:href="@{/userQnaEdit(id=${qna.id})}" class="btn btn-warning me-2">수정</a>
+                <form th:if="${#authentication.name.equals(qna.userId)}" th:action="@{/user/qnaDelete}" method="post" style="display: inline;" onsubmit="return confirm('정말 삭제하시겠습니까?');">
+                    <input type="hidden" name="qnaId" th:value="${qna.id}" />
+                    <button type="submit" class="btn btn-danger">삭제</button>
+                </form>
+
+                <!-- 관리자에게 모든 질문의 답변 수정 권한 부여 -->
+                <a th:if="${#authentication.authorities.?[authority=='ROLE_ADMIN'].size() > 0}" th:href="@{/admin/qnaEdit(id=${qna.id})}" class="btn btn-warning me-2">답변 수정</a>
+            </div>
+
+            <!-- 목록으로 돌아가기 버튼 -->
+            <div class="text-center mt-4">
+                <a th:href="@{/userQnaList}" class="btn btn-secondary">목록으로 돌아가기</a>
+            </div>
         </div>
     </div>
 
-    <!-- 푸터 가져오기 -->
+    <!-- 푸터 -->
     <th:block th:replace="~{fragments/footer :: footerFragment}"></th:block>
 
     <!-- Bootstrap JS (Optional) -->

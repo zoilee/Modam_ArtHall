@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import com.arthall.modam.entity.RewardsLogEntity;
-import java.math.BigDecimal;
 
 @Repository
 public interface RewardsLogRepository extends JpaRepository<RewardsLogEntity, Integer> {

@@ -2,10 +2,8 @@ package com.arthall.modam.entity;
 
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
-
 import org.hibernate.annotations.CreationTimestamp;
-import java.time.LocalDateTime;
+
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -40,6 +38,15 @@ public class QnaEntity {
     @Column(name = "answer")
     private String answer;
 
-   
+    //* */
+    @Column(name = "is_private", nullable = false)
+    private boolean isPrivate = false; // 기본값은 비밀글 아님
+
+    // 답변 완료 여부
+    public boolean isAnswered() {
+        return answer != null && !answer.isEmpty();
+    }
+
+
 
 }

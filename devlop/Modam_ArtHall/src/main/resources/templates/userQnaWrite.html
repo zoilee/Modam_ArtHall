@@ -6,8 +6,15 @@
     <title>QnA 작성</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <!-- 스타일 시트 -->
     <link rel="stylesheet" th:href="@{/css/layout/style.css}">
+    <style>
+        #titleSuggestions {
+            display: none;
+        }
+    </style>
 </head>
 <body>
 
@@ -22,10 +29,10 @@
             <div class="mb-3 row position-relative">
                 <label for="title" class="col-sm-2 col-form-label">제목</label>
                 <div class="col-sm-10 input-group" style="width: 83%;">
-                    <input type="text" class="form-control" id="title" name="title" placeholder="제목을 입력하세요" required>
+                    <input type="text" class="form-control" id="title" name="title" placeholder="제목을 입력하세요" required onfocus="showSuggestions()" onblur="hideSuggestions()" oninput="filterSuggestions()">
                     <span class="input-group-text"><i class="bi bi-caret-down-fill"></i></span>
                     <!-- 추천 제목 목록 -->
-                    <div id="titleSuggestions" class="list-group position-absolute" style="top: 100%; z-index: 1; display: none; width: 94%;">
+                    <div id="titleSuggestions" class="list-group position-absolute" style="top: 100%; z-index: 1; width: 94%;">
                         <button type="button" class="list-group-item list-group-item-action" onclick="setTitle('환불문의')">환불문의</button>
                         <button type="button" class="list-group-item list-group-item-action" onclick="setTitle('단체예약문의')">단체예약문의</button>
                         <button type="button" class="list-group-item list-group-item-action" onclick="setTitle('위치문의')">위치문의</button>
@@ -33,7 +40,7 @@
                     </div>
                 </div>
             </div>
-        
+
             <!-- 내용 입력 -->
             <div class="mb-3 row">
                 <label for="content" class="col-sm-2 col-form-label">내용</label>
@@ -41,15 +48,23 @@
                     <textarea class="form-control" id="content" name="contents" rows="10" placeholder="질문 내용을 입력하세요" required></textarea>
                 </div>
             </div>
-        
+
+            <!-- 비밀글 여부 -->
+            <div class="mb-3 row">
+                <label for="isPrivate" class="col-sm-2 col-form-label">비밀글</label>
+                <div class="col-sm-10">
+                    <input type="checkbox" id="isPrivate" name="isPrivate">
+                    <small class="text-muted">비밀글로 설정 시 관리자와 작성자만 볼 수 있습니다.</small>
+                </div>
+            </div>
+
             <!-- 등록/취소 버튼 -->
             <div class="text-center mt-4">
                 <button type="submit" class="btn btn-primary me-2">질문 등록하기</button>
                 <a th:href="@{/userQnaList}" class="btn btn-secondary">취소</a>
             </div>
-        <input type="hidden" name="redirectUrl" value="http://localhost:8082/userQnaList" />
-</form>
-        
+            <input type="hidden" name="redirectUrl" value="http://localhost:8082/userQnaList" />
+        </form>
     </div>
 
     <!-- 푸터 가져오기 -->
@@ -58,32 +73,33 @@
     <!-- Bootstrap JS (Optional) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        const titleInput = document.getElementById('title');
-        const titleSuggestions = document.getElementById('titleSuggestions');
-
-        titleInput.addEventListener('focus', () => {
-            titleSuggestions.style.display = 'block';
-        });
-
-        titleInput.addEventListener('blur', () => {
-            setTimeout(() => {
-                titleSuggestions.style.display = 'none';
-            }, 200);
-        });
-
         function setTitle(title) {
-            titleInput.value = title;
-            titleSuggestions.style.display = 'none';
+            document.getElementById('title').value = title;
+            hideSuggestions();
+        }
+
+        function showSuggestions() {
+            document.getElementById('titleSuggestions').style.display = 'block';
+        }
+
+        function hideSuggestions() {
+            setTimeout(() => {
+                document.getElementById('titleSuggestions').style.display = 'none';
+            }, 200);
+        }
+
+        function filterSuggestions() {
+            const input = document.getElementById('title').value.toLowerCase();
+            const suggestions = document.querySelectorAll('#titleSuggestions button');
+
+            suggestions.forEach(suggestion => {
+                if (suggestion.textContent.toLowerCase().includes(input)) {
+                    suggestion.style.display = 'block';
+                } else {
+                    suggestion.style.display = 'none';
+                }
+            });
         }
     </script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
-    <style>
-        .col-form-label {
-            padding-right: 0;
-        }
-        #titleSuggestions .list-group-item {
-            width: 100%;
-        }
-    </style>
 </body>
 </html>

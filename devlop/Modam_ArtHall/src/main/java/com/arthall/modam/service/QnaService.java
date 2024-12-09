@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import com.arthall.modam.entity.QnaEntity;
@@ -55,4 +56,33 @@ public class QnaService{
         return qnaRepository.findUnansweredQuestions();
     }
     
+
+/****1209 QnA 수정관련**** */
+    public boolean isAuthorized(QnaEntity qna, Authentication authentication) {
+        if (!qna.isPrivate()) {
+            return true; // 비밀글이 아니면 누구나 접근 가능
+        }
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return false; // 인증되지 않은 사용자
+        }
+    
+        String currentUsername = authentication.getName();
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+        return currentUsername.equals(qna.getUserId()) || isAdmin; // 작성자이거나 관리자인 경우
+    }
+
+ /****1209 QnA 수정관련**** */   
+    
+    public boolean canEditQna(QnaEntity qna, Authentication authentication) {
+        if (qna.isAnswered()) {
+            return false; // 답변 완료된 QnA는 수정 불가
+        }
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return false; // 인증되지 않은 사용자
+        }
+
+        String currentUsername = authentication.getName();
+        return currentUsername.equals(qna.getUserId()); // 작성자만 수정 가능
+    }
 }
