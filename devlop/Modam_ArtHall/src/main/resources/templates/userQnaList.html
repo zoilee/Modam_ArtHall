@@ -37,7 +37,7 @@
                             <td>
                                 <a th:href="@{/user/qnaView(id=${qna.id})}" th:text="${qna.title}">QnA 제목</a>
                             </td>
-                            <td th:text="${#temporals.format(qna.createdAt, 'yyyy-MM-dd')}">2024-12-06</td> <!-- 작성일자 -->
+                            <td th:text="${#dates.format(qna.createdAt, 'yyyy-MM-dd')}">2024-12-06</td> <!-- 작성일자 -->
                             <td>
                                 <div>
                                     <!-- 일반 사용자에게 본인이 작성한 질문만 수정/삭제 버튼을 보여줌 -->

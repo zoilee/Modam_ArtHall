@@ -1,6 +1,7 @@
 package com.arthall.modam.entity;
 
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -27,8 +28,8 @@ public class QnaEntity {
     private String userId; // 사용자 ID
 
     @CreationTimestamp
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    @Column(name = "created_at", updatable = false)
+    private Timestamp createdAt; // TIMESTAMP 필드
 
     @Column(name = "title", nullable = false)
     private String title;

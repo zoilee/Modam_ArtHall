@@ -138,15 +138,10 @@
     const rValue = 100;
     const sValue = 800;
     const aValue = 600;
-    const noneValue = 0;
 
 
 // 좌석 ID에 따라 가격을 설정하는 함수
 function getSeatPrice(seatId) {
-    // none인 경우 0원 반환
-    if (seatId === 'none' || !seatId) {
-        return noneValue;
-    }
     // VIP 좌석 (200000원)
     const vipSeats = [
         'a4', 'a5', 'a6', 'a7', 'a8', 'a9', 'a10', 'a11', 'a12', 'a13', 'a14', 'a15', 

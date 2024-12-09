@@ -27,7 +27,7 @@
                 </tr>
                 <tr>
                     <th style="width: 100px;">작성일</th>
-                    <td th:text="${#temporals.format(qna.createdAt, 'yyyy-MM-dd')}">작성일 데이터 없음</td>
+                    <td th:text="${#dates.format(qna.createdAt, 'yyyy-MM-dd')}">작성일 데이터 없음</td>
 
                     <th style="width: 100px;">작성자</th>
                     <td th:text="${qna.userId}">작성자 데이터 없음</td>

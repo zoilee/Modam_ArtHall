@@ -24,6 +24,7 @@ import com.arthall.modam.repository.UserRepository;
 import com.arthall.modam.repository.RewardsRepository;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.persistence.EnumType;
 
 @Service
 @Transactional
@@ -168,6 +169,7 @@ public class UserService implements UserDetailsService {
             adminUser.setName("관리자");
             adminUser.setEmail("admin@example.com");
             adminUser.setPhoneNumber("010-1234-5678");
+            adminUser.setStatus(UserEntity.Status.ACTIVE);
             adminUser.setRole(UserEntity.Role.ADMIN); // 관리자 권한 설정
 
             userRepository.save(adminUser);
@@ -245,11 +247,12 @@ public class UserService implements UserDetailsService {
         userRepository.deleteById(userId);
     }
 
-    //총 가입자 수 조회
+    // 총 가입자 수 조회
     public long getTotalUsers() {
         return userRepository.countTotalUsers();
     }
-    //최근 1주일 동안 가입한 사용자 조회
+
+    // 최근 1주일 동안 가입한 사용자 조회
     public Page<UserEntity> getUsersRegisteredInLastWeek(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         LocalDateTime oneWeekAgo = LocalDateTime.now().minusDays(7);

@@ -23,7 +23,7 @@
         .seat.s { background-color: #AAFFAA; }  /* S seat - green */
         .seat.a { background-color: #AAAAFF; }  /* A seat - blue */
         .seat.unavailable { background-color: #555555 !important; } /* Unavailable seat - grey */
-        .seat.selected { background-color: #D1AFFF; } /* Selected seat - purple */
+        .seat.selected { background-color: #7542b8; } /* Selected seat - purple */
         
         /* Layout styling */
         .stage { background-color: #d3d3d3; text-align: center; padding: 20px; margin-bottom: 20px; font-weight: bold; }
@@ -240,7 +240,7 @@ function updateForm() {
     // 폼 데이터 업데이트
     $('input[name="seatId1"]').val(selectedSeats[0] || '');
     // numberOfPeople이 1이면 seatId2는 'null'으로 설정, 2이면 선택된 좌석값 설정
-    $('input[name="seatId2"]').val(numberOfPeople === 1 ? 'NULL' : (selectedSeats[1] || ''));
+    $('input[name="seatId2"]').val(numberOfPeople === 1 ? null : (selectedSeats[1] || ''));
     
     // 선택된 좌석 표시 업데이트 (화면에는 실제 선택된 좌석만 표시)
     $('#seatPicked1').text(selectedSeats[0] || '');
