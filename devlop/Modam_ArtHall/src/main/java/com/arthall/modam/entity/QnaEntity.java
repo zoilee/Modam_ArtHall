@@ -27,7 +27,7 @@ public class QnaEntity {
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
-    private Timestamp createdAt; // TIMESTAMP 필드
+    private Timestamp createdAt; // TIMESTAMP 필드 //
 
     @Column(name = "title", nullable = false)
     private String title;
