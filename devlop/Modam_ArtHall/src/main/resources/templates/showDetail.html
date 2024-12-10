@@ -9,6 +9,26 @@
     <link rel="stylesheet" th:href="@{/css/layout/style.css}">
     <link rel="stylesheet" th:href="@{/css/showDetail/style.css}">
     <style>
+        .detailBack{
+            background-color: #10375C;
+            position: absolute;
+            width: 100%;
+            height: 470px;
+            top: 110px;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .btnToReservform{
+            background-color: #EB8317;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.25);
+            width: 300px;
+        }
+        .btnToReservform:hover{
+            background-color: #ff9320;
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.7);
+            color: #fff;
+        }
         /* 댓글 박스를 relative로 설정하여 절대 위치가 박스 기준으로 적용되게 설정 */
         .card.position-relative {
             position: relative;
@@ -48,41 +68,44 @@
     <!-- 헤더 -->
     <th:block th:replace="~{fragments/header :: headerFragment}"></th:block>
 
+    <div class="detailBack">
+        <img src="/imgs/backgrounds/showDetail-background-1900.jpg" style="object-fit: fill;">
+    </div>
     <!-- 메인 컨테이너 -->
     <div class="container my-4" style="padding: 100px 0;">
         <div class="row justify-content-center">
             <!-- 공연 정보 -->
-            <div class="col-md-8 my-4 sd_info-section">
+            <div class="col-md-8 my-4 sd_info-section" style="color: #fff; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);">
                 <h4 class="my-4" th:text="${performance.title}">공연 제목</h4>
-                <p th:text="'공연기간: ' + ${performance.startDate} + ' ~ ' + ${performance.endDate}">공연 기간</p>
-                <p th:text="'공연시간: ' + ${performance.time} + '분'">공연 시간</p>
-                <p th:text="'관람연령: ' + ${performance.age} + '세 이상'">관람 연령</p>
-                <p th:text="'장소: ' + ${performance.location}">공연 장소</p>
-                <p th:text="'평균 평점: ' + (${performance.formattedAverageRating} ?: '0.0') + ' / 5'">
-                    평균 평점: 0.0 / 5
+                <p th:text="'공연기간 : ' + ${performance.startDate} + ' ~ ' + ${performance.endDate}">공연 기간</p>
+                <p th:text="'공연시간 : ' + ${performance.time} + '분'">공연 시간</p>
+                <p th:text="'관람연령 : ' + ${performance.age} + '세 이상'">관람 연령</p>
+                <p th:text="'장소 : ' + ${performance.location}">공연 장소</p>
+                <p th:text="'평균 평점 : ' + (${performance.formattedAverageRating} ?: '0.0') + ' / 5'">
+                    평균 평점 : 0.0 / 5
                 </p>
-                <p>가격 : 미선정</p>
+                <p>가격 : VIP:200,000 / R:100,000 / S:80,000 / A:60,000</p>
             </div>
     
             <!-- 포스터 및 예매 버튼 -->
             <div class="col-md-4 poster-section text-center">
                 <!-- 포스터 이미지 -->
-                <div style="height: 300px; width: 300px; margin: 0 auto; margin-bottom: 20px;">
+                <div style="height: 400px; width: 300px; margin: 0 auto; margin-bottom: 10px;">
                     <img th:src="${performance.imagesEntities != null && !performance.imagesEntities.isEmpty() 
                                   ? performance.imagesEntities[0].imageUrl : '/imgs/default-poster.jpg'}" 
                          alt="공연 이미지" 
-                         style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                         style="max-width: 100%; max-height: 100%; object-fit: fit;">
                 </div>
                 <!-- 로그인된 사용자만 접근 가능 -->
                 <form action="/reservForm" method="post" id="formToReservForm">
                     <input type="hidden" name="performanceId" class="performanceId" th:value="${performance.id}">
                     <!-- 로그인된 사용자 -->
-                    <button th:if="${#authentication.authenticated}" type="submit" class="btn btn-primary btn-block mb-2">
+                    <button th:if="${#authentication.authenticated}" type="submit" class="btn btn-block mb-2 btnToReservform">
                         예매하기
                     </button>
     
                     <!-- 비로그인 사용자 -->
-                    <button th:if="${!#authentication.authenticated}" type="button" class="btn btn-primary btn-block" 
+                    <button th:if="${!#authentication.authenticated}" type="button" class="btn btn-block btnToReservform" 
                             onclick="alert('로그인 후 이용하세요.');">
                         예매하기
                     </button>
@@ -93,7 +116,7 @@
     
 
         <!-- 환불규정 / 주의사항 -->
-        <div class="bg-light py-3 my-4">
+        <div class="bg-light py-3 my-4" style="border-radius: 10px;">
             <h5>환불규정 / 주의사항</h5>
             <p>환불 규정 및 주의사항 내용을 여기에 추가하세요.</p>
         </div>
