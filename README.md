@@ -1,8 +1,19 @@
-### 현재 페이지 로드 예쁘게 잘 나오는 것들
-- main
-- login
-- reservConfirm
-- reservFrom
-- adminShowCommitList
-- adminShowCommitWrite
-- adminUserCommit
+# SpringBoot-project-ModamArthall
+SpringBoot 기반 공연 예매시스템
+
+## 기업요구과제
+기업에서 요구한 조건들을 최우선으로 수행하며 과제 진행
+
+## 구축기능
+- 유저 / 관리자 SIDE별 기능
+- 회원가입, 로그인, 내정보수정 기능
+    - (Google, Naver, Kakao 등 Synchro 로그인)
+- 예약현황, 예약 조회 기능
+    - 예약 일정 등록 및 관리 기능
+- 결제 및 조회 기능 (PG사 연동)
+    - 예약 취소 시 기간 별 수수료 부과 기능
+    - 적립금 시스템
+- 게시판 등록 및 관리 기능
+
+## 상세페이지
+
