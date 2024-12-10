@@ -10,20 +10,37 @@
     <link rel="stylesheet" th:href="@{/css/layout/style.css}">
     <style>
         html, body {
-            height: 100%; /* 화면 전체 높이를 차지 */
+            height: 100%;
             margin: 0;
             display: flex;
             flex-direction: column;
         }
         .content {
-            flex: 1; /* 컨텐츠 영역이 남은 공간을 차지 */
+            flex: 1;
             padding-top: 250px;
         }
         .custom-footer {
             background-color: #f8f9fa;
             text-align: center;
             padding: 1px 0;
-            margin-top: auto; /* 항상 하단에 배치 */
+            margin-top: auto;
+        }
+        /* 공지사항 밑줄 스타일 */
+        .notice-title {
+            display: inline-block;
+            position: relative;
+            font-size: 24px;
+            font-weight: bold;
+            color: #000;
+        }
+        .notice-title::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: -5px; /* 텍스트 밑에 밑줄 위치 */
+            width: 105%; /* 밑줄 길이 */
+            height: 3px; /* 밑줄 두께 */
+            background: linear-gradient(to right, orange, navy); /* 밑줄 색상 그라데이션 */
         }
     </style>
 </head>
@@ -33,7 +50,7 @@
     <th:block th:replace="~{fragments/header :: headerFragment}"></th:block>
 
     <div class="container my-5 content">
-        <h2 class="mb-4">공지사항</h2>
+        <h2 class="mb-4 notice-title">공지사항</h2>
         <div class="table-responsive">
             <!-- 공지사항 Table -->
             <table class="table table-bordered text-center">
@@ -47,12 +64,12 @@
                 <tbody>
                     <!-- 반복되는 공지사항 항목 -->
                     <tr th:each="notice, stat : ${notices.content}">
-                        <td th:text="${notices.totalElements - stat.index}">1</td> <!-- 공지사항 번호, 최신 공지가 위로 -->
+                        <td th:text="${notices.totalElements - stat.index}">1</td>
                         <td>
                             <!-- 제목에 링크 추가 -->
                             <a th:href="@{/userNoticeView(id=${notice.id})}" th:text="${notice.title}">공지사항 제목</a>
                         </td>
-                        <td th:text="${#dates.format(notice.createdAt, 'yyyy-MM-dd')}">작성일자</td> <!-- 작성일자 -->
+                        <td th:text="${#dates.format(notice.createdAt, 'yyyy-MM-dd')}">작성일자</td>
                     </tr>
                 </tbody>
             </table>

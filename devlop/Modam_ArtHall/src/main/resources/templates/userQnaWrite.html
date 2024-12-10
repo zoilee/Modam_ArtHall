@@ -11,25 +11,41 @@
     <!-- 스타일 시트 -->
     <link rel="stylesheet" th:href="@{/css/layout/style.css}">
 <style>
-#titleSuggestions {
-    display: none;
-}
-html, body {
-    height: 100%; /* 화면 전체 높이를 차지 */
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-}
-.content {
-    flex: 1; /* 컨텐츠 영역이 남은 공간을 차지 */
-    padding-top: 150px;
-    }
-.custom-footer {
-    background-color: #f8f9fa;
-    text-align: center;
-    padding: 1px 0;
-    margin-top: auto; /* 항상 하단에 배치 */
-}
+        #titleSuggestions {
+            display: none;
+        }
+        html, body {
+            height: 100%; /* 화면 전체 높이를 차지 */
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        .content {
+            flex: 1; /* 컨텐츠 영역이 남은 공간을 차지 */
+            padding-top: 150px;
+            }
+        .custom-footer {
+            background-color: #f8f9fa;
+            text-align: center;
+            padding: 1px 0;
+            margin-top: auto; /* 항상 하단에 배치 */
+        }
+        .notice-title {
+            display: inline-block;
+            position: relative;
+            font-size: 24px;
+            font-weight: bold;
+            color: #000;
+        }
+        .notice-title::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: -5px;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(to right, orange, navy);
+        }
     </style>
 </head>
 <body>
@@ -39,7 +55,7 @@ html, body {
 
     <!-- QnA 작성 Section -->
     <div class="container my-5" style="padding-top: 120px;">
-        <h2 class="mb-4">QnA 질문 작성</h2>
+        <h2 class="mb-4 notice-title">QnA 질문 작성</h2>
         <form th:action="@{/user/qnaWrite}" method="post" th:onsubmit="return validateForm();">
             <!-- 제목 입력 -->
             <div class="mb-3 row position-relative">
