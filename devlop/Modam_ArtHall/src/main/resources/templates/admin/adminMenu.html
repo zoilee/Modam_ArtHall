@@ -162,16 +162,16 @@
                     </div>
                     <div class="modal-body">
                         <!-- 오늘의 매출 -->
-                        <p>오늘의 결제 금액: ₩<strong th:text="${#numbers.formatInteger(todayPayments, 0)}">0</strong></p>
-                        <p>오늘의 환불 금액: ₩<strong th:text="${#numbers.formatInteger(todayRefunds, 0)}">0</strong></p>
-                        <p>오늘의 적립금 사용: ₩<strong th:text="${#numbers.formatInteger(todayCreditsUsed, 0)}">0</strong></p>
-                        <p><strong>오늘의 순수 매출:</strong> ₩<strong th:text="${#numbers.formatInteger(todayNetSales, 0)}">0</strong></p>
+                        <p>오늘의 결제 금액: <span th:text="${todaySales.todayPayments}"></span></p>
+                        <p>오늘의 환불 금액: <span th:text="${todaySales.todayRefunds}"></span></p>
+                        <p>오늘의 적립금 사용: <span th:text="${todaySales.todayCreditsUsed}"></span></p>
+                        <p><strong>오늘의 순수 매출:</strong> <strong th:text="${todaySales.todayNetSales}"></strong></p>
                         <hr>
                         <!-- 총 매출 -->
-                        <p>총 결제 금액: ₩<strong th:text="${#numbers.formatInteger(totalPayments, 0)}">0</strong></p>
-                        <p>총 환불 금액: ₩<strong th:text="${#numbers.formatInteger(totalRefunds, 0)}">0</strong></p>
-                        <p>총 적립금 사용: ₩<strong th:text="${#numbers.formatInteger(totalCreditsUsed, 0)}">0</strong></p>
-                        <p><strong>총 순수 매출:</strong> ₩<strong th:text="${#numbers.formatInteger(totalNetSales, 0)}">0</strong></p>
+                        <p>총 결제 금액: <span th:text="${monthlySales.monthlyPayments}"></span></p>
+                        <p>총 환불 금액: <span th:text="${monthlySales.monthlyRefunds}"></span></p>
+                        <p>총 적립금 사용: <span th:text="${monthlySales.monthlyCreditsUsed}"></span></p>
+                        <p><strong>총 순수 매출:</strong> <strong th:text="${monthlySales.monthlyNetSales}"></strong></p>
                     </div>
                 </div>
             </div>
