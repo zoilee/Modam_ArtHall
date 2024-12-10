@@ -18,6 +18,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.Data;
 
 @Data
@@ -61,4 +62,15 @@ public class ReservationsEntity {
 
     @OneToMany(mappedBy = "reservationsEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RewardsLogEntity> rewardsLogEntities; // RewardsLogEntity와 연결
+
+    @Transient
+    private String formattedTotalPrice;
+
+    public String getFormattedTotalPrice() {
+        return formattedTotalPrice;
+    }
+
+    public void setFormattedTotalPrice(String formattedTotalPrice) {
+        this.formattedTotalPrice = formattedTotalPrice;
+    }
 }
