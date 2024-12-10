@@ -22,7 +22,7 @@
         <!-- Summary Cards -->
         <div class="row mb-4">
             <div class="col-md-3">
-                <div class="card mb-3" data-bs-toggle="modal" data-bs-target="#reservationModal">
+                <div class="card mb-3" data-bs-toggle="modal" data-bs-target="#reservationsModal">
                     <div class="card-body" style="cursor: pointer;">
                         <h5 class="card-title">오늘의 예약<i class="ri-survey-line"></i></h5>
                     </div>
@@ -73,7 +73,6 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- 예약 데이터 출력 -->
                                 <tr th:each="reservation : ${todayReservations}">
                                     <td th:text="${reservation.id}"></td>
                                     <td th:text="${reservation.showEntity.performancesEntity.title}"></td>
@@ -82,7 +81,6 @@
                                     <td th:text="${reservation.status}"></td>
                                     <td th:text="${#dates.format(reservation.reservationDate, 'yyyy-MM-dd HH:mm')}"></td>
                                 </tr>
-                                <!-- 예약 데이터가 없는 경우 -->
                                 <tr th:if="${#lists.isEmpty(todayReservations)}">
                                     <td colspan="6" class="text-center text-danger">오늘의 예약 데이터가 없습니다.</td>
                                 </tr>
