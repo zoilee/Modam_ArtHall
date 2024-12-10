@@ -31,4 +31,28 @@ public interface PaymentsRepository extends JpaRepository<PaymentsEntity, Intege
             "GROUP BY p.title " +
             "HAVING SUM(pmt.reAmount) > 0")
     List<Object[]> findPerformancesWithTotalSales();
+
+    // 오늘의 결제 금액
+    @Query("SELECT SUM(p.amount) FROM PaymentsEntity p WHERE p.transactionType = 'PAYMENT' AND DATE(p.createdAt) = CURRENT_DATE")
+    Double findTodayPayments();
+
+    // 오늘의 환불 금액
+    @Query("SELECT SUM(p.amount) FROM PaymentsEntity p WHERE p.transactionType = 'REFUND' AND DATE(p.createdAt) = CURRENT_DATE")
+    Double findTodayRefunds();
+
+    // 오늘의 적립금 사용 금액
+    @Query("SELECT SUM(p.reAmount) FROM PaymentsEntity p WHERE p.transactionType = 'PAYMENT' AND DATE(p.createdAt) = CURRENT_DATE")
+    Double findTodayCreditsUsed();
+
+    // 총 결제 금액
+    @Query("SELECT SUM(p.amount) FROM PaymentsEntity p WHERE p.transactionType = 'PAYMENT'")
+    Double findTotalPayments();
+
+    // 총 환불 금액
+    @Query("SELECT SUM(p.amount) FROM PaymentsEntity p WHERE p.transactionType = 'REFUND'")
+    Double findTotalRefunds();
+
+    // 총 적립금 사용 금액
+    @Query("SELECT SUM(p.reAmount) FROM PaymentsEntity p WHERE p.transactionType = 'PAYMENT'")
+    Double findTotalCreditsUsed();
 }
