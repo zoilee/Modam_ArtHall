@@ -9,10 +9,6 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 @EntityScan(basePackages = { "com.arthall.modam.entity" })
 public class ModamApplication {
     public static void main(String[] args) {
-<<<<<<< Updated upstream
-        
-=======
->>>>>>> Stashed changes
-        SpringApplication.run(ModamApplication.class, args);
+
     }
 }
