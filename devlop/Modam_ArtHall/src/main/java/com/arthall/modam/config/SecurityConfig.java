@@ -32,7 +32,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // Lambda DSL로 CSRF 보호 비활성화
                 .authorizeHttpRequests(authorize -> authorize
                         // 누구나 접근 가능한 경로
-                        .requestMatchers("/", "/hallDetail", "/findAccount", "/showDetail", "/user/api/**",
+                        .requestMatchers("/", "/hallDetail", "/findAccount", "/showDetail", "/user/api/**", "/userNoticeList",
                                 "/noticeList", "/showDetail/{performanceId}", "/register", "/login", "/find-id",
                                 "/find-password", "/css/**", "/js/**", "/imgs/**", "/showList", "/showListFragment",
                                 "/error", "/uploads/**","/webhook/**")

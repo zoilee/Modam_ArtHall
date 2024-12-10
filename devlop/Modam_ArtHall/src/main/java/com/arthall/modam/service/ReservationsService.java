@@ -1,5 +1,6 @@
 package com.arthall.modam.service;
 
+import java.math.RoundingMode;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -109,14 +110,17 @@ public class ReservationsService {
         }).collect(Collectors.toList());
     }
 
-    // 오늘 결제된 예약 목록 가져오기
-    public List<ReservationsEntity> getTodayPaidReservations() {
-        List<ReservationsEntity> reservations = reservationRepository.findTodayPaidReservations();
-        if (reservations == null || reservations.isEmpty()) {
-            System.out.println("No reservations found for today.");
-        } else {
-            System.out.println("Reservations found: " + reservations.size());
+    public List<ReservationsEntity> getTodayConfirmedReservations() {
+        List<ReservationsEntity> todayReservations = reservationRepository.findTodayConfirmedReservations();
+
+        // 금액 포맷팅
+        for (ReservationsEntity reservation : todayReservations) {
+            if (reservation.getTotalPrice() != null) {
+                reservation.setFormattedTotalPrice("₩" + reservation.getTotalPrice().setScale(0, RoundingMode.HALF_UP).toString());
+            } else {
+                reservation.setFormattedTotalPrice("₩0");
+            }
         }
-        return reservations;
+        return todayReservations;
     }
 }

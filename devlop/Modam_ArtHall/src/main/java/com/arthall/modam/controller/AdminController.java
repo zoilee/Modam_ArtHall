@@ -52,7 +52,6 @@ import com.arthall.modam.entity.UserEntity;
 
 import com.arthall.modam.repository.PerformancesRepository;
 import com.arthall.modam.repository.ReservationsRepository;
-import com.arthall.modam.repository.ShowRepository;
 
 @Controller
 @RequestMapping("/admin")
@@ -269,12 +268,13 @@ public class AdminController {
     //////////////////////////////////////////////////////////////////////
     @GetMapping("/menu")
     public String showAdminMenu(
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "10") int size,
-            Model model) {
-        // 총 가입자 수 가져오기
-        long totalUsers = userService.getTotalUsers();
-        model.addAttribute("totalUsers", totalUsers);
+        @RequestParam(name = "page", defaultValue = "0") int page,
+        @RequestParam(name = "size", defaultValue = "10") int size,
+        Model model) {
+
+    // 총 가입자 수 가져오기
+    long totalUsers = userService.getTotalUsers();
+    model.addAttribute("totalUsers", totalUsers);
 
         // 최근 1주일 동안 가입한 사용자 목록 가져오기
         Page<UserEntity> recentUsers = userService.getUsersRegisteredInLastWeek(page, size);
@@ -282,11 +282,31 @@ public class AdminController {
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", recentUsers.getTotalPages());
 
-        // 오늘의 매출 가져오기
-        double todaySales = portOneService.getTodayTotalSales();
-        double totalSales = portOneService.getTotalSales();
-        model.addAttribute("todaySales", todaySales);
-        model.addAttribute("totalSales", totalSales);
+    // 오늘의 매출 데이터
+    double todayPayments = portOneService.getTodayPayments();
+    double todayRefunds = portOneService.getTodayRefunds();
+    double todayCreditsUsed = portOneService.getTodayCreditsUsed();
+    double todayNetSales = todayPayments - todayRefunds - todayCreditsUsed;
+
+    model.addAttribute("todayPayments", todayPayments);
+    model.addAttribute("todayRefunds", todayRefunds);
+    model.addAttribute("todayCreditsUsed", todayCreditsUsed);
+    model.addAttribute("todayNetSales", todayNetSales);
+
+    // 총 매출 데이터
+    double totalPayments = portOneService.getTotalPayments();
+    double totalRefunds = portOneService.getTotalRefunds();
+    double totalCreditsUsed = portOneService.getTotalCreditsUsed();
+    double totalNetSales = totalPayments - totalRefunds - totalCreditsUsed;
+
+    model.addAttribute("totalPayments", totalPayments);
+    model.addAttribute("totalRefunds", totalRefunds);
+    model.addAttribute("totalCreditsUsed", totalCreditsUsed);
+    model.addAttribute("totalNetSales", totalNetSales);
+
+    // 오늘의 예약 데이터 가져오기
+    List<ReservationsEntity> todayReservations = reservationsService.getTodayConfirmedReservations();
+        model.addAttribute("todayReservations", todayReservations);
 
         // 최신 공연 데이터 가져오기
         List<PerformancesEntity> upcomingPerformances = performancesRepository.findUpcomingPerformances();
@@ -297,9 +317,6 @@ public class AdminController {
                 .collect(Collectors.toList());
 
         model.addAttribute("upcomingPerformances", top4Performances);
-        // List<ReservationsEntity> reservations =
-        // reservationsService.getTodayPaidReservations();
-        // model.addAttribute("reservations", reservations);
 
         // 알람 처리
         List<AlramEntitiy> alrams = alramService.findAlramByReaded(false);
@@ -634,7 +651,7 @@ public class AdminController {
     // 오늘의 예약 데이터를 가져와서 모델에 추가
     @GetMapping("/admin/todayReservations")
     public String getTodayReservations(Model model) {
-        List<ReservationsEntity> reservations = reservationsService.getTodayPaidReservations();
+        List<ReservationsEntity> reservations = reservationsService.getTodayConfirmedReservations();
         if (reservations == null || reservations.isEmpty()) {
             System.out.println("No reservations found for today.");
         } else {

@@ -1,11 +1,14 @@
 package com.arthall.modam.service;
 
+import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -14,8 +17,10 @@ import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import com.arthall.modam.entity.RewardsEntity;
 import com.arthall.modam.entity.UserEntity;
 import com.arthall.modam.entity.UserEntity.Status;
+import com.arthall.modam.repository.RewardsRepository;
 import com.arthall.modam.repository.UserRepository;
 
 @Service
@@ -23,6 +28,10 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private final KakaoUserService kakaoUserService;
     private final UserRepository userRepository;
+    
+    @Autowired
+    RewardsRepository rewardsRepository;
+   
 
     public CustomOAuth2UserService(KakaoUserService kakaoUserService, UserRepository userRepository) {
         this.kakaoUserService = kakaoUserService;
@@ -61,9 +70,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         if (loginId == null) {
             throw new RuntimeException("OAuth2 공급자로부터 loginId를 가져올 수 없습니다.");
         }
+        
 
         // 데이터베이스에서 사용자 정보 확인
         Optional<UserEntity> existingUserOpt = userRepository.findByLoginId(loginId);
+
 
         // 사용자 상태 확인
         if (existingUserOpt.isPresent()) {
@@ -78,8 +89,23 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             return createOAuth2User(oAuth2User, attributes, loginId);
         }
 
+        
+        
         // 사용자 정보 저장 또는 조회
         kakaoUserService.registerUser(loginId, email, name, registrationId.toUpperCase());
+
+        UserEntity thisUser = userRepository.findByLoginId(loginId).orElseThrow();
+        int userId = thisUser.getId();
+
+        // Rewards 생성
+        RewardsEntity rewards = new RewardsEntity();
+        rewards.setUserId(userId); // 저장된 userEntity의 ID 사용
+        rewards.setTotalPoint(BigDecimal.ZERO); // 초기 적립금 0
+        rewards.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+        rewardsRepository.save(rewards);
+
+        System.out.println("user Rewards 생성 " + rewards);
+
         // OAuth2User 생성 및 반환
          return createOAuth2User(oAuth2User, attributes, loginId);
         }

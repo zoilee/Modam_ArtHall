@@ -52,15 +52,40 @@ public class PortOneService {
     }
 
     /*********************************관리자 대시보드 모달 창 시작*********************************/
-    //오늘의 매출
-    public double getTodayTotalSales() {
-        Double totalSales = paymentsRepository.findTodayTotalSales();
-        return totalSales != null ? totalSales : 0.0; // null 값 처리
+    // 오늘의 결제 금액
+    public double getTodayPayments() {
+        Double total = paymentsRepository.findTodayPayments();
+        return total != null ? total : 0.0;
     }
-    //총 매출
-    public double getTotalSales() {
-        Double totalSales = paymentsRepository.findTotalSales();
-        return totalSales != null ? totalSales : 0.0; // null 값 처리
+
+    // 오늘의 환불 금액
+    public double getTodayRefunds() {
+        Double total = paymentsRepository.findTodayRefunds();
+        return total != null ? total : 0.0;
+    }
+
+    // 오늘의 적립금 사용 금액
+    public double getTodayCreditsUsed() {
+        Double total = paymentsRepository.findTodayCreditsUsed();
+        return total != null ? total : 0.0;
+    }
+
+    // 총 결제 금액
+    public double getTotalPayments() {
+        Double total = paymentsRepository.findTotalPayments();
+        return total != null ? total : 0.0;
+    }
+
+    // 총 환불 금액
+    public double getTotalRefunds() {
+        Double total = paymentsRepository.findTotalRefunds();
+        return total != null ? total : 0.0;
+    }
+
+    // 총 적립금 사용 금액
+    public double getTotalCreditsUsed() {
+        Double total = paymentsRepository.findTotalCreditsUsed();
+        return total != null ? total : 0.0;
     }
     /*********************************관리자 대시보드 모달 창 끝*********************************/
 }
