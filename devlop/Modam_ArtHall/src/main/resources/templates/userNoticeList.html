@@ -17,22 +17,22 @@
         }
         .content {
             flex: 1; /* 컨텐츠 영역이 남은 공간을 차지 */
-            padding-top: 300px;
+            padding-top: 250px;
         }
         .custom-footer {
             background-color: #f8f9fa;
             text-align: center;
-            padding: 15px 0;
+            padding: 1px 0;
             margin-top: auto; /* 항상 하단에 배치 */
-        }    
-    </style>   
+        }
+    </style>
 </head>
 <body>
 
     <!-- 헤더 -->
     <th:block th:replace="~{fragments/header :: headerFragment}"></th:block>
 
-    <div class="container my-5" style="padding-top: 100px;">
+    <div class="container my-5 content">
         <h2 class="mb-4">공지사항</h2>
         <div class="table-responsive">
             <!-- 공지사항 Table -->
