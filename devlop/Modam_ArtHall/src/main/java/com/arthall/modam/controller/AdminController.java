@@ -179,26 +179,26 @@ public class AdminController {
                 List<ImagesEntity> imagesToDelete = imagesService.findAllById(deleteImageIds);
                 for (ImagesEntity image : imagesToDelete) {
                     try {
-                        // 파일 삭제
                         fileService.deleteFile(image.getImageUrl());
-                        imagesService.deleteImg(image); // 데이터베이스에서 삭제
+                        imagesService.deleteImg(image);
                     } catch (IOException e) {
                         System.err.println("이미지 삭제 중 오류 발생: " + image.getImageUrl());
-                        throw new RuntimeException("이미지 삭제 중 오류가 발생했습니다.");
+                        throw new RuntimeException("이미지 삭제 중 오류가 발생했습니다.", e);
                     }
                 }
             }
+            
 
             // 새 이미지 업로드 처리
             if (file != null && !file.isEmpty()) {
-                String filePath = fileService.saveFile(file); // 파일 저장
+                String filePath = fileService.saveFile(file);
                 ImagesEntity newImage = new ImagesEntity();
                 newImage.setImageUrl(filePath);
-                newImage.setReferenceId(id);
+                newImage.setReferenceId(notice.getId());
                 newImage.setReferenceType(ImagesEntity.ReferenceType.NOTICE);
                 imagesService.saveImg(newImage);
             }
-
+            
             // 공지사항 저장
             bbsService.saveNotice(notice);
 
