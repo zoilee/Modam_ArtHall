@@ -41,23 +41,19 @@ public class FileService {
         return "/uploads/" + uniqueFileName;
     }
 
-
-
     public void deleteFile(String filePath) throws IOException {
         // 절대 경로 생성
-        Path absoluteDir = Paths.get(uploadDir).normalize();
-        System.out.println("삭제할 파일 경로: " + absoluteDir);
+        Path absolutePath = Paths.get(uploadDir).resolve(filePath).normalize();
+        System.out.println("삭제할 파일 경로: " + absolutePath);
     
         // 파일 존재 여부 확인 후 삭제
-        if (Files.exists(absoluteDir)) {
-            Files.delete(absoluteDir);
-            System.out.println("파일 삭제 성공: " + absoluteDir);
+        if (Files.exists(absolutePath)) {
+            Files.delete(absolutePath);
+            System.out.println("파일 삭제 성공: " + absolutePath);
         } else {
-            System.err.println("파일이 존재하지 않음: " + absoluteDir);
+            System.err.println("파일이 존재하지 않음: " + absolutePath);
         }
     }
     
-
     
-
 }

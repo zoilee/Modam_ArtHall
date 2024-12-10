@@ -1,6 +1,8 @@
 package com.arthall.modam.service;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -52,40 +54,37 @@ public class PortOneService {
     }
 
     /*********************************관리자 대시보드 모달 창 시작*********************************/
-    // 오늘의 결제 금액
-    public double getTodayPayments() {
-        Double total = paymentsRepository.findTodayPayments();
-        return total != null ? total : 0.0;
+
+    // 오늘의 매출 데이터
+    public Map<String, Double> getTodaySales() {
+        Double todayPayments = paymentsRepository.findTodayPayments();
+        Double todayRefunds = paymentsRepository.findTodayRefunds();
+        Double todayCreditsUsed = paymentsRepository.findTodayCreditsUsed();
+        Double todayNetSales = todayPayments - todayRefunds - todayCreditsUsed;
+
+        Map<String, Double> todaySales = new HashMap<>();
+        todaySales.put("todayPayments", todayPayments);
+        todaySales.put("todayRefunds", todayRefunds);
+        todaySales.put("todayCreditsUsed", todayCreditsUsed);
+        todaySales.put("todayNetSales", todayNetSales);
+
+        return todaySales;
     }
 
-    // 오늘의 환불 금액
-    public double getTodayRefunds() {
-        Double total = paymentsRepository.findTodayRefunds();
-        return total != null ? total : 0.0;
-    }
+    // 특정 달의 매출 데이터
+    public Map<String, Double> getSalesForMonth(int year, int month) {
+        Double monthlyPayments = paymentsRepository.findMonthlyPayments(year, month);
+        Double monthlyRefunds = paymentsRepository.findMonthlyRefunds(year, month);
+        Double monthlyCreditsUsed = paymentsRepository.findMonthlyCreditsUsed(year, month);
+        Double monthlyNetSales = monthlyPayments - monthlyRefunds - monthlyCreditsUsed;
 
-    // 오늘의 적립금 사용 금액
-    public double getTodayCreditsUsed() {
-        Double total = paymentsRepository.findTodayCreditsUsed();
-        return total != null ? total : 0.0;
-    }
+        Map<String, Double> monthlySales = new HashMap<>();
+        monthlySales.put("monthlyPayments", monthlyPayments);
+        monthlySales.put("monthlyRefunds", monthlyRefunds);
+        monthlySales.put("monthlyCreditsUsed", monthlyCreditsUsed);
+        monthlySales.put("monthlyNetSales", monthlyNetSales);
 
-    // 총 결제 금액
-    public double getTotalPayments() {
-        Double total = paymentsRepository.findTotalPayments();
-        return total != null ? total : 0.0;
-    }
-
-    // 총 환불 금액
-    public double getTotalRefunds() {
-        Double total = paymentsRepository.findTotalRefunds();
-        return total != null ? total : 0.0;
-    }
-
-    // 총 적립금 사용 금액
-    public double getTotalCreditsUsed() {
-        Double total = paymentsRepository.findTotalCreditsUsed();
-        return total != null ? total : 0.0;
-    }
+        return monthlySales;
     /*********************************관리자 대시보드 모달 창 끝*********************************/
+    }
 }
