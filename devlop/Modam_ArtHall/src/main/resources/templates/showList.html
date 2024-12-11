@@ -7,141 +7,8 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" th:href="@{/css/layout/style.css}">
-    <link rel="stylesheet" href="../static/css/showList/showList.css">
-    <style>
-
-        .showList-poster-container {
-            display: flex;
-            flex-direction: column;
-            gap: 50px;
-            margin-bottom: 100px;
-        }
-        .showList-poster-group {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-            width: 700px;
-        }
-        .showList-poster-group.left { align-self: flex-start; margin-right: 670px; }
-        .showList-poster-group.right { align-self: flex-end; margin-left: 670px; }
-        .showList-poster {
-            background-color: #d6d6d6;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            color: #555;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-            width: 454px;
-            height: 605px;
-        }
-        .showList-poster img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: cover;
-        }
-
-
-        /* 슬라이드 전체 래퍼 */
-        .slider-wrapper {
-            position: relative; /* 슬라이더를 부모 레이아웃 안에서 배치 */
-            z-index: 0; /* 푸터와의 z-index 충돌 방지 */
-            margin-bottom: 50px; /* 푸터와 간격 유지 */
-        }
-
-        /* 슬라이드 컨테이너 */
-        .slider-container {
-            overflow: hidden; /* 슬라이드 외부 콘텐츠 숨기기 */
-            flex: 1;
-        }
-
-        /* 슬라이드 */
-        .slides {
-            display: flex;
-            transition: transform 0.3s ease-in-out;
-            width: 100%;
-        }
-
-        .slide {
-            flex: 0 0 25%; /* 한 슬라이드 너비 */
-            box-sizing: border-box;
-            padding: 15px;
-        }
-
-        /* 공연 카드 */
-        .performance-item {
-            text-align: center;
-            padding: 15px;
-        }
-
-        .performance-item img {
-            width: 100%;
-            height: 300px;
-            object-fit: cover;
-            border-radius: 8px;
-            margin-bottom: 10px;
-        }
-
-        /* 버튼 스타일 */
-        .slider-btn {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background-color: rgba(0, 0, 0, 0.5);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-            z-index: 1000;
-            transition: background-color 0.3s ease;
-        }
-
-        .slider-btn.left-btn {
-            left: -60px; /* 컨테이너 왼쪽 밖으로 이동 */
-        }
-
-        .slider-btn.right-btn {
-            right: -60px; /* 컨테이너 오른쪽 밖으로 이동 */
-        }
-
-        .slider-btn:hover {
-            background-color: rgba(0, 0, 0, 0.8);
-        }
-
-        /* Top 버튼 스타일 */
-        #topButton {
-            position: fixed;
-            bottom: 300px;
-            right: 20px; /* 화면 오른쪽 하단 */
-            background-color: #007bff; /* 버튼 배경색 */
-            color: white;
-            border: none;
-            border-radius: 50%; /* 동그랗게 */
-            width: 50px;
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            z-index: 999;
-            opacity: 0.8;
-            transition: all 0.3s ease;
-        }
-
-        #topButton:hover {
-            background-color: #0056b3; /* 호버 시 더 어두운 파란색 */
-            opacity: 1;
-            transform: scale(1.1); /* 약간 확대 */
-        }
-
-        #topButton:focus {
-            outline: none;
-        }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/showList/showList.css}">
 </head>
-
 <body>
     <th:block th:replace="~{fragments/header :: headerFragment}"></th:block>
 
@@ -149,24 +16,37 @@
         <div class="showList-poster-container">
             <div th:each="performance, stat : ${top4Performances}">
                 <div class="showList-poster-group" th:classappend="${stat.index % 2 == 0} ? 'left' : 'right'">
-                    <a th:href="@{'/showDetail/' + ${performance.id}}" class="showList-poster">
-                        <img th:if="${performance.imagesEntities != null and performance.imagesEntities.size() > 0}"
-                             th:src="${performance.imagesEntities[0].imageUrl}"
-                             alt="공연 이미지">
-                        <img th:if="${performance.imagesEntities == null or performance.imagesEntities.size() == 0}"
-                             src="/imgs/default-poster.jpg"
-                             alt="기본 이미지">
-                    </a>
-                    <div class="showList-poster-title">
-                        <h4 th:text="${performance.title}">공연 제목</h4>
-                        <p th:text="${performance.formattedStartDate} + ' ~ ' + ${performance.formattedEndDate}"></p>
+                    <!-- 포스터 -->
+                    <div>
+                        <a th:href="@{'/showDetail/' + ${performance.id}}" class="showList-poster">
+                            <img th:if="${performance.imagesEntities != null and performance.imagesEntities.size() > 0}"
+                                 th:src="${performance.imagesEntities[0].imageUrl}"
+                                 alt="공연 이미지">
+                            <img th:if="${performance.imagesEntities == null or performance.imagesEntities.size() == 0}"
+                                 src="/imgs/default-poster.jpg"
+                                 alt="기본 이미지">
+                        </a>
+                        <!-- 포스터 제목과 날짜 -->
+                        <div class="showList-poster-title">
+                            <h4 th:text="${performance.title}">공연 제목</h4>
+                            <p th:text="${performance.formattedStartDate} + ' ~ ' + ${performance.formattedEndDate}">공연 기간</p>
+                        </div>
+                    </div>
+        
+                    <!-- 음악 노트 이미지 -->
+                    <div class="SLimg-container">
+                        <div class="SLimg">
+                            <img th:src="@{'/imgs/showList/showList' + ${stat.index + 1} + '.jpg'}" 
+                             alt="musicalNotes">
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-
+        
         <div class="container mt-5">
             <!-- 슬라이드 -->
+            <h3>개봉 예정 공연</h3>
             <div class="slider-wrapper">
                 <!-- 왼쪽 버튼 -->
                 <button class="slider-btn left-btn" onclick="moveSlide(-1)">&#10094;</button>
@@ -176,13 +56,14 @@
                     <div class="slides">
                         <div th:each="performance : ${remainingPerformances}" class="slide">
                             <div class="performance-item">
-                                <img th:src="${performance.imagesEntities != null && performance.imagesEntities.size() > 0 
+                                <a th:href="@{'/showDetail/' + ${performance.id}}">
+                                    <img th:src="${performance.imagesEntities != null && performance.imagesEntities.size() > 0 
                                               ? performance.imagesEntities[0].imageUrl 
                                               : '/imgs/default-poster.jpg'}" 
                                      alt="공연 이미지">
-                                <h5 th:text="${performance.title}">공연 제목</h5>
-                                <p th:text="${performance.formattedStartDate} + ' ~ ' + ${performance.formattedEndDate}">공연 기간</p>
-                                <a th:href="@{'/showDetail/' + ${performance.id}}" class="btn btn-primary btn-sm">자세히 보기</a>
+                                    <h5 th:text="${performance.title}">공연 제목</h5>
+                                    <p th:text="${performance.formattedStartDate} + ' ~ ' + ${performance.formattedEndDate}">공연 기간</p>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -238,7 +119,10 @@
         function moveSlide(direction) {
             const slidesContainer = document.querySelector(".slides");
             const slides = document.querySelectorAll(".slide");
-            const slideWidth = slides[0].offsetWidth;
+            const slideWidth = slides[0]?.offsetWidth || 0; // 슬라이드가 없을 경우 대비
+
+            console.log("Current index before:", currentIndex);
+            console.log("Slide width:", slideWidth);
 
             // 이동할 인덱스 계산
             currentIndex += direction;
@@ -246,9 +130,11 @@
             // 경계를 넘어가지 않도록 설정
             if (currentIndex < 0) {
                 currentIndex = 0;
-            } else if (currentIndex > slides.length - 4) { // 4개씩 보이므로 경계 체크
+            } else if (currentIndex > slides.length - 4) {
                 currentIndex = slides.length - 4;
             }
+
+            console.log("Current index after:", currentIndex);
 
             // 슬라이드 이동
             slidesContainer.style.transform = `translateX(-${currentIndex * slideWidth}px)`;
