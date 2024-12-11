@@ -78,9 +78,10 @@
 <!-- 푸터 가져오기 -->
 <th:block th:replace="~{fragments/footer :: footerFragment}"></th:block>
 <script>
-   const errorMessage = /*[[${session.errorMessage != null}]]*/ '[[${session.errorMessage}]]';
-    if (errorMessage) {
-        alert(errorMessage);
+   // 서버에서 전달된 에러 메시지를 확인하고 alert 창에 표시
+   const loginError = /*[[${loginError != null}]]*/ '[[${loginError}]]';
+    if (loginError) {
+        alert(loginError); // 에러 메시지를 alert로 표시
     }
 </script>
 <!-- Bootstrap JS, Popper.js, and jQuery -->
