@@ -116,14 +116,14 @@
     
 
         <!-- 환불규정 / 주의사항 -->
-        <div class="bg-light py-3 my-4" style="border-radius: 10px;">
+        <div class="bg-light py-3 my-4 paymentAlert" style="border-radius: 10px;">
             <h5>환불규정 / 주의사항</h5>
             <p>환불 금액은 예매일까지 남은 기간에 따라 차등 적용되며, 환불금액 패널티 기간(최대 6일전)에 환불하실 경우 사용된 적립금은 반환이 불가능합니다. 
-                예매 취소 시, 환불 기간에 관계없이 해당 예매 시 적립된 적립금은 전액 적립이 취소됩니다.</p>
-            <p>전액 환불 : 예매한 티켓의 날짜로부터 7일 전 까지</p>
-            <p>50% 환불 : 예매한 티켓의 날짜로부터 6일 전 ~ 1일 전 까지</p>
-            <p>환불불가 : 예매한 티켓의 날짜 당일</p>
-            <p>예매 취소 후 금액 환불은 카드사의 상황에 따라 최대 일주일까지 걸릴 수 있습니다.</p>
+                예매 취소 시, 환불 기간에 관계없이 해당 예매 시 적립된 적립금은 전액 적립이 취소됩니다. 예매 취소 후 금액 환불은 카드사의 상황에 따라 최대 일주일까지 걸릴 수 있습니다.</p>
+            <br>
+            <p>- 전액 환불 : 예매한 티켓의 날짜로부터 7일 전 까지</p>
+            <p>- 50% 환불 : 예매한 티켓의 날짜로부터 6일 전 ~ 1일 전 까지</p>
+            <p>- 환불불가 : 예매한 티켓의 날짜 당일</p>
         </div>
 
         <!-- 관람평 (댓글) -->
@@ -153,7 +153,7 @@
                     
                     <!-- 수정/삭제 버튼 (기본 상태) -->
                     <div class="action-buttons" th:if="${comment.user.id == userId || isAdmin}">
-                        <button class="btn btn-sm btn-outline-primary" th:onclick="'enterEditMode(' + ${comment.id} + ')'" th:attr="id='edit-button-' + ${comment.id}">수정</button>
+                        <button class="btn btn-sm btn-outline-secondary" th:onclick="'enterEditMode(' + ${comment.id} + ')'" th:attr="id='edit-button-' + ${comment.id}">수정</button>
                         <button class="btn btn-sm btn-outline-danger" th:onclick="'deleteComment(' + ${comment.id} + ')'" th:attr="id='delete-button-' + ${comment.id}">삭제</button>
                     </div>
                 </div>

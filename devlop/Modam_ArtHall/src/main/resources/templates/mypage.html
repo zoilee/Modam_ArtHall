@@ -10,6 +10,7 @@
     integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
     crossorigin="anonymous"
     ></script>
+    <link rel="stylesheet" th:href="@{/css/mypage/mypage.css}">
 </head>
 <body>
     <!-- 헤더 가져오기 -->
@@ -17,32 +18,42 @@
                th:if="${#strings.isNotEmpty(user.name)}"></th:block>
 
     <!-- Welcome Section -->
-    <div class="container mt-4" style="padding: 100px 0;">
+    <div class="container mt-4" style="padding-top: 100px;">
         <div class="row align-items-center">
             <div class="col-8">
                 <h4>어서오세요 <strong><span th:text="${user.name}"></span></strong> 고객님!</h4>
             </div>
-            <div class="col-4 text-end">
-                <a th:href="@{/registeruserEdit}" class="btn btn-secondary">개인정보수정</a>
+            <div class="col-4 text-end" style="margin-bottom: 7px;">
+                <a th:href="@{/registeruserEdit}" class="btn btn-secondary userBtn">개인정보수정</a>
             </div>
         </div>
-
+    </div>
         <!-- Points Section -->
-        <div class="row mt-3 bg-light p-4">
-            <div class="col-6 text-center">
-                <h5>
-                    <strong><span th:text="${user.name}"></span></strong> 님의 적립금 현황
-                </h5>
+        <div class="points-section">
+            <div class="points-container">
+                <!-- 왼쪽 텍스트 -->
+                <div class="points-info">
+                    <h5>guest1님의 적립금 현황</h5>
+                </div>
+        
+                <!-- 중간 구분선 -->
+                <div class="divider"></div>
+        
+                <!-- 가운데 포인트 -->
+                <div class="points-balance text-center">
+                    <h1 class="display-4 fw-bold">
+                        <span th:text="${#numbers.formatDecimal(points, 0, 0)}">0</span> 포인트
+                    </h1>
+                </div>
+        
+                <!-- 오른쪽 버튼 -->
+                <div class="points-button">
+                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#rewardsLogModal">
+                        포인트 적립내역 확인
+                    </button>
+                </div>
             </div>
-            <div class="col-6 text-center">
-                <h5>
-                    <strong>총 적립금:</strong> <span th:text="${#numbers.formatDecimal(points, 0, 0)}">0</span> Point
-                </h5>
-
-                <!-- 적립금 내역 조회 버튼 -->
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#rewardsLogModal">적립금 내역 조회</button>
-        </div>
-
+        
         <div class="modal fade" id="rewardsLogModal" tabindex="-1" aria-labelledby="rewardsLogModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -69,116 +80,106 @@
         </div>
     </div>
        
-
+    <div class="container mt-4" style="padding-bottom: 100px;">
         <!-- 현재 예매내역 -->
-        <h5 class="mt-4">현재 예매내역</h5>
+        <h5 class="mt-4"><strong>현재 예매내역</strong></h5>
         <div th:if="${#lists.isEmpty(upcomingReservations)}">
-            <div class="row mt-2 bg-light p-4 align-items-center">
+            <div class="reservation-card">
                 <p>현재 예약이 없습니다.</p>
             </div>
         </div>
         <div th:if="${!#lists.isEmpty(upcomingReservations)}">
-            <div th:each="reservation : ${upcomingReservations}" class="row mt-2 bg-light p-4 align-items-center">
+            <div th:each="reservation : ${upcomingReservations}" class="reservation-card card-border">
                 <!-- 공연 이미지 -->
-                <div class="col-3">
+                <div class="Areservation-image">
                     <img th:src="${(reservation.showEntity != null and reservation.showEntity.performancesEntity != null and 
                         reservation.showEntity.performancesEntity.imagesEntities != null and 
                         !#lists.isEmpty(reservation.showEntity.performancesEntity.imagesEntities)) 
                         ? reservation.showEntity.performancesEntity.imagesEntities[0].imageUrl 
                         : '/imgs/default-poster.jpg'}"
-                    alt="공연 이미지"
-                    style="max-width: 100%; max-height: 150px; object-fit: cover;">
+                    alt="공연 이미지">
                 </div>
-            
+    
                 <!-- 공연 정보 -->
-                <div class="col-7">
-                    <div class="row mb-2">
-                        <div class="col-4"><strong>공연제목</strong>:</div>
-                        <div class="col-6 text-center" th:text="${reservation.showEntity?.performancesEntity?.title ?: '정보 없음'}">공연 제목</div>
+                <div class="reservation-info">
+                    <div class="info-title">
+                        <h5 class="text-muted" th:text="${reservation.showEntity?.performancesEntity?.title ?: '정보 없음'}">공연 제목</h5>
                     </div>
-                    <div class="row mb-2">
-                        <div class="col-4"><strong>공연날짜</strong>:</div>
-                        <div class="col-6 text-center" th:text="${#dates.format(reservation.showEntity?.showDate ?: today, 'yyyy-MM-dd')}">날짜</div>
+                    <div class="info-date">
+                        <div><strong>공연날짜:</strong></div>
+                        <div><span th:text="${#dates.format(reservation.showEntity?.showDate ?: today, 'yyyy-MM-dd')}">날짜</span></div>
                     </div>
-                    <div class="row mb-2">
-                        <div class="col-4"><strong>공연시간</strong>:</div>
-                        <div class="col-6 text-center" th:text="${reservation.showEntity?.showTime == 1 ? '13:00' : '17:00'}">공연 시간</div>
+                    <div class="info-time">
+                        <div><strong>공연시간:</strong></div>
+                        <div><span th:text="${reservation.showEntity?.showTime == 1 ? '13:00' : '17:00'}">공연 시간</span></div>
                     </div>
-                    <div class="row mb-2">
-                        <div class="col-4"><strong>좌석</strong>:</div>
-                        <div class="col-6 text-center">
+                    <div class="info-seat">
+                        <div><strong>좌석:</strong></div>
+                        <div>
                             <span th:text="${reservation.seatId1 ?: '좌석 정보 없음'}">좌석1</span>
                             <span th:if="${reservation.seatId2 != null}" th:text="' / ' + ${reservation.seatId2}"> / 좌석2</span>
                         </div>
                     </div>
-                    <div class="row mb-2">
-                        <div class="col-4"><strong>총 가격</strong>:</div>
-                        <div class="col-6 text-center" th:text="${#numbers.formatDecimal(reservation.totalPrice ?: 0, 0, 0)} + '원'">0 원</div>
+                    <div class="info-price">
+                        <div><strong>총 가격:</strong></div>
+                        <div><span th:text="${#numbers.formatDecimal(reservation.totalPrice ?: 0, 0, 0)} + '원'">0 원</span></div>
                     </div>
-                    <div class="row mb-2">
-                        <div class="col-4"><strong>예매번호</strong>:</div>
-                        <div class="col-6 text-center" th:text="${reservation.ticket}">예약번호</div>
+                    <div class="info-ticket">
+                        <div><strong>예매번호:</strong></div>
+                        <div><span th:text="${reservation.ticket}">예매번호</span></div>
                     </div>
                 </div>
-            
+    
                 <!-- 환불/취소 버튼 -->
-                <div class="col-2 text-end">
-                    <div class="btn btn-danger refund-btn" id="refund" th:attr="data-ticket=${reservation.ticket}, 
-                    data-totalprice=${reservation.totalPrice}, data-id=${reservation.id}">환불/취소</div>
+                <div class="reservation-actions">
+                    <button class="btn btn-danger refund-btn" id="refund" th:attr="data-ticket=${reservation.ticket}, 
+                    data-totalprice=${reservation.totalPrice}, data-id=${reservation.id}">환불/취소</button>
                 </div>
             </div>
         </div>
 
-        <!-- 이전 예매내역 -->
-        <h5 class="mt-4">이전 예매내역</h5>
-        <div th:if="${#lists.isEmpty(pastReservations)}">
-            <div class="row mt-2 bg-light p-4 align-items-center">
-                <p>과거 예약이 없습니다.</p>
-            </div>
+    <!-- 이전 예매내역 -->
+    <h5 class="mt-4"><strong>이전 예매내역</strong></h5>
+    <div th:if="${#lists.isEmpty(pastReservations)}" class="card-border">
+        <div class="reservation-card">
+            <p>과거 예약이 없습니다.</p>
         </div>
-        <div th:if="${!#lists.isEmpty(pastReservations)}">
-            <div th:each="reservation : ${pastReservations}" class="row mt-2 bg-light p-4 align-items-center">
-                <!-- 공연 이미지 -->
-                <div class="col-3">
-                    <img th:src="${(reservation.showEntity != null and reservation.showEntity.performancesEntity != null and 
-                        reservation.showEntity.performancesEntity.imagesEntities != null and 
-                        !#lists.isEmpty(reservation.showEntity.performancesEntity.imagesEntities)) 
-                        ? reservation.showEntity.performancesEntity.imagesEntities[0].imageUrl 
-                        : '/imgs/default-poster.jpg'}"
-                    alt="공연 이미지"
-                    style="max-width: 100%; max-height: 150px; object-fit: cover;">
+    </div>
+    <div th:if="${!#lists.isEmpty(pastReservations)}">
+        <div th:each="reservation : ${pastReservations}" class="reservation-card card-border">
+            <!-- 공연 이미지 -->
+            <div class="reservation-image">
+                <img th:src="${(reservation.showEntity != null and reservation.showEntity.performancesEntity != null and 
+                    reservation.showEntity.performancesEntity.imagesEntities != null and 
+                    !#lists.isEmpty(reservation.showEntity.performancesEntity.imagesEntities)) 
+                    ? reservation.showEntity.performancesEntity.imagesEntities[0].imageUrl 
+                    : '/imgs/default-poster.jpg'}"
+                alt="공연 이미지">
+            </div>
+
+            <!-- 공연 정보 -->
+            <div class="reservation-info">
+                <h5 class="text-muted" th:text="${reservation.showEntity?.performancesEntity?.title ?: '정보 없음'}">공연 제목</h5>
+                <div><strong>공연날짜:</strong> <span th:text="${#dates.format(reservation.showEntity?.showDate ?: today, 'yyyy-MM-dd')}">날짜</span></div>
+                <div><strong>공연시간:</strong> <span th:text="${reservation.showEntity?.showTime == 1 ? '13:00' : '17:00'}">공연 시간</span></div>
+                <div><strong>좌석:</strong> <span th:text="${reservation.seatId1 ?: '좌석 정보 없음'}">좌석1</span>
+                    <span th:if="${reservation.seatId2 != null}" th:text="' / ' + ${reservation.seatId2}"> / 좌석2</span>
                 </div>
-                <!-- 공연 정보 -->
-                <div class="col-7">
-                    <div class="row mb-2">
-                        <div class="col-4"><strong>공연제목</strong>:</div>
-                        <div class="col-6 text-center" th:text="${reservation.showEntity?.performancesEntity?.title ?: '정보 없음'}">공연 제목</div>
-                    </div>
-                    <div class="row mb-2">
-                        <div class="col-4"><strong>공연날짜</strong>:</div>
-                        <div class="col-6 text-center" th:text="${reservation.showEntity?.showDate != null ? #dates.format(reservation.showEntity.showDate, 'yyyy-MM-dd') : '미정'}">2024-01-01</div>
-                    </div>
-                    <div class="row mb-2">
-                        <div class="col-4"><strong>좌석</strong>:</div>
-                        <div class="col-6 text-center">
-                            <span th:text="${reservation.seatId1 ?: '좌석 정보 없음'}">좌석1</span>
-                            <span th:if="${reservation.seatId2 != null}" th:text="' / ' + ${reservation.seatId2}"> / 좌석2</span>
-                        </div>
-                    </div>
-                </div>
-                <!-- 리뷰 작성 버튼 -->
-                <div class="col-2 text-end">
-                    <a th:if="${reservation.showEntity != null and reservation.showEntity.performancesEntity != null}" 
-                    th:href="@{/showDetail/{performanceId}(performanceId=${reservation.showEntity.performancesEntity.id})}">
-                        리뷰 작성
-                    </a>
-                    <span th:if="${reservation.showEntity == null or reservation.showEntity.performancesEntity == null}">
-                        공연 정보 없음
-                    </span>
-                </div>
+            </div>
+
+            <!-- 리뷰 작성 버튼 -->
+            <div class="reservation-actions">
+                <a class="btn btn-secondary rebtn" th:if="${reservation.showEntity != null and reservation.showEntity.performancesEntity != null}" 
+                   th:href="@{/showDetail/{performanceId}(performanceId=${reservation.showEntity.performancesEntity.id})}">
+                    리뷰 작성
+                </a>
+                <span th:if="${reservation.showEntity == null or reservation.showEntity.performancesEntity == null}">
+                    공연 정보 없음
+                </span>
             </div>
         </div>
     </div>
+</div>
 
     <!-- 푸터 가져오기 -->
     <th:block th:replace="~{fragments/footer :: footerFragment}"></th:block>

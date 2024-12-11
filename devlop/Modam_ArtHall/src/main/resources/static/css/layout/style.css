@@ -11,12 +11,61 @@
     z-index: 1030; /* 부트스트랩의 고정 네비게이션 바와 같은 레벨 */
 }
 .logo-img {
+/* .logo-img {
     height: 100%;
     max-width: 100%; /* 로고가 부모 요소의 너비를 넘지 않도록 설정 */
+    max-width: 100%; 
     height: auto; 
     object-fit: contain;
+} */
+
+.footer-logo img {
+    max-width: 100%; /* 기본적으로 컨테이너 크기에 맞춤 */
+    height: auto; /* 비율을 유지하며 크기 조정 */
+    margin-bottom: 15px; /* 로고 아래 간격 추가 */
 }
 
+@media (max-width: 768px) {
+    .footer-left,
+    .footer-right {
+        text-align: center; /* 작은 화면에서는 텍스트 가운데 정렬 */
+    }
+
+    .footer-left .footer-logo img {
+        max-width: 150px; /* 작은 화면에서도 적절한 크기 유지 */
+        height: auto; /* 비율 유지 */
+        margin-bottom: 15px; /* 로고와 텍스트 간격 추가 */
+    }
+    .footer-logo{
+        margin: 0 20px;
+    }
+    .footer-left {
+        padding: 10px 10px; /* 양쪽 여백 조정 */
+        margin-bottom: 15px; /* 아래쪽 간격 추가 */
+    }
+
+    .footer-right {
+        padding: 10px 10px; /* 양쪽 여백 조정 */
+    }
+}
+
+@media (max-width: 576px) {
+    .footer-left .footer-logo img {
+        max-width: 120px; /* 더 작은 화면에서는 이미지 최소 크기 설정 */
+        margin-bottom: 10px; /* 로고와 텍스트 간격 추가 */
+    }
+    .footer-logo{
+        margin: 0 20px !important;
+    }
+
+    .footer-info p {
+        font-size: 12px; /* 텍스트 크기 축소 */
+    }
+
+    .footer-right p {
+        font-size: 12px; /* 텍스트 크기 축소 */
+    }
+}
 
 .content{
     margin-top: 100px;
