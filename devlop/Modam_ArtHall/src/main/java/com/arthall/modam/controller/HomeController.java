@@ -128,41 +128,41 @@ public class HomeController {
         if (authentication == null || !authentication.isAuthenticated()) {
             return "redirect:/login";
         }
-    
+
         Object principal = authentication.getPrincipal();
         String loginId = null;
-    
+
         if (principal instanceof UserDetails) {
             loginId = ((UserDetails) principal).getUsername();
         } else if (principal instanceof OAuth2User) {
             loginId = (String) ((OAuth2User) principal).getAttributes().get("loginId");
         }
-    
+
         if (loginId == null) {
             throw new RuntimeException("사용자를 찾을 수 없습니다.");
         }
-    
+
         UserEntity user = userService.getUserByLoginId(loginId);
         if (user == null) {
             throw new RuntimeException("사용자를 찾을 수 없습니다.");
         }
-    
+
         int userId = user.getId();
-    
+
         // 예약 데이터 조회
         List<ReservationsEntity> upcomingReservations = reservationService.getUpcomingReservations(userId);
         List<ReservationsEntity> pastReservations = reservationService.getPastReservations(userId);
-    
+
         model.addAttribute("user", user);
-        model.addAttribute("upcomingReservations", 
+        model.addAttribute("upcomingReservations",
                 upcomingReservations != null ? upcomingReservations : new ArrayList<>());
-        model.addAttribute("pastReservations", 
+        model.addAttribute("pastReservations",
                 pastReservations != null ? pastReservations : new ArrayList<>());
-    
+
         // 적립금 정보
         RewardsEntity rewards = rewardsService.getRewardsByUserId(userId);
         model.addAttribute("points", rewards.getTotalPoint());
-    
+
         return "mypage";
     }
 
@@ -193,35 +193,35 @@ public class HomeController {
     // /showList 매핑
     @GetMapping("/showList")
     public String showList(@RequestParam(value = "page", defaultValue = "0") int page,
-                           @RequestParam(value = "size", defaultValue = "5") int size,
-                           Model model) {
-    
+            @RequestParam(value = "size", defaultValue = "5") int size,
+            Model model) {
+
         // Validate and adjust page and size
         page = Math.max(page, 0);
         size = Math.max(size, 1);
         Pageable pageable = PageRequest.of(page, size);
-    
+
         // 현재 날짜를 기준으로 공연 데이터 분리
         List<PerformancesEntity> upcomingPerformances = performanceService.getUpcomingPerformances();
         Page<Map<String, Object>> pastPerformances = performanceService.getPastPerformances(pageable);
-    
+
         // 최근 4개 공연 추출
         List<PerformancesEntity> top4Performances = upcomingPerformances.stream()
                 .limit(4)
                 .toList();
-    
+
         // 나머지 공연 추출
         List<PerformancesEntity> remainingPerformances = upcomingPerformances.stream()
                 .skip(4)
                 .toList();
-    
+
         // Partition remaining performances into chunks of 4
         List<List<PerformancesEntity>> partitionedPerformances = IntStream
                 .range(0, (remainingPerformances.size() + 3) / 4)
                 .mapToObj(
                         i -> remainingPerformances.subList(i * 4, Math.min((i + 1) * 4, remainingPerformances.size())))
                 .toList();
-    
+
         // 모델에 데이터 추가
         model.addAttribute("top4Performances", top4Performances);
         model.addAttribute("remainingPerformances", remainingPerformances);
@@ -231,7 +231,7 @@ public class HomeController {
         model.addAttribute("totalPages", pastPerformances.getTotalPages());
         model.addAttribute("isFirstPage", pastPerformances.isFirst());
         model.addAttribute("isLastPage", pastPerformances.isLast());
-    
+
         return "showList";
     }
 
@@ -411,19 +411,19 @@ public class HomeController {
         return "seatSelect";
     }
 
-    //페이지 넘어가기 전 좌석 가능 여부 체크
+    // 페이지 넘어가기 전 좌석 가능 여부 체크
     @GetMapping("/checkSeatsAvailability")
     @ResponseBody
     public ResponseEntity<Boolean> checkSeatsAvailability(
-        @RequestParam("showId") int showId,
-        @RequestParam("seats") List<String> seats) {
-        
+            @RequestParam("showId") int showId,
+            @RequestParam("seats") List<String> seats) {
+
         List<String> unavailableSeats = reservationService.getUnavailableSeats(showId);
-        
+
         // 선택한 좌석들 중 하나라도 unavailableSeats에 포함되어 있는지 확인
         boolean isAvailable = seats.stream()
-            .noneMatch(seat -> unavailableSeats.contains(seat));
-        
+                .noneMatch(seat -> unavailableSeats.contains(seat));
+
         return ResponseEntity.ok(isAvailable);
     }
 
@@ -469,6 +469,9 @@ public class HomeController {
 
         System.out.println("내 포인트는 : " + points);
 
+        PerformancesEntity performance = performanceService.getPerformanceById(performanceId)
+                .orElseThrow(() -> new IllegalArgumentException("공연을 찾을 수 없습니다."));
+
         // 모델에 값 저장
         model.addAttribute("points", points.intValue());
         model.addAttribute("userId", userId);
@@ -483,6 +486,7 @@ public class HomeController {
         model.addAttribute("userName", userName);
         model.addAttribute("userNum", userNum);
         model.addAttribute("userEmail", userEmail);
+        model.addAttribute("performance", performance);
         // 예약 확인 페이지로 이동
         return "reservConfirm";
     }

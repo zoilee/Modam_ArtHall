@@ -22,7 +22,7 @@
         <!-- Summary Cards -->
         <div class="row mb-4">
             <div class="col-md-3">
-                <div class="card mb-3" data-bs-toggle="modal" data-bs-target="#reservationModal">
+                <div class="card mb-3" data-bs-toggle="modal" data-bs-target="#reservationsModal">
                     <div class="card-body" style="cursor: pointer;">
                         <h5 class="card-title">오늘의 예약<i class="ri-survey-line"></i></h5>
                     </div>
@@ -73,7 +73,6 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- 예약 데이터 출력 -->
                                 <tr th:each="reservation : ${todayReservations}">
                                     <td th:text="${reservation.id}"></td>
                                     <td th:text="${reservation.showEntity.performancesEntity.title}"></td>
@@ -82,7 +81,6 @@
                                     <td th:text="${reservation.status}"></td>
                                     <td th:text="${#dates.format(reservation.reservationDate, 'yyyy-MM-dd HH:mm')}"></td>
                                 </tr>
-                                <!-- 예약 데이터가 없는 경우 -->
                                 <tr th:if="${#lists.isEmpty(todayReservations)}">
                                     <td colspan="6" class="text-center text-danger">오늘의 예약 데이터가 없습니다.</td>
                                 </tr>
@@ -164,16 +162,16 @@
                     </div>
                     <div class="modal-body">
                         <!-- 오늘의 매출 -->
-                        <p>오늘의 결제 금액: ₩<strong th:text="${#numbers.formatInteger(todayPayments, 0)}">0</strong></p>
-                        <p>오늘의 환불 금액: ₩<strong th:text="${#numbers.formatInteger(todayRefunds, 0)}">0</strong></p>
-                        <p>오늘의 적립금 사용: ₩<strong th:text="${#numbers.formatInteger(todayCreditsUsed, 0)}">0</strong></p>
-                        <p><strong>오늘의 순수 매출:</strong> ₩<strong th:text="${#numbers.formatInteger(todayNetSales, 0)}">0</strong></p>
+                        <p>오늘의 결제 금액: <span th:text="${todaySales.todayPayments}"></span></p>
+                        <p>오늘의 환불 금액: <span th:text="${todaySales.todayRefunds}"></span></p>
+                        <p>오늘의 적립금 사용: <span th:text="${todaySales.todayCreditsUsed}"></span></p>
+                        <p><strong>오늘의 순수 매출:</strong> <strong th:text="${todaySales.todayNetSales}"></strong></p>
                         <hr>
                         <!-- 총 매출 -->
-                        <p>총 결제 금액: ₩<strong th:text="${#numbers.formatInteger(totalPayments, 0)}">0</strong></p>
-                        <p>총 환불 금액: ₩<strong th:text="${#numbers.formatInteger(totalRefunds, 0)}">0</strong></p>
-                        <p>총 적립금 사용: ₩<strong th:text="${#numbers.formatInteger(totalCreditsUsed, 0)}">0</strong></p>
-                        <p><strong>총 순수 매출:</strong> ₩<strong th:text="${#numbers.formatInteger(totalNetSales, 0)}">0</strong></p>
+                        <p>총 결제 금액: <span th:text="${monthlySales.monthlyPayments}"></span></p>
+                        <p>총 환불 금액: <span th:text="${monthlySales.monthlyRefunds}"></span></p>
+                        <p>총 적립금 사용: <span th:text="${monthlySales.monthlyCreditsUsed}"></span></p>
+                        <p><strong>총 순수 매출:</strong> <strong th:text="${monthlySales.monthlyNetSales}"></strong></p>
                     </div>
                 </div>
             </div>

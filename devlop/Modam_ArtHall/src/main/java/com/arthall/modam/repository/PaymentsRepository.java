@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.arthall.modam.entity.PaymentsEntity;
@@ -32,27 +33,24 @@ public interface PaymentsRepository extends JpaRepository<PaymentsEntity, Intege
             "HAVING SUM(pmt.reAmount) > 0")
     List<Object[]> findPerformancesWithTotalSales();
 
-    // 오늘의 결제 금액
-    @Query("SELECT SUM(p.amount) FROM PaymentsEntity p WHERE p.transactionType = 'PAYMENT' AND DATE(p.createdAt) = CURRENT_DATE")
+    @Query("SELECT COALESCE(SUM(p.amount), 0) FROM PaymentsEntity p WHERE p.transactionType = 'PAYMENT' AND DATE(p.createdAt) = CURRENT_DATE")
     Double findTodayPayments();
 
-    // 오늘의 환불 금액
-    @Query("SELECT SUM(p.amount) FROM PaymentsEntity p WHERE p.transactionType = 'REFUND' AND DATE(p.createdAt) = CURRENT_DATE")
+    @Query("SELECT COALESCE(SUM(p.amount), 0) FROM PaymentsEntity p WHERE p.transactionType = 'REFUND' AND DATE(p.createdAt) = CURRENT_DATE")
     Double findTodayRefunds();
 
-    // 오늘의 적립금 사용 금액
-    @Query("SELECT SUM(p.reAmount) FROM PaymentsEntity p WHERE p.transactionType = 'PAYMENT' AND DATE(p.createdAt) = CURRENT_DATE")
+    @Query("SELECT COALESCE(SUM(p.reAmount), 0) FROM PaymentsEntity p WHERE p.transactionType = 'PAYMENT' AND p.status = 'confirmed' AND DATE(p.createdAt) = CURRENT_DATE") 
     Double findTodayCreditsUsed();
 
-    // 총 결제 금액
-    @Query("SELECT SUM(p.amount) FROM PaymentsEntity p WHERE p.transactionType = 'PAYMENT'")
-    Double findTotalPayments();
+    // 특정 달의 결제 금액
+    @Query("SELECT COALESCE(SUM(p.amount), 0) FROM PaymentsEntity p WHERE p.transactionType = 'PAYMENT' AND YEAR(p.createdAt) = :year AND MONTH(p.createdAt) = :month")
+    Double findMonthlyPayments(@Param("year") int year, @Param("month") int month);
 
-    // 총 환불 금액
-    @Query("SELECT SUM(p.amount) FROM PaymentsEntity p WHERE p.transactionType = 'REFUND'")
-    Double findTotalRefunds();
+    // 특정 달의 환불 금액
+    @Query("SELECT COALESCE(SUM(p.amount), 0) FROM PaymentsEntity p WHERE p.transactionType = 'REFUND' AND YEAR(p.createdAt) = :year AND MONTH(p.createdAt) = :month")
+    Double findMonthlyRefunds(@Param("year") int year, @Param("month") int month);
 
-    // 총 적립금 사용 금액
-    @Query("SELECT SUM(p.reAmount) FROM PaymentsEntity p WHERE p.transactionType = 'PAYMENT'")
-    Double findTotalCreditsUsed();
+    // 특정 달의 적립금 사용
+    @Query("SELECT COALESCE(SUM(p.reAmount), 0) FROM PaymentsEntity p WHERE p.transactionType = 'PAYMENT' AND p.status = 'confirmed' AND YEAR(p.createdAt) = :year AND MONTH(p.createdAt) = :month")
+    Double findMonthlyCreditsUsed(@Param("year") int year, @Param("month") int month);
 }

@@ -7,9 +7,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 @SpringBootApplication
 @EntityScan(basePackages = {"com.arthall.modam.entity"})
 public class ModamApplication {
-
-	public static void main(String[] args) {
-		SpringApplication.run(ModamApplication.class, args);
-	}
-
+    public static void main(String[] args) {
+        SpringApplication.run(ModamApplication.class, args);
+    }
 }

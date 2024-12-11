@@ -16,6 +16,7 @@ import com.arthall.modam.service.UserService;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.RoundingMode;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -52,6 +53,7 @@ import com.arthall.modam.entity.UserEntity;
 
 import com.arthall.modam.repository.PerformancesRepository;
 import com.arthall.modam.repository.ReservationsRepository;
+import com.arthall.modam.repository.ShowRepository;
 
 @Controller
 @RequestMapping("/admin")
@@ -177,26 +179,26 @@ public class AdminController {
                 List<ImagesEntity> imagesToDelete = imagesService.findAllById(deleteImageIds);
                 for (ImagesEntity image : imagesToDelete) {
                     try {
-                        // 파일 삭제
                         fileService.deleteFile(image.getImageUrl());
-                        imagesService.deleteImg(image); // 데이터베이스에서 삭제
+                        imagesService.deleteImg(image);
                     } catch (IOException e) {
                         System.err.println("이미지 삭제 중 오류 발생: " + image.getImageUrl());
-                        throw new RuntimeException("이미지 삭제 중 오류가 발생했습니다.");
+                        throw new RuntimeException("이미지 삭제 중 오류가 발생했습니다.", e);
                     }
                 }
             }
+            
 
             // 새 이미지 업로드 처리
             if (file != null && !file.isEmpty()) {
-                String filePath = fileService.saveFile(file); // 파일 저장
+                String filePath = fileService.saveFile(file);
                 ImagesEntity newImage = new ImagesEntity();
                 newImage.setImageUrl(filePath);
-                newImage.setReferenceId(id);
+                newImage.setReferenceId(notice.getId());
                 newImage.setReferenceType(ImagesEntity.ReferenceType.NOTICE);
                 imagesService.saveImg(newImage);
             }
-
+            
             // 공지사항 저장
             bbsService.saveNotice(notice);
 
@@ -270,7 +272,14 @@ public class AdminController {
     public String showAdminMenu(
         @RequestParam(name = "page", defaultValue = "0") int page,
         @RequestParam(name = "size", defaultValue = "10") int size,
+        @RequestParam(name = "year", required = false) Integer year,
+        @RequestParam(name = "month", required = false) Integer month,
         Model model) {
+        
+    // 현재 날짜
+    LocalDate now = LocalDate.now();
+    if (year == null) year = now.getYear();
+    if (month == null) month = now.getMonthValue();
 
     // 총 가입자 수 가져오기
     long totalUsers = userService.getTotalUsers();
@@ -281,31 +290,18 @@ public class AdminController {
         model.addAttribute("recentUsers", recentUsers.getContent()); // 현재 페이지의 사용자 목록
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", recentUsers.getTotalPages());
+    
+        // 오늘의 매출 데이터
+        Map<String, Double> todaySales = portOneService.getTodaySales();
+        model.addAttribute("todaySales", todaySales);
+        // 특정 달의 매출 데이터
+        Map<String, Double> monthlySales = portOneService.getSalesForMonth(year, month);
+        model.addAttribute("monthlySales", monthlySales);
+        model.addAttribute("currentYear", year);
+        model.addAttribute("currentMonth", month);
 
-    // 오늘의 매출 데이터
-    double todayPayments = portOneService.getTodayPayments();
-    double todayRefunds = portOneService.getTodayRefunds();
-    double todayCreditsUsed = portOneService.getTodayCreditsUsed();
-    double todayNetSales = todayPayments - todayRefunds - todayCreditsUsed;
-
-    model.addAttribute("todayPayments", todayPayments);
-    model.addAttribute("todayRefunds", todayRefunds);
-    model.addAttribute("todayCreditsUsed", todayCreditsUsed);
-    model.addAttribute("todayNetSales", todayNetSales);
-
-    // 총 매출 데이터
-    double totalPayments = portOneService.getTotalPayments();
-    double totalRefunds = portOneService.getTotalRefunds();
-    double totalCreditsUsed = portOneService.getTotalCreditsUsed();
-    double totalNetSales = totalPayments - totalRefunds - totalCreditsUsed;
-
-    model.addAttribute("totalPayments", totalPayments);
-    model.addAttribute("totalRefunds", totalRefunds);
-    model.addAttribute("totalCreditsUsed", totalCreditsUsed);
-    model.addAttribute("totalNetSales", totalNetSales);
-
-    // 오늘의 예약 데이터 가져오기
-    List<ReservationsEntity> todayReservations = reservationsService.getTodayConfirmedReservations();
+        // 오늘의 예약 데이터 가져오기
+        List<ReservationsEntity> todayReservations = reservationsService.getTodayConfirmedReservations();
         model.addAttribute("todayReservations", todayReservations);
 
         // 최신 공연 데이터 가져오기
