@@ -108,6 +108,10 @@ nav a:hover {
     font-size: 1.5rem; /* 햄버거 아이콘 크기 */
     color: #000; /* 아이콘 색상 */
 }
+.collapsing {
+    height: auto !important; /* 애니메이션 중 높이 강제 고정 */
+    transition: none !important; /* 애니메이션 효과 제거 */
+}
 
 /* 전체 헤더 스타일 */
 header {
@@ -176,6 +180,42 @@ header {
     margin-top: 10px;
     font-size: 13px;
     color: #555;
+}
+/* 반응형 스타일 */
+@media (max-width: 768px) {
+    .footer-left,
+    .footer-right {
+        text-align: center; /* 모바일 화면에서는 가운데 정렬 */
+    }
+
+    .footer-left .footer-info p {
+        margin-bottom: 10px; /* 문장 간격 조정 */
+    }
+
+    .footer-logo img {
+        max-width: 100%; 
+        height: auto;
+        margin-bottom: 15px; /* 로고 아래 간격 추가 */
+    }
+
+    .footer-left {
+       margin-bottom: 0 !important;
+       padding-left: 15px; /* 왼쪽 여백 */
+        padding-right: 15px; /* 오른쪽 여백 */
+        text-align: center; /* 텍스트 가운데 정렬 */
+    }
+}
+
+@media (max-width: 576px) {
+    .footer-info p {
+        font-size: 12px; /* 글자 크기 축소 */
+    }
+    .footer-left {
+        margin-bottom: 0 !important;
+     }
+    .footer-right p {
+        font-size: 12px;
+    }
 }
 
 /**************** 로그인 아이콘 *******************/
