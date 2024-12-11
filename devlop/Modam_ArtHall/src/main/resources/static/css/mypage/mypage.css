@@ -1,0 +1,196 @@
+/* 적립금 섹션 */
+.points-section {
+    background-color: #fde8d0; /* 부드러운 배경색 */
+    padding: 40px 0; /* 상하 여백 */
+    display: flex; /* Flexbox로 레이아웃 설정 */
+    justify-content: center; /* 수평 중앙 정렬 */
+    align-items: center; /* 수직 중앙 정렬 */
+}
+
+.points-container {
+    max-width: 1200px; /* 최대 너비 */
+    width: 100%; /* 부모 요소의 100% 사용 */
+    display: flex; /* Flexbox로 내부 요소 배치 */
+    align-items: center; /* 수직 가운데 정렬 */
+    justify-content: space-between; /* 좌우로 배치 */
+}
+
+/* 텍스트 스타일 */
+.points-info h5 {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #333; /* 텍스트 색상 */
+    margin: 0;
+}
+
+/* 포인트 스타일 */
+.points-balance h1 {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #333;
+    margin: 0;
+}
+.points-balance h1 span{
+    font-size: 2.5rem;
+}
+
+/* 버튼 스타일 */
+.userBtn{
+    font-size: 1rem;
+    padding: 7px 18px;
+    border-radius: 5px;
+    background-color: #007bff;
+    border: none;
+}
+
+.points-button .btn-primary {
+    font-size: 0.9rem;
+    padding: 10px 20px;
+    border-radius: 5px;
+    background-color: #007bff;
+    border: none;
+}
+
+.points-button .btn-primary:hover, .userBtn:hover {
+    background-color: #0056b3;
+}
+
+.rebtn {
+    border: none;
+    background-color: #EB8317;
+}
+.rebtn:hover {
+    background-color: #F3C623;
+}
+
+/* 중간 구분선 스타일 */
+.divider {
+    width: 2px; /* 선 두께 */
+    height: 80px; /* 선 높이 */
+    background-color: #666; /* 선 색상 */
+    margin: 0 20px; /* 양쪽 간격 */
+}
+
+
+/* 카드 스타일 */
+.card-border {
+    border: 1px solid #333; /* 카드 테두리 */
+    border-radius: 8px; /* 둥근 모서리 */
+    margin-bottom: 16px; /* 카드 간 간격 */
+}
+
+.text-muted{
+    color: #000;
+    font-size: 22px;
+    font-weight: 700;
+    padding-bottom: 18px;
+}
+
+/* 전체 카드 스타일 */
+.reservation-card {
+    display: flex;
+    flex-wrap: wrap; /* 작은 화면에서는 요소가 자동으로 줄바꿈 */
+    align-items: center;
+    padding: 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* 이미지 섹션 */
+.Areservation-image img{
+    width: 200px;
+    height: 267px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-right: 16px;
+}
+.reservation-image img {
+    width: 150px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-right: 16px;
+}
+
+/* 정보 섹션 */
+.reservation-info {
+    flex-grow: 1; /* 남은 공간 차지 */
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* 정보 간 간격 */
+}
+
+/* 버튼 섹션 */
+.reservation-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 16px;
+}
+
+/* 버튼 스타일 */
+.reservation-actions .btn {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    border-radius: 5px;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .points-section{
+        padding: 10px 0;
+    }
+
+    .points-container {
+        flex-direction: column; /* 카드가 세로로 정렬 */
+        padding: 16px; /* 내부 여백 조정 */
+
+    }
+
+    .divider{
+        display: none;
+    }
+
+    .points-button{
+        margin-top: 10px;
+    }
+
+    .refund-btn{
+        margin-left: 250px;
+    }
+
+    .rebtn{
+        margin-left: 200px;
+    }
+
+}
+
+.reservation-info {
+    padding-left: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* 항목 간 간격 */
+}
+
+.reservation-info > .info-date, 
+.reservation-info > .info-time, 
+.reservation-info > .info-seat, 
+.reservation-info > .info-price, 
+.reservation-info > .info-ticket {
+    display: flex;
+    justify-content: space-between; /* 양 끝 정렬 */
+}
+
+.info-date div, .info-time div, .info-seat div, .info-price div, .info-ticket div {
+    flex: 1; /* 동일한 넓이 */
+}
+
+strong {
+    font-weight: bold;
+    color: #333; /* 강조 색상 */
+}
+
+span {
+    color: #666; /* 일반 텍스트 색상 */
+}
