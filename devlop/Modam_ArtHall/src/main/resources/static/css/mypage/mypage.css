@@ -39,25 +39,29 @@
     font-size: 1rem;
     padding: 7px 18px;
     border-radius: 5px;
-    background-color: #007bff;
+    background-color: #10375C;
     border: none;
+    color: #fff;
 }
 
 .points-button .btn-primary {
     font-size: 0.9rem;
     padding: 10px 20px;
     border-radius: 5px;
-    background-color: #007bff;
+    background-color: #10375C;
     border: none;
+    color: #fff;
 }
 
 .points-button .btn-primary:hover, .userBtn:hover {
-    background-color: #0056b3;
+    background-color: #fff;
+    border: 1px solid #10375C;
+    color: #10375C;
 }
 
 .rebtn {
     border: none;
-    background-color: #EB8317;
+    background-color: #ff6b00;
 }
 .rebtn:hover {
     background-color: #F3C623;

@@ -12,9 +12,12 @@
 /* 이미지와 텍스트 섹션 스타일 */
 .content-section h2 {
     font-weight: bold;
-    border-left: 5px solid #ffa500;
+    border-left: 5px solid #ff6b00;
     padding-left: 15px;
-    margin-bottom: 20px;
+    margin-bottom: 40px;
+}
+.modam-A{
+    border-left: 5px solid #10375C !important;
 }
 
 .content-section img {
