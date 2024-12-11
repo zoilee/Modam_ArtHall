@@ -1,5 +1,6 @@
-/* style.css */
-
+#titleSuggestions {
+    display: none;
+}
 html, body {
     height: 100%; /* 화면 전체 높이를 차지 */
     margin: 0;
@@ -9,7 +10,7 @@ html, body {
 .content {
     flex: 1; /* 컨텐츠 영역이 남은 공간을 차지 */
     padding-top: 150px;
-}
+    }
 .custom-footer {
     background-color: #f8f9fa;
     text-align: center;
@@ -17,11 +18,11 @@ html, body {
     margin-top: auto; /* 항상 하단에 배치 */
 }
 .notice-title {
-display: inline-block;
-position: relative;
-font-size: 24px;
-font-weight: bold;
-color: #000;
+    display: inline-block;
+    position: relative;
+    font-size: 24px;
+    font-weight: bold;
+    color: #000;
 }
 .notice-title::after {
     content: "";
@@ -31,4 +32,4 @@ color: #000;
     width: 100%;
     height: 3px;
     background: linear-gradient(to right, orange, navy);
-}    
+}

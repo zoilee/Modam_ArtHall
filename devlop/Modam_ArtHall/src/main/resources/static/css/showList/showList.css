@@ -1,18 +1,36 @@
+a{
+    font-weight: bold;
+    color: #000;
+    text-decoration: none;
+}
+a:hover{
+    color: #F3C623;
+}
+
 .showList-poster-container {
     display: flex;
     flex-direction: column;
     gap: 50px;
+    align-items: center;
     margin-bottom: 100px;
 }
+
 .showList-poster-group {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 10px;
-    width: 700px;
+    justify-content: space-between; /* 포스터와 이미지를 양쪽으로 배치 */
+    gap: 20px;
+    width: 1100px; /* 화면 전체 너비 사용 */
 }
-.showList-poster-group.left { align-self: flex-start; margin-right: 670px; }
-.showList-poster-group.right { align-self: flex-end; margin-left: 670px; }
+
+.showList-poster-group.left {
+    flex-direction: row; /* 기본 왼쪽 정렬 */
+}
+
+.showList-poster-group.right {
+    flex-direction: row-reverse; /* 오른쪽 정렬 */
+}
+
 .showList-poster {
     background-color: #d6d6d6;
     display: flex;
@@ -21,14 +39,39 @@
     font-size: 20px;
     color: #555;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    width: 454px;
-    height: 605px;
+    width: 550px;
+    height: 733px;
 }
-.showList-poster img {
+
+.SLimg-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 700px;
+}
+
+.SLimg img {
     max-width: 100%;
-    max-height: 100%;
-    object-fit: cover;
+    height: auto;
 }
+.showList-poster-title {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.showList-poster-title h4 {
+    font-size: 1.5rem;
+    margin: 0;
+    color: #333;
+}
+
+.showList-poster-title p {
+    font-size: 1rem;
+    color: #777;
+    margin: 5px 0 0;
+}
+
+
 
 
 /* 슬라이드 전체 래퍼 */
@@ -76,9 +119,10 @@
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: #EB8317;
     color: white;
     border: none;
+    border-radius: 15px;
     padding: 10px 20px;
     cursor: pointer;
     z-index: 1000;
@@ -94,7 +138,7 @@
 }
 
 .slider-btn:hover {
-    background-color: rgba(0, 0, 0, 0.8);
+    background-color: #F3C623;
 }
 
 /* Top 버튼 스타일 */
@@ -126,4 +170,67 @@
 
 #topButton:focus {
     outline: none;
+}
+
+/* 태블릿 크기 (768px 이하) */
+@media (max-width: 768px) {
+    .slide {
+        flex: 0 0 50%; /* 한 번에 2개씩 표시 */
+    }
+}
+
+/* 모바일 크기 (576px 이하) */
+@media (max-width: 576px) {
+    .showList-poster-group {
+        flex-direction: column; /* 세로 정렬 유지 */
+        align-items: center;
+        gap: 20px;
+    }
+
+    .showList-poster {
+        width: 100%;
+        max-width: 350px; /* 너비 더 축소 */
+        height: 450px;
+    }
+
+    .SLimg-container {
+        width: 100%;
+        max-width: 250px; /* 이미지 크기 축소 */
+    }
+
+    .showList-poster-group.left {
+        flex-direction: column; /* 기본 왼쪽 정렬 */
+    }
+
+    .showList-poster-group.right {
+        flex-direction: column; /* 오른쪽 정렬 */
+    }
+
+    .showList-poster-title h4 {
+        font-size: 1rem; /* 제목 크기 더 축소 */
+    }
+
+    .showList-poster-title p {
+        font-size: 0.8rem; /* 날짜 크기 더 축소 */
+    }
+
+    .performance-item img {
+        width: 100%;
+        height: 300px;
+        object-fit: cover;
+        border-radius: 8px;
+        margin-bottom: 10px;
+    }
+
+    .slide {
+        flex: 0 0 100%; /* 한 번에 1개씩 표시 */
+    }
+
+    .slider-btn.left-btn {
+        left: 0; /* 컨테이너 왼쪽 밖으로 이동 */
+    }
+
+    .slider-btn.right-btn {
+        right: 0; /* 컨테이너 오른쪽 밖으로 이동 */
+    }
 }

@@ -15,98 +15,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Swiper JS -->
     <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
-    <style>
-/* Swiper 컨테이너 */
-.swiper-container {
-    width: 100%; /* 슬라이드 전체 너비 */
-    padding: 50px 0; /* 상하 여백 */
-    position: relative; /* 버튼을 컨테이너 안에 배치 */
-    overflow: hidden;
-    box-sizing: border-box; /* 크기 계산 방식 설정 */
-}
-
-/* 카드 스타일 */
-.swiper-slide {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    opacity: 0.5; /* 기본 음영 처리 */
-    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
-    text-decoration: none; /* 링크 스타일 제거 */
-    height: auto; /* 슬라이드 높이를 자동으로 조정 */
-}
-
-.swiper-slide-active {
-    opacity: 1; /* 중앙 슬라이드는 강조 */
-    transform: scale(1.05); /* 약간 확대 */
-}
-
-.maincard {
-    width: 260px; /* 카드 고정 너비 */
-    max-width: 90%; /* 최대 너비 설정 */
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-    overflow: hidden;
-    transition: transform 0.3s ease-in-out;
-}
-
-.maincard img {
-    height: 250px; /* 이미지 높이 설정 */
-    object-fit: cover;
-    width: 100%;
-}
-
-.maincard:hover {
-    transform: translateY(-10px); /* 호버 시 살짝 떠오르는 효과 */
-}
-
-/* 페이지네이션 */
-.swiper-pagination {
-    bottom: 20px; /* 이미지와 겹치지 않도록 아래로 이동 */
-}
-
-.swiper-pagination-bullet {
-    background-color: #007bff; /* 페이지네이션 색상 */
-    opacity: 0.7;
-}
-
-.swiper-pagination-bullet-active {
-    opacity: 1;
-}
-
-/* 이전/다음 버튼 */
-.swiper-button-prev,
-.swiper-button-next {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 40px;
-    height: 40px;
-    background-color: rgba(0, 0, 0, 0.6); /* 반투명 배경 */
-    border-radius: 50%; /* 둥근 버튼 */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: white;
-    cursor: pointer;
-    z-index: 10;
-    transition: background-color 0.3s ease;
-}
-
-.swiper-button-prev:hover,
-.swiper-button-next:hover {
-    background-color: rgba(0, 0, 0, 0.8); /* 호버 시 배경 색상 변경 */
-}
-
-.swiper-button-prev {
-    left: 20px; /* 왼쪽 버튼 위치 */
-}
-
-.swiper-button-next {
-    right: 20px; /* 오른쪽 버튼 위치 */
-}
-    </style>
 </head>
 <body>
 
@@ -118,25 +26,30 @@
         <h1>hero(slide)</h1>
     </div>
 
-    <div class="container-fluid mt-5">
-        <h3 class="text-center mb-4">현재 상영 중인 공연</h3>
+    <div class="container-fluid nowOn">
+        <div class="nowOn-header">
+            <h1>What's <span>ON</span></h1>
+            <div class="whatsonBack1"></div>
+            <div class="whatsonBack2"></div>
+            <button class="show-all-btn">공연전체보기 +</button>
+        </div>
         <div class="swiper-container">
             <div class="swiper-wrapper">
-                <!-- Thymeleaf로 공연 데이터를 반복하여 렌더링 -->
                 <a class="swiper-slide maincard" th:href="@{'/showDetail/' + ${performance.id}}" th:each="performance : ${performances}">
-                    <img th:src="${performance.imagesEntities != null && performance.imagesEntities.size() > 0
-                                  ? performance.imagesEntities[0].imageUrl
-                                  : '/imgs/default-poster.jpg'}"
-                         class="card-img-top" alt="공연 이미지">
-                    <div class="card-body text-center">
-                        <h5 class="card-title" th:text="${performance.title}">공연 제목</h5>
-                        <p class="card-text" th:text="${performance.formattedStartDate} + ' ~ ' + ${performance.formattedEndDate}">
-                            공연 기간
-                        </p>
+                    <div class="performance-image">
+                        <img th:src="${performance.imagesEntities != null && performance.imagesEntities.size() > 0
+                                      ? performance.imagesEntities[0].imageUrl
+                                      : '/imgs/default-poster.jpg'}"
+                             class="card-img-top" alt="공연 이미지">
+                    </div>
+                    <div class="performance-info">
+                        <span class="venue">모담 A홀</span>
+                        <h3 class="title" th:text="${performance.title}">공연 제목</h3>
+                        <p class="date" th:text="${performance.startDate} + ' ~ ' + ${performance.endDate}">공연 기간</p>
                     </div>
                 </a>
             </div>
-            <!-- 네비게이션 버튼 -->
+            <!-- ... 네비게이션 버튼 ... -->
             <div class="swiper-button-prev"></div>
             <div class="swiper-button-next"></div>
             <!-- 페이지네이션 -->
@@ -148,14 +61,25 @@
     
     
         <!-- 공지사항 섹션 -->
-        <div class="container my-5">
-            <h2>최근 공지사항</h2>
-            <ul class="list-group">
-                <li class="list-group-item" th:each="notice : ${recentNotices}">
-                    <a th:href="@{'/noticeView/' + ${notice.id}}"><h5 th:text="${notice.title}">공지사항 제목</h5></a>
-                    <p th:text="${#dates.format(notice.createdAt, 'yyyy-MM-dd')}">2024-11-25</p>
-                </li>
-            </ul>
+        <div class="notice-section row">
+            <div class="notice-header">
+                <h2>공지사항</h2>
+                <div class="notice-underline1"></div>
+                <div class="notice-underline2"></div>
+            </div>
+            <div class="notice-body">
+                <ul class="notice-list">
+                    <li class="notice-item" th:each="notice : ${recentNotices}">
+                        <a th:href="@{'/noticeView/' + ${notice.id}}">
+                            <span class="notice-title" th:text="${notice.title}">공지사항 제목</span>
+                            <span class="notice-date" th:text="${#dates.format(notice.createdAt, 'yyyy.MM.dd')}">2024.12.12</span>
+                        </a>
+                    </li>
+                </ul>
+                <div class="notice-more">
+                    <a href="/notice" class="more-link">전체보기</a>
+                </div>
+            </div>
         </div>
    
     <!-- 푸터 -->
