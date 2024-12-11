@@ -1,5 +1,3 @@
-/* style.css */
-
 html, body {
     height: 100%; /* 화면 전체 높이를 차지 */
     margin: 0;
@@ -8,20 +6,20 @@ html, body {
 }
 .content {
     flex: 1; /* 컨텐츠 영역이 남은 공간을 차지 */
-    padding-top: 150px;
+    padding-top: 70px;
 }
 .custom-footer {
     background-color: #f8f9fa;
     text-align: center;
     padding: 1px 0;
     margin-top: auto; /* 항상 하단에 배치 */
-}
+}    
 .notice-title {
-display: inline-block;
-position: relative;
-font-size: 24px;
-font-weight: bold;
-color: #000;
+    display: inline-block;
+    position: relative;
+    font-size: 24px;
+    font-weight: bold;
+    color: #000;
 }
 .notice-title::after {
     content: "";
@@ -31,26 +29,44 @@ color: #000;
     width: 100%;
     height: 3px;
     background: linear-gradient(to right, orange, navy);
-}    
+}
 
+/* 사용자 정보 카드 스타일 */
+.ascl-member-info-container {
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    padding: 15px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.ascl-member-info-container:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* 사용자 ID 스타일 */
+.user-id {
+    font-size: 1.5rem;
+    color: #555;
+    min-width: 50px;
+}
+
+/* 버튼 스타일 */
+.action-button {
+    font-size: 0.9rem;
+    border-radius: 5px;
+}
 
 /* 태블릿 크기 (768px 이하) */
-@media (max-width: 768px) {
-    body {
-        padding: 0 10px; /* 좌우 여백 추가 */
+@media (max-width: 768px) { /* 태블릿 이하 */
+    .ascl-action-buttons {
+        flex-direction: column; /* 버튼을 위아래로 배치 */
+        gap: 5px; /* 간격을 더 좁게 설정 */
+        align-items: flex-start; /* 왼쪽 정렬 */
     }
-    .content {
-        padding-top: 100px; /* 상단 여백 조정 */
-    }
-    .notice-title {
-        font-size: 20px; /* 제목 크기 축소 */
-    }
-    table.table {
-        font-size: 14px; /* 테이블 글꼴 크기 축소 */
-    }
-    img {
-        max-width: 100%;
-        height: auto; /* 이미지 반응형 */
+    .action-button {
+        width: auto; /* 버튼 너비를 자동으로 조정 */
     }
 }
 

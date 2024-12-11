@@ -33,3 +33,51 @@ html, body {
     height: 3px;
     background: linear-gradient(to right, orange, navy);
 }
+
+/* 태블릿 크기 (768px 이하) */
+@media (max-width: 768px) {
+    body {
+        padding: 0 10px; /* 좌우 여백 추가 */
+    }
+    .content {
+        padding-top: 100px; /* 상단 여백 조정 */
+    }
+    .notice-title {
+        font-size: 20px; /* 제목 크기 축소 */
+    }
+    table.table {
+        font-size: 14px; /* 테이블 글꼴 크기 축소 */
+    }
+    img {
+        max-width: 100%;
+        height: auto; /* 이미지 반응형 */
+    }
+}
+
+/* 모바일 크기 (576px 이하) */
+@media (max-width: 576px) {
+    body {
+        padding: 0 5px; /* 모바일 화면에서는 여백 더 축소 */
+    }
+    .content {
+        padding-top: 80px; /* 상단 여백 더 조정 */
+    }
+    .notice-title {
+        font-size: 18px; /* 제목 크기 더 축소 */
+    }
+    table.table {
+        font-size: 12px; /* 테이블 글꼴 크기 더 축소 */
+    }
+    table.table th, table.table td {
+        word-wrap: break-word; /* 긴 텍스트 줄바꿈 처리 */
+    }
+    .showList-poster {
+        width: 100%;
+        max-width: 300px; /* 너비 축소 */
+        height: auto; /* 높이 자동 조정 */
+    }
+    img {
+        max-width: 100%;
+        height: auto; /* 이미지 크기 자동 조정 */
+    }
+}
