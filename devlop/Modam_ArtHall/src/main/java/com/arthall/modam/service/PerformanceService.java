@@ -159,9 +159,9 @@ public class PerformanceService {
         }
     }
 
-    // 최신 공연 리스트를 가져오는 메서드
-    public List<PerformancesEntity> getPerformancesByDate(Date startDate, Date endDate) {
-        return performancesRepository.findByStartDateBeforeAndEndDateAfter(startDate, endDate);
+    // 현재 상연 중인 공연 가져오기
+    public List<PerformancesEntity> getCurrentPerformances(Date today) {
+        return performancesRepository.findByStartDateBeforeAndEndDateAfter(today, today);
     }
 
     // 모든 공연의 예약 현황 정보 가져오기 (내림차순 정렬)

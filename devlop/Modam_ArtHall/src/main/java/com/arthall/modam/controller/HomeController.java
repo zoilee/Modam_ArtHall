@@ -93,32 +93,27 @@ public class HomeController {
     public String home(Model model) {
         // 현재 날짜 가져오기
         Date today = Date.valueOf(LocalDate.now());
-
-        // 시작일과 종료일 설정 (예: 현재부터 30일 후까지의 공연)
-        Date startDate = Date.valueOf(LocalDate.now().minusDays(30));
-        Date endDate = today;
-
-        // 현재 상영 중인 공연 리스트 가져오기
-        List<PerformancesEntity> performances = performanceService.getPerformancesByDate(startDate, endDate);
-
+    
+        // 현재 상연 중인 공연 리스트 가져오기
+        List<PerformancesEntity> performances = performanceService.getCurrentPerformances(today);
+    
         // 공연 데이터 형식화
         performances.forEach(performance -> {
             if (performance.getStartDate() != null && performance.getEndDate() != null) {
-                performance
-                        .setFormattedStartDate(new SimpleDateFormat("yyyy-MM-dd").format(performance.getStartDate()));
+                performance.setFormattedStartDate(new SimpleDateFormat("yyyy-MM-dd").format(performance.getStartDate()));
                 performance.setFormattedEndDate(new SimpleDateFormat("yyyy-MM-dd").format(performance.getEndDate()));
             } else {
                 performance.setFormattedStartDate("N/A");
                 performance.setFormattedEndDate("N/A");
             }
         });
-
+    
         // 최근 공지사항 4개 가져오기
         List<NoticesEntity> recentNotices = noticesService.getRecentNotices(4);
-
+    
         model.addAttribute("performances", performances);
         model.addAttribute("recentNotices", recentNotices);
-
+    
         return "main"; // Thymeleaf 템플릿 이름
     }
 
