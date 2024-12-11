@@ -7,7 +7,7 @@
         <!-- Bootstrap CSS -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" th:href="@{/css/layout/style.css}">
-        <link rel="stylesheet" th:href="@{/css/qna/style.css}">
+        <link rel="stylesheet" th:href="@{/css/qna/style2.css}">
 </head>
     
 <body>
@@ -40,36 +40,33 @@
                                     <!-- 버튼들 -->
                                     <a th:if="${#authentication.principal.username eq qna.userId}" 
                                        th:href="@{/userQnaEdit(id=${qna.id})}" 
-                                       class="btn btn-sm" 
+                                       class="btn btn-sm common-button" 
                                        th:classappend="${qna.answered} ? 'btn-secondary' : 'btn-warning'" 
                                        th:onclick="${qna.answered} ? 'alert(`답변이 완료되어 수정이 불가능합니다.`); return false;' : ''" 
-                                       th:text="${qna.answered} ? '답변완료' : '수정하기'" 
-                                       style="width: 75px; margin-right: 10px; text-align: center;">
+                                       th:text="${qna.answered} ? '답변' : '수정'">
                                     </a>
                                     <form th:if="${#authentication.principal.username eq qna.userId}" 
                                           th:action="@{/user/qnaDelete}" 
                                           method="post" 
-                                          style="display: inline;" 
-                                          onsubmit="return confirm('정말 삭제하시겠습니까?');">
+                                          style="display: inline;">
                                         <input type="hidden" name="qnaId" th:value="${qna.id}"/>
-                                        <button type="submit" class="btn btn-sm btn-danger">삭제</button>
+                                        <button type="submit" class="btn btn-sm btn-danger common-button">삭제</button>
                                     </form>
                                     <a th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}" 
                                        th:href="@{/admin/qnaEdit(id=${qna.id})}" 
-                                       class="btn btn-sm" 
+                                       class="btn btn-sm common-button" 
                                        th:classappend="${qna.answered} ? 'btn-secondary' : 'btn-warning'" 
-                                       th:text="${qna.answered} ? '완료' : '답변'" 
-                                       style="width: 50px; margin-right: 10px; text-align: center;">
+                                       th:text="${qna.answered} ? '완료' : '답변'">
                                     </a>
                                     <form th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}" 
                                           th:action="@{/admin/qnaDelete}" 
                                           method="post" 
-                                          style="display: inline;" 
-                                          onsubmit="return confirm('정말 삭제하시겠습니까?');">
+                                          style="display: inline;">
                                         <input type="hidden" name="qnaId" th:value="${qna.id}"/>
-                                        <button type="submit" class="btn btn-sm btn-danger">삭제</button>
+                                        <button type="submit" class="btn btn-sm btn-danger common-button">삭제</button>
                                     </form>
                                 </div>
+                                
                             </td>
                         </tr>
                     </tbody>

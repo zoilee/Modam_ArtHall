@@ -10,11 +10,11 @@
     <!-- 헤더 -->
     <th:block th:replace="~{fragments/header :: headerFragment}"></th:block>
 
-
-    <div class="container my-5" style="max-width: 600px; padding-top: 80px;">
+    <!--메인 컨텐츠-->
+    <div class="container my-5" style="max-width: 800px; padding: 150px;">
         <h2 class="text-center mb-4">아이디/비밀번호 찾기</h2>
 
-        <ul class="nav nav-tabs mb-3" id="findAccountTabs" role="tablist">
+        <ul class="nav nav-tabs mb-3 justify-content-start" id="findAccountTabs" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active" id="find-id-tab" data-bs-toggle="tab" data-bs-target="#find-id" type="button" role="tab" aria-controls="find-id" aria-selected="true">
                     아이디 찾기
@@ -29,7 +29,7 @@
         <div class="tab-content" id="findAccountTabContent">
             <!-- 아이디 찾기 -->
             <div class="tab-pane fade show active" id="find-id" role="tabpanel" aria-labelledby="find-id-tab">
-                <form th:action="@{/find-id}" method="post" id="findIdForm">
+                <form th:action="@{/find-id}" method="post" >
                     <div class="mb-3">
                         <label for="name" class="form-label">이름</label>
                         <input type="text" class="form-control" id="name" name="name" placeholder="가입한 이름을 입력하세요" required>
@@ -38,7 +38,7 @@
                         <label for="email" class="form-label">이메일</label>
                         <input type="email" class="form-control" id="email" name="email" placeholder="가입한 이메일 주소를 입력하세요" required>
                     </div>
-                    <button type="submit" class="btn btn-primary mt-3">아이디 찾기</button>
+                    <button type="submit" class="btn btn-primary w-100">아이디 찾기</button>
                 </form>
 
                 <!-- 성공 메시지 -->
@@ -53,7 +53,7 @@
             </div>
             <!-- 비밀번호 찾기 -->
             <div class="tab-pane fade" id="find-password" role="tabpanel" aria-labelledby="find-password-tab">
-                <form th:action="@{/find-password}" method="post" id="findPasswordForm">
+                <form th:action="@{/find-password}" method="post">
                     <div class="mb-3">
                         <label for="loginId" class="form-label">아이디</label>
                         <input type="text" class="form-control" id="loginId" name="loginId" placeholder="가입한 아이디를 입력하세요" required>
@@ -62,7 +62,7 @@
                         <label for="email" class="form-label">이메일</label>
                         <input type="email" class="form-control" id="email" name="email" placeholder="가입한 이메일 주소를 입력하세요" required>
                     </div>
-                    <button type="submit" class="btn btn-primary mt-3">비밀번호 찾기</button>
+                    <button type="submit" class="btn btn-primary w-100">비밀번호 찾기</button>
                 </form>
 
                 <!-- 성공 메시지 -->

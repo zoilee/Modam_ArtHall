@@ -8,15 +8,28 @@
 }
 
 .poster-box {
-    width: 100%; /* 가로 크기 설정 */
-    max-width: 300px; /* 최대 가로 크기 */
-    aspect-ratio: 3 / 4; /* 비율 3:4 */
-    object-fit: cover; /* 이미지를 비율에 맞게 채움 */
-    
-    display: block; /* 레이아웃 흐름에서 블록 요소로 설정 */
-    
+    width: 100%; /* 컨테이너 크기에 맞춤 */
+    max-width: 300px; /* 최대 크기 설정 */
+    aspect-ratio: 3 / 4; /* 3:4 비율 유지 */
+    object-fit: cover; /* 이미지가 영역을 가득 채우도록 */
+    display: block; /* 블록 요소로 설정 */
+    margin: 0 auto; /* 이미지 중앙 정렬 */
 }
 
+/* 작은 화면에서 이미지 크기 조정 */
+@media (max-width: 768px) {
+    .poster-box {
+        max-width: 200px; /* 작은 화면에서도 너무 작아지지 않도록 최소 크기 설정 */
+        width: 90%; /* 컨테이너의 90% 크기 */
+    }
+}
+
+@media (max-width: 576px) {
+    .poster-box {
+        max-width: 150px; /* 매우 작은 화면에서는 최소 크기 설정 */
+        width: 80%; /* 컨테이너의 80% 크기 */
+    }
+}
 .form-label {
     font-weight: bold;
 }
