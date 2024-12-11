@@ -10,8 +10,10 @@
     left: 0;
     z-index: 1030; /* 부트스트랩의 고정 네비게이션 바와 같은 레벨 */
 }
+.logo-img {
 /* .logo-img {
     height: 100%;
+    max-width: 100%; /* 로고가 부모 요소의 너비를 넘지 않도록 설정 */
     max-width: 100%; 
     height: auto; 
     object-fit: contain;
