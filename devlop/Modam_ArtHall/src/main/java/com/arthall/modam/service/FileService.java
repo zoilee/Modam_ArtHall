@@ -16,7 +16,7 @@ public class FileService {
 
     // 업로드 경로를 절대 경로로 고정
 
-    private final String uploadDir = "/works/img/upload";
+    private final String uploadDir = "/works/upload";
 
     public String saveFile(MultipartFile file) throws IOException {
 
