@@ -12,7 +12,7 @@ public class ModamApplication {
 
     public static void main(String[] args) {
         Dotenv dotenv = Dotenv.configure()
-                .directory(".//")
+                .directory("/var/lib/jenkins/workspace/yayaya/devlop/Modam_ArtHall")
                 .load();
 
         // 프로퍼티 설정 .
