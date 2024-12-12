@@ -5,12 +5,7 @@ server:
 
 
 spring:
-  #database 연동
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ${RDS_URL}
-    username: ${RDS_USERNAME}
-    password: ${RDS_PASSWORD}
+  
   thymeleaf:
     cache: false
     check-template-location: true
@@ -35,6 +30,12 @@ spring:
         - classpath:/static/     # 기존 정적 리소스 경로
         - file:/works/img
    #oauth2 연동 설정(로그인 api)
+   #database 연동
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${RDS_URL}
+    username: ${RDS_USERNAME}
+    password: ${RDS_PASSWORD}
   security:
     oauth2:
       client:
