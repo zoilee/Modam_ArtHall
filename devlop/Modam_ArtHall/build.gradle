@@ -32,7 +32,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6' // Spring Security Thymeleaf 통합 추가
 	implementation 'org.projectlombok:lombok'
-	implementation 'io.github.cdimascio:java-dotenv:5.2.2' // 모든 java프로젝트에서 사용 가능한 dotenv라이브러리
+	//implementation 'io.github.cdimascio:java-dotenv:5.2.2' // 모든 java프로젝트에서 사용 가능한 dotenv라이브러리
 	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.0.0' //Thymeleaf Layout Dialect 의존성 추가
 	implementation 'me.paulschwarz:spring-dotenv:2.5.4' // Spring Boot 프로젝트만 사용 가능한 dotenv라이브러리
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
