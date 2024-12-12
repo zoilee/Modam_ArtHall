@@ -24,20 +24,16 @@ public class FileService {
         Path absoluteDir = Paths.get(uploadDir);
         System.out.println("업로드 경로: " + absoluteDir);
 
-        // 경로 정규화
-        String normalizedDir = absoluteDir.toString().replace("\\", "/");
-        System.out.println("업로드 경로 (정규화): " + normalizedDir);
-
         // 디렉토리가 없으면 생성
-        Path normalizedPath = Paths.get(normalizedDir);
-        if (!Files.exists(normalizedPath)) {
-            Files.createDirectories(normalizedPath);
+
+        if (!Files.exists(absoluteDir)) {
+            Files.createDirectories(absoluteDir);
         }
 
         String uniqueFileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
         // 파일이 저장되는 실제 경로
-        Path filePath = normalizedPath.resolve(uniqueFileName);
-        System.out.println("실제파일저장 경로 " + filePath.toString().replace("\\", "/") + "(정규화) :" + normalizedDir);
+        Path filePath = absoluteDir.resolve(uniqueFileName);
+        System.out.println("실제파일저장 경로 " + filePath.toString().replace("\\", "/") + "(정규화) :" + absoluteDir);
 
         // 업로드된 파일을 실제 폴더에 저장
         Files.write(filePath, file.getBytes());
