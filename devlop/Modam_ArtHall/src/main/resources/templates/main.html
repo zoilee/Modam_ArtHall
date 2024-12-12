@@ -77,7 +77,7 @@
             <div class="notice-body">
                 <ul class="notice-list">
                     <li class="notice-item" th:each="notice : ${recentNotices}">
-                        <a th:href="@{'/noticeView/' + ${notice.id}}">
+                        <a th:href="@{'/userNoticeView?id=' + ${notice.id}}">
                             <span class="notice-title" th:text="${notice.title}">공지사항 제목</span>
                             <span class="notice-date" th:text="${#dates.format(notice.createdAt, 'yyyy.MM.dd')}">2024.12.12</span>
                         </a>
