@@ -12,7 +12,7 @@ public class ModamApplication {
 
     public static void main(String[] args) {
         Dotenv dotenv = Dotenv.configure()
-                .directory("./")
+                .directory(".//")
                 .load();
 
         // 프로퍼티 설정 .
