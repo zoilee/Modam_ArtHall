@@ -27,7 +27,7 @@ public class AlramService {
         return alramRepository.findAllByReadedOrderByIdDesc(readed);
     }
 
-    // 알람 삭제 (일정 시간마다? or 관리자 대시보드 접속시 사라지게)
+    // 알람 삭제 (일정 시간마다? or 관리자 대시보드 접속시 사라지게)1
     public void deleteAllByReaded(boolean readed) {
         List<AlramEntitiy> deletedAlarms = alramRepository.findAllByReaded(readed);
         alramRepository.deleteAllByReaded(readed);
