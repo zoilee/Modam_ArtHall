@@ -28,7 +28,7 @@
 /* Swiper 컨테이너 */
 .swiper-container {
     width: 100%; /* 슬라이드 전체 너비 */
-    padding: 50px 0; /* 상하 여백 */
+    padding: 50px;
     position: relative; /* 버튼을 컨테이너 안에 배치 */
     overflow: hidden;
     box-sizing: border-box; /* 크기 계산 방식 설정 */
@@ -312,23 +312,28 @@
 #topButton:focus {
     outline: none;
 }
-
-/* 태블릿 크기 (768px 이하) */
-@media (max-width: 768px) {
+/* 태블릿 크기 (768px ~ 1024px) */
+@media (min-width: 768px) and (max-width: 1024px) {
+    
     .swiper-wrapper {
-        flex: 0 0 100%; /* 한 번에 2개씩 표시 */
-        overflow: hidden;
-    }
-    .whatsonBack1{
-        width: 70%;
-    }
-    .whatsonBack2{
-        width: 70%;
+        width: calc(50% - 80px) !important; /* 2개씩 표시 */
+        padding: 0 40px; /* 패딩 조정 */
     }
 }
 
-/* 모바일 크기 (576px 이하) */
-@media (max-width: 576px) {
+/* 모바일 크기 (768px 이하) */
+@media (max-width: 767px) {
+
+    .swiper-wrapper {
+        width: calc(100% - 40px) !important; /* 1개씩 표시 */
+        padding: 0 10px; /* 패딩 조정 */
+        left: 10%;
+    }
+    
+    .swiper-button-prev,
+    .swiper-button-next {
+        display: none; /* 모바일에서는 네비게이션 버튼 숨김 */
+    }
     .nowOn-header{
         flex-direction: column;
     }
@@ -341,9 +346,5 @@
     }
     .show-all-btn{
         margin-top: 30px;
-    }
-    .swiper-wrapper {
-        flex: 0 0 100%; /* 한 번에 1개씩 표시 */
-        overflow: hidden;
     }
 }
