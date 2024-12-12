@@ -21,7 +21,7 @@ public class FileService {
     public String saveFile(MultipartFile file) throws IOException {
 
         // 절대경로
-        Path absoluteDir = Paths.get(uploadDir).normalize();
+        Path absoluteDir = Paths.get(uploadDir);
         System.out.println("업로드 경로: " + absoluteDir);
 
         // 경로 정규화
