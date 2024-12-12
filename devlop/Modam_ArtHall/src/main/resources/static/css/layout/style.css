@@ -72,7 +72,7 @@
 }
 .auth-buttons .btn {
     padding: 10px 20px;
-    font-size: 14px;
+    font-size: 13px;
     border-radius: 5px;
 }
 
@@ -230,7 +230,16 @@ header {
     font-size: 13px;
     color: #555;
 }
+
+
+
 /* 반응형 스타일 */
+@media (max-width: 992px){
+    .auth-buttons{
+        display: none !important;
+    }
+}
+
 @media (max-width: 768px) {
     .footer-left,
     .footer-right {
@@ -253,6 +262,9 @@ header {
         padding-right: 15px; /* 오른쪽 여백 */
         text-align: center; /* 텍스트 가운데 정렬 */
     }
+    .auth-buttons{
+        display: none !important;
+    }
 }
 
 @media (max-width: 576px) {
@@ -264,5 +276,8 @@ header {
      }
     .footer-right p {
         font-size: 12px;
+    }
+    .auth-buttons{
+        display: none !important;
     }
 }
