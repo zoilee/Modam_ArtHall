@@ -38,7 +38,7 @@ public class FileService {
         Files.write(filePath, file.getBytes());
 
         // "/uploads/" + uniqueFileName; 경로 조정 1202
-        return "/uploads/" + uniqueFileName;
+        return "/uploads/" + uniqueFileName.replace("\\", "/");
     }
 
     public void deleteFile(String filePath) throws IOException {
