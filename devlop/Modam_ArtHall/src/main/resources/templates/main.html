@@ -30,8 +30,10 @@
     <div class="container-fluid nowOn">
         <div class="nowOn-header">
             <h1>What's <span>ON</span></h1>
-            <div class="whatsonBack1"></div>
-            <div class="whatsonBack2"></div>
+            <div class="whatson">
+                <div class="whatsonBack1"></div>
+                <div class="whatsonBack2"></div>
+            </div>
             <button class="show-all-btn" onclick="window.location.href='/showList'">공연전체보기 +</button>
         </div>
         <div class="swiper-container">
@@ -86,6 +88,9 @@
                 </div>
             </div>
         </div>
+
+        <!--top 버튼-->
+        <button id="topButton" onclick="scrollToTop()">▲</button>
    
     <!-- 푸터 -->
     <th:block th:replace="~{fragments/footer :: footerFragment}"></th:block>
@@ -119,6 +124,25 @@
                 card.addEventListener('mouseenter', () => swiper.autoplay.stop()); // hover 시 멈춤
                 card.addEventListener('mouseleave', () => swiper.autoplay.start()); // hover 해제 시 다시 시작
             });
+        });
+
+        // 스크롤 시 버튼 표시/숨김
+        window.addEventListener("scroll", function () {
+            const topButton = document.getElementById("topButton");
+            if (window.scrollY > 200) {
+                topButton.style.display = "flex"; // 스크롤 200px 이상일 때 버튼 표시
+            } else {
+                topButton.style.display = "none"; // 스크롤 200px 이하일 때 버튼 숨김
+            }
+        });
+
+        // 맨 위로 부드럽게 스크롤
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+    
+        document.addEventListener("DOMContentLoaded", () => {
+            fetchData(0);
         });
     </script>
 </body>
