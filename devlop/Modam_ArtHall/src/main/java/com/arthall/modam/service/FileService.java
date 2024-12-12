@@ -37,7 +37,7 @@ public class FileService {
         String uniqueFileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
         // 파일이 저장되는 실제 경로
         Path filePath = normalizedPath.resolve(uniqueFileName);
-        System.out.println("실제파일저장 경로" + filePath.toString().replace("\\", "/"));
+        System.out.println("실제파일저장 경로 " + filePath.toString().replace("\\", "/") + "(정규화) :" + normalizedDir);
 
         // 업로드된 파일을 실제 폴더에 저장
         Files.write(filePath, file.getBytes());
