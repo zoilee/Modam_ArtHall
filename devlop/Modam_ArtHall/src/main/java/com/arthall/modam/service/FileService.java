@@ -15,11 +15,12 @@ import java.util.UUID;
 public class FileService {
 
     // 업로드 경로를 절대 경로로 고정
-    private final String uploadDir = "C:\\upload";
+
+    private final String uploadDir = "/works/img\\upload";
 
     public String saveFile(MultipartFile file) throws IOException {
-        
-        //절대경로
+
+        // 절대경로
         Path absoluteDir = Paths.get(uploadDir).normalize();
         System.out.println("업로드 경로: " + absoluteDir);
 
@@ -36,7 +37,6 @@ public class FileService {
         // 업로드된 파일을 실제 폴더에 저장
         Files.write(filePath, file.getBytes());
 
-        
         // "/uploads/" + uniqueFileName; 경로 조정 1202
         return "/uploads/" + uniqueFileName;
     }
@@ -45,7 +45,7 @@ public class FileService {
         // 절대 경로 생성
         Path absolutePath = Paths.get(uploadDir).resolve(filePath).normalize();
         System.out.println("삭제할 파일 경로: " + absolutePath);
-    
+
         // 파일 존재 여부 확인 후 삭제
         if (Files.exists(absolutePath)) {
             Files.delete(absolutePath);
@@ -54,6 +54,5 @@ public class FileService {
             System.err.println("파일이 존재하지 않음: " + absolutePath);
         }
     }
-    
-    
+
 }
