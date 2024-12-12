@@ -122,7 +122,7 @@ a:hover{
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    background-color: #EB8317;
+    background-color: #10375C;
     color: white;
     border: none;
     border-radius: 15px;
@@ -141,15 +141,17 @@ a:hover{
 }
 
 .slider-btn:hover {
-    background-color: #F3C623;
+    background-color: #fff;
+    border: 1px solid #10375C;
+    color: #10375C;
 }
 
 /* Top 버튼 스타일 */
 #topButton {
     position: fixed;
-    bottom: 300px;
+    bottom: 80px;
     right: 20px; /* 화면 오른쪽 하단 */
-    background-color: #EB8317; /* 버튼 배경색 */
+    background-color: #10375C; /* 버튼 배경색 */
     color: white;
     border: none;
     border-radius: 50%; /* 동그랗게 */
@@ -166,7 +168,7 @@ a:hover{
 }
 
 #topButton:hover {
-    background-color: #F3C623; /* 호버 시 더 어두운 파란색 */
+    background-color: #09223a; /* 호버 시 더 어두운 파란색 */
     opacity: 1;
     transform: scale(1.1); /* 약간 확대 */
 }

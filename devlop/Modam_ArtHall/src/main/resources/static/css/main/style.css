@@ -110,7 +110,7 @@
 .nowOn-header h1 {
     font-size: 2.5rem;
     font-style: italic;
-    z-index: 10;
+    z-index: 100;
     margin-left: 50px;
 }
 
@@ -120,15 +120,21 @@
     font-size: 1.4em;
     font-style: normal;
     font-weight: bold;
-    z-index: 10;
+    z-index: 100;
 }
-
+.whatson{
+    position: absolute;
+    left: 0;
+    width: 600px;
+    height: 100px;
+}
 .whatsonBack1{
     width: 600px;
     height: 70px;
     background-color: #ff6b00;
-    position: absolute;
-    left: 0;
+    position: relative;
+    float: left;
+    top: 10px;
     z-index: 1;
     box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.25);
 }
@@ -137,9 +143,9 @@
     width: 600px;
     height: 70px;
     background-color: #10375C;
-    position: absolute;
+    position:relative;
     left: 10px;
-    bottom: 20px;
+    top: 20px;
     z-index: 0;
     box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.25);
 }
@@ -274,4 +280,70 @@
 
 .more-link:hover {
     text-decoration: underline;
+}
+
+/* Top 버튼 스타일 */
+#topButton {
+    position: fixed;
+    bottom: 100px;
+    right: 20px; /* 화면 오른쪽 하단 */
+    background-color: #10375C; /* 버튼 배경색 */
+    color: white;
+    border: none;
+    border-radius: 50%; /* 동그랗게 */
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 999;
+    opacity: 0.8;
+    transition: all 0.3s ease;
+}
+
+#topButton:hover {
+    background-color: #09223a; /* 호버 시 더 어두운 파란색 */
+    opacity: 1;
+    transform: scale(1.1); /* 약간 확대 */
+}
+
+#topButton:focus {
+    outline: none;
+}
+
+/* 태블릿 크기 (768px 이하) */
+@media (max-width: 768px) {
+    .swiper-wrapper {
+        flex: 0 0 100%; /* 한 번에 2개씩 표시 */
+        overflow: hidden;
+    }
+    .whatsonBack1{
+        width: 70%;
+    }
+    .whatsonBack2{
+        width: 70%;
+    }
+}
+
+/* 모바일 크기 (576px 이하) */
+@media (max-width: 576px) {
+    .nowOn-header{
+        flex-direction: column;
+    }
+    .nowOn-header h1{
+        margin-left: 0;
+        margin-top: 10px;
+    }
+    .nowOn-header h1 span{
+        padding: 0;
+    }
+    .show-all-btn{
+        margin-top: 30px;
+    }
+    .swiper-wrapper {
+        flex: 0 0 100%; /* 한 번에 1개씩 표시 */
+        overflow: hidden;
+    }
 }

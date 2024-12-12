@@ -8,75 +8,17 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" th:href="@{/css/layout/style.css}">
     <link rel="stylesheet" th:href="@{/css/showDetail/style.css}">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <style>
-        .detailBack{
-            background-color: #10375C;
-            position: absolute;
-            width: 100%;
-            height: 470px;
-            top: 110px;
-            z-index: 0;
-            overflow: hidden;
-        }
-        .btnToReservform{
-            background-color: #EB8317;
-            color: #fff;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.25);
-            width: 300px;
-        }
-        .btnToReservform:hover{
-            background-color: #ff9320;
-            box-shadow: 0 0 5px rgba(255, 255, 255, 0.7);
-            color: #fff;
-        }
-        /* 댓글 박스를 relative로 설정하여 절대 위치가 박스 기준으로 적용되게 설정 */
-        .card.position-relative {
-            position: relative;
-        }
-
-        /* 수정/삭제, 저장/취소 버튼 디자인 통일 */
-        .action-buttons {
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-        }
-
-        /* 버튼 스타일 */
-        .action-buttons button {
-            margin-left: 5px;
-        }
-        /* 댓글 박스를 relative로 설정하여 절대 위치가 박스 기준으로 적용되게 설정 */
-        .card.position-relative {
-            position: relative;
-        }
-    
-        /* 저장 및 취소 버튼이 오른쪽 아래에 위치하도록 설정 */
-        .edit-buttons {
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-        }
-    
-        /* 버튼 간격 추가 */
-        .edit-buttons button {
-            margin-left: 5px;
-        }
-
-    </style>
 </head>
 <body>
     <!-- 헤더 -->
     <th:block th:replace="~{fragments/header :: headerFragment}"></th:block>
 
-    <div class="detailBack">
-        <img src="/imgs/backgrounds/showDetail-background-1900.jpg" style="object-fit: fill;">
-    </div>
+    <div class="detailBack"></div>
     <!-- 메인 컨테이너 -->
     <div class="container my-4" style="padding: 100px 0; margin-top: 100px;">
         <div class="row justify-content-center">
             <!-- 공연 정보 -->
-            <div class="col-md-8 my-4 sd_info-section" style="color: #fff; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);">
+            <div class="col-md-8 my-4 sd_info-section">
                 <h4 class="my-4" th:text="${performance.title}">공연 제목</h4>
                 <p th:text="'공연기간 : ' + ${performance.startDate} + ' ~ ' + ${performance.endDate}">공연 기간</p>
                 <p th:text="'공연시간 : ' + ${performance.time} + '분'">공연 시간</p>
@@ -117,7 +59,7 @@
     
 
         <!-- 환불규정 / 주의사항 -->
-        <div class="bg-light py-3 my-4 paymentAlert" style="border-radius: 10px;">
+        <div class="bg-light py-3 my-4 paymentAlert">
             <h5>환불규정 / 주의사항</h5>
             <p>환불 금액은 예매일까지 남은 기간에 따라 차등 적용되며, 환불금액 패널티 기간(최대 6일전)에 환불하실 경우 사용된 적립금은 반환이 불가능합니다. 
                 예매 취소 시, 환불 기간에 관계없이 해당 예매 시 적립된 적립금은 전액 적립이 취소됩니다. 예매 취소 후 금액 환불은 카드사의 상황에 따라 최대 일주일까지 걸릴 수 있습니다.</p>

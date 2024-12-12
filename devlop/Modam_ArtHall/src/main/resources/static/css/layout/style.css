@@ -72,7 +72,7 @@
 }
 .auth-buttons .btn {
     padding: 10px 20px;
-    font-size: 14px;
+    font-size: 13px;
     border-radius: 5px;
 }
 
@@ -230,7 +230,16 @@ header {
     font-size: 13px;
     color: #555;
 }
+
+
+
 /* 반응형 스타일 */
+@media (max-width: 992px){
+    .auth-buttons{
+        display: none !important;
+    }
+}
+
 @media (max-width: 768px) {
     .footer-left,
     .footer-right {
@@ -253,6 +262,9 @@ header {
         padding-right: 15px; /* 오른쪽 여백 */
         text-align: center; /* 텍스트 가운데 정렬 */
     }
+    .auth-buttons{
+        display: none !important;
+    }
 }
 
 @media (max-width: 576px) {
@@ -265,77 +277,7 @@ header {
     .footer-right p {
         font-size: 12px;
     }
-}
-
-/**************** 로그인 아이콘 *******************/
-/* 유저 아이콘 */
-.user-icon {
-    display: none; /* 기본적으로 숨김 */
-    cursor: pointer;
-    font-size: 0.8rem; /* 아이콘 크기 */
-    margin-left: 10px;
-    position: relative;
-    transition: transform 0.2s ease, color 0.2s ease; /* 애니메이션 */
-}
-
-.user-icon:hover {
-    color: #007bff; /* hover 시 색상 */
-}
-/* 관리자 아이콘 스타일 */
-.admin-icon i {
-    font-size: 2.5rem; /* 아이콘 크기 */
-    color: #333; /* 기본 색상 */
-    cursor: pointer;
-    transition: transform 0.2s ease, color 0.2s ease;
-}
-
-.admin-icon i:hover {
-    color: #dc3545; /* hover 시 빨간색 */
-    transform: scale(1.1); /* hover 시 확대 */
-}
-
-
-/* 드롭다운 스타일 */
-.dropdown-menu {
-    display: none; /* 기본적으로 숨김 */
-    position: absolute;
-    top: 40px;
-    right: 10px;
-    background-color: #333;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-    flex-direction: column;
-}
-
-.dropdown-item {
-    padding: 10px 15px;
-    color: white;
-    text-decoration: none;
-}
-
-.dropdown-item:hover {
-    background-color: #555; /* hover 시 배경 */
-    color: white;
-}
-@media (max-width: 768px) {
-    .menu {
-        display: none !important; /* 작은 화면에서는 숨김 */
-    }
-
-    .user-icon {
-        display: block !important; /* 아이콘을 표시 */
-        font-size: 2rem; /* 아이콘 크기 조정 */
-        cursor: pointer; /* 클릭 가능 표시 */
-    }
-
-    .admin-icon {
-        display: block !important; /* 아이콘을 표시 */
-        font-size: 2rem; /* 아이콘 크기 조정 */
-        cursor: pointer; /* 클릭 가능 표시 */
-    }
-
-    .dropdown-menu {
-        display: none; /* 드롭다운 기본 숨김 */
+    .auth-buttons{
+        display: none !important;
     }
 }
