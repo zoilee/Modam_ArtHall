@@ -100,21 +100,34 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const swiper = new Swiper('.swiper-container', {
-                slidesPerView: 3, // 한 번에 보이는 슬라이드 개수
-                spaceBetween: 100, // 슬라이드 간 간격
-                loop: true, // 무한 루프
-                centeredSlides: true, // 중앙에 슬라이드 정렬
+                slidesPerView: 'auto',
+                breakpoints: {
+                    320: {
+                        slidesPerView: 1,
+                        spaceBetween: 20
+                    },
+                    768: {
+                        slidesPerView: 2,
+                        spaceBetween: 40
+                    },
+                    1024: {
+                        slidesPerView: 3,
+                        spaceBetween: 100
+                    }
+                },
+                loop: true,
+                centeredSlides: true,
                 autoplay: {
-                    delay: 3000, // 3초 간격으로 자동 슬라이드
-                    disableOnInteraction: false, // 사용자 상호작용 후에도 자동 슬라이드 유지
+                    delay: 3000,
+                    disableOnInteraction: false,
                 },
                 pagination: {
-                    el: '.swiper-pagination', // 페이지네이션 요소
-                    clickable: true, // 클릭 가능
+                    el: '.swiper-pagination',
+                    clickable: true,
                 },
                 navigation: {
-                    nextEl: '.swiper-button-next', // 다음 버튼
-                    prevEl: '.swiper-button-prev', // 이전 버튼
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
                 },
             });
 

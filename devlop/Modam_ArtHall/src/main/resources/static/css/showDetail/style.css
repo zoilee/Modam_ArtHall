@@ -148,8 +148,8 @@ html, body {
     .detailBack{
         display: none;
     }
-    .sd_info-section{
-        color: #000;
+    .detailBanner{
+        background-color: #0a233a;
     }
 }
 

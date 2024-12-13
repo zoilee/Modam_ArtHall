@@ -17,7 +17,6 @@
 }
 
 
-
 .section-title {
     font-weight: bold;
     font-size: 1.4rem;
@@ -35,4 +34,35 @@
     border: 1px solid #ff9320;
     color: #ff9320;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.25);
+}
+
+/* 태블릿 크기 (768px ~ 1024px) */
+@media (min-width: 768px) and (max-width: 1024px) {
+    .full-row{
+        display: flex !important;
+        flex-direction: column !important;
+    }
+    .right-section {
+        width: 100%;
+    }
+    .left-section{
+        width: 100%;
+    }
+    .section-box{
+        width: 50%;
+    }
+}
+
+/* 모바일 사이즈 */
+@media (max-width: 768px) {
+    .poster-box{
+        width: 250px;
+        height: 333px;
+    }
+    .right-section{
+        width: 100%;
+    }
+    .section-box{
+        width: 50%;
+    }
 }
