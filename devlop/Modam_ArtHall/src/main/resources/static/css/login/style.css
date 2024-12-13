@@ -9,4 +9,18 @@
         width: 100%;
         overflow-x: hidden;
     }
+/* 모바일 크기 (768px 이하) */
+@media (max-width: 767px) {
+    .photo-box{
+        display: none !important;
+    }
+    .custom-card{
+        max-width: 100% !important;
+        width: 90% !important;
+        margin: 100px auto;
+    }
+    .social-log{
+        flex-direction: row !important;
+    }
+}
     

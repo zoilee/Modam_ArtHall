@@ -30,9 +30,6 @@
         width: 80%; /* 컨테이너의 80% 크기 */
     }
 }
-.form-label {
-    font-weight: bold;
-}
 
 
 .left-section-title{
@@ -42,35 +39,25 @@
 }
 @media (max-width: 767px) {
     .left-section-title{
-        width: 96px;
-        font-size: 1.5rem;
-        font-weight: bold;
-        margin-right: 50px;
+        display: none;
     }
     .poster-box {  
         width: 500px; /* 최대 가로 크기 */
         aspect-ratio: 3 / 4; /* 비율 3:4 */
         object-fit: cover; /* 이미지를 비율에 맞게 채움 */
-        
         display: block; /* 레이아웃 흐름에서 블록 요소로 설정 */
-        
     }
 }
 
 
 .right-section label{
     margin-right: 50px;
-    font-size: 1.5rem;
-}
-.right-section p{
-    font-size: 1.2rem;
+    font-size: 1.1rem;
 }
 
 /* 적립금 사용 섹션 스타일 */
-.points-section {
-   
-    padding: 20px;
-    
+.points-section { 
+    padding: 20px;   
 }
 
 .input-group {
@@ -79,20 +66,19 @@
 
 .points-apply-btn {
     background-color: #27ae60; /* 녹색으로 변경 */
+    border: 1px solid #27ae60;
     color: #fff;
     transition: all 0.3s ease;
 }
 
 .points-apply-btn:hover {
-    background-color: #229954; /* 진한 녹색 */
+    background-color: #1e884a; /* 진한 녹색 */
+    border: 1px solid #1e884a;
 }
 .points-summary{
-    
     padding: 20px;
     padding-bottom: 149px;
     border-radius: 10px;
-    /*border: 3px solid #eb8317;*/
-    /*box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);  그림자 */
     font-size: 1rem;
 }
 .points-summary label{
@@ -109,10 +95,9 @@
 
 
 .payment-summary {
-    
     padding: 20px;
     border-radius: 10px;
-    border: 1px solid #eb8317;
+    border: 1px solid #d9534f;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 그림자 */
     font-size: 1rem;
 }
@@ -136,6 +121,7 @@
 .btn-custom:hover {
     background-color: #c0392b; /* 더 진한 색상으로 변화 */
     transform: scale(1.02); /* 약간 커짐 효과 */
+    color: #fff;
 }
 
 .section-title {
