@@ -1,0 +1,187 @@
+/* 기본 스타일 (데스크톱) */
+.head-mobile{
+    display: none;
+}
+.seat-wrapper {
+    display: grid;
+    grid-template-columns: repeat(18, 1fr);
+    gap: 5px;
+    margin: 20px auto;
+    width: 100%;
+    max-width: 1200px;
+}
+
+.seat {
+    width: 40px;
+    height: 40px;
+    margin: 3px;
+    border-radius: 10px;
+    font-size: 14px;
+}
+
+.stage {
+    background-color: #d3d3d3;
+    color: #666;
+    text-align: center;
+    font-weight: bold;
+    width: 70%;
+    height: 50%;
+    margin-top: 85px;
+    padding: 15px;
+}
+
+.seat-position {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    width: 15%;
+    height: 100%;
+}
+
+.seatShow {
+    width: 15%;
+    height: 100%;
+    border: 2px solid #555555;
+    padding: 20px 0;
+}
+.seatZone{
+    display: flex;
+    flex-direction: column;
+}
+.btnPay{
+    width: 60%;
+    height: 40px;
+}
+.legend-item { 
+    display: flex; 
+    align-items: center; 
+}
+.legend-item .seat {
+    margin-right: 5px; 
+}
+
+/* 태블릿 화면 */
+@media (min-width: 768px) and (max-width: 1024px) {
+    .seat-wrapper {
+        grid-template-columns: repeat(18, 1fr);
+        gap: 3px;
+        max-width: 900px;
+    }
+    
+    .seat {
+        width: 30px;
+        height: 30px;
+        margin: 2px;
+        font-size: 12px;
+    }
+    
+    .stage {
+        width: 80%;
+        margin: 15px auto;
+        padding: 12px;
+    }
+    
+    .seat-position {
+        justify-content: center;
+        gap: 20px;
+    }
+}
+
+/* 모바일 화면 */
+@media (max-width: 767px) {
+    .head-tab{
+        display: none;
+    }
+    .head-mobile{
+        display: block;
+        width: 100%;
+        margin-top: 100px;
+    }
+    .seatShow{
+        width: 100% !important;
+        height: 80px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .btnPay{
+        width: 120px;
+        font-size: 14px;
+    }
+    .seat-position{
+        width: 100% !important;
+        display: flex;
+        justify-content: space-between;
+    }
+    .seat-wrapper {
+        grid-template-columns: repeat(18, 1fr);
+        gap: 1px;
+        margin: 10px auto;
+        max-width: 100%;
+    }
+    
+    .seat {
+        width: 20px;
+        height: 20px;
+        margin: 1px;
+        border-radius: 5px;
+        font-size: 8px;
+        padding: 1px;
+    }
+    
+    .stage {
+        width: 90%;
+        margin: 10px auto;
+        padding: 8px;
+    }
+    
+    .stage h1 {
+        font-size: 18px;
+        margin: 0;
+    }
+    
+    .legend {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 5px;
+        margin-bottom: 10px;
+        font-size: 12px;
+    }
+    
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+    }
+    
+    .legend-item .seat {
+        width: 12px;
+        height: 12px;
+        margin-right: 3px;
+    }
+    
+    .seatShow {
+        width: 200px;
+        padding: 10px;
+        margin-top: 10px;
+        border-width: 1px;
+    }
+    
+    .seatZone h5 {
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+    
+    .seatZone p {
+        font-size: 12px;
+        margin: 5px 0;
+    }
+}
+
+/* 좌석 색상 (모든 화면 크기에 동일하게 적용) */
+.seat.vip { background-color: #FFD1DC; }
+.seat.r { background-color: #FFFFAA; }
+.seat.s { background-color: #AAFFAA; }
+.seat.a { background-color: #bdd2ff; }
+.seat.unavailable { background-color: #555555 !important; }
+.seat.selected { background-color: #7542b8; }
