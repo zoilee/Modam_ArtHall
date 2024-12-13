@@ -140,7 +140,7 @@
 
     <!-- 이전 예매내역 -->
     <h5 class="mt-4"><strong>이전 예매내역</strong></h5>
-    <div th:if="${#lists.isEmpty(pastReservations)}" class="card-border">
+    <div th:if="${#lists.isEmpty(pastReservations)}">
         <div class="reservation-card">
             <p>과거 예약이 없습니다.</p>
         </div>
