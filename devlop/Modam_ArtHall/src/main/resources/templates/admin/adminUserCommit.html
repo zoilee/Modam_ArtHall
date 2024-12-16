@@ -46,10 +46,11 @@
                     <button type="submit" class="btn btn-warning btn-sm action-button">수정</button>
                 </form>
                 <!-- 삭제 버튼 -->
-                <form th:action="@{/admin/users/delete}" method="post">
+                <form th:action="@{/admin/users/delete}" method="post" onsubmit="return confirmDelete();">
                     <input type="hidden" name="id" th:value="${user.id}">
                     <button type="submit" class="btn btn-danger btn-sm action-button">삭제</button>
                 </form>
+                
             </div>
             
         </div>
@@ -77,4 +78,10 @@
     <!-- 푸터 -->
     <th:block th:replace="~{fragments/footer :: footerFragment}"></th:block>
 </body>
+<script>
+    function confirmDelete() {
+        return confirm("정말로 삭제하시겠습니까?");
+    }
+</script>
+
 </html>

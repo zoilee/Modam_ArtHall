@@ -112,7 +112,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         private OAuth2User createOAuth2User(OAuth2User oAuth2User, Map<String, Object> attributes, String loginId) {
             Map<String, Object> customAttributes = new HashMap<>(attributes);
             customAttributes.put("loginId", loginId); // loginId를 추가
-        
+            
               // 소셜 로그인 사용자를 ROLE_USER로 설정
     Collection<GrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
 

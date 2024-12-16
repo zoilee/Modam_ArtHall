@@ -2,33 +2,45 @@
 ### SpringBoot 기반 공연 예매시스템
 
 ## 📖목차
-#### 1. [소개]
-#### 2. [기술스택]
-#### 3. [구축기능]
-#### 4. [ERD]
-#### 5. [상세페이지]
-#### 6. [참고 자료]
+### 1. [소개]
+### 2. [기술스택]
+### 3. [구축기능]
+### 4. [ERD]
+### 5. [상세페이지]
+### 6. [참고 자료]
 
 ## 👀소개
-### 프로젝트 이름
-- ModamArthall 프로젝트는 **기업요구를 반영한 프로젝트로** 기업에서 요구하는 기능 구현을 우선으로 생각해서 개발했습니다.
-### 주요 목표
+#### 프로젝트 개요
+- ModamArthall 프로젝트는 **기업요구를 반영한 프로젝트로** 기업에서 요구하는 기능 구현을 우선하여 개발
+- 목표: 사용자가 실시간으로 공연 좌석을 예약하고, 편리하게 예약 내용을 관리할 수 있는 온라인 예약 관리 시스템 구축
+- 타겟층: 뮤지컬 및 공연을 즐기는 다양한 연령층
+#### 주요 목표
+- 사용자는 다양한 공연 정보를 한눈에 확인하고, 실시간으로 좌석을 예약하고 조회할 수 있는 시스템 구축을 통해 편리한 예약 제공.
 - 사용자를 위한 **쉽고 직관적인 인터페이스** 제공.
-- 마이페이지에서 **사용자의 예매정보와 적립금**을 한 곳에서 확인 가능.
-- 로그인과 결제에 **api사용**.
-
+- 유저/관리자용 로그인 및 계정관리 시스템 구현.
+- 적립금과 기간별 환불 수수료 시스템을 포함한 결제 기능 구현.
 ## 🛠️기술 스택
 
+### 💻 Language
 ![Java](https://img.shields.io/badge/Java-ED8B00?style=flat&logo=java&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-ES6%2B-F7DF1E?style=flat&logo=javascript&logoColor=black)
+
+### ⚙️ Backend
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-2.5.4-6DB33F?style=flat&logo=spring-boot&logoColor=white)
-![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=flat&logo=mysql&logoColor=white)
-![AWS](https://img.shields.io/badge/AWS-Cloud-F28D00?style=flat&logo=amazon-aws&logoColor=white)
-![RDS](https://img.shields.io/badge/AWS%20RDS-Database-527FFF?style=flat&logo=amazon-rds&logoColor=white)
+
+### 🎨 Frontend
 ![HTML5](https://img.shields.io/badge/HTML5-5C5F67-E34F26?style=flat&logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6-1572B6?style=flat&logo=css3&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-ES6%2B-F7DF1E?style=flat&logo=javascript&logoColor=black)
 
-## 🖱️구축기능
+### 🗃️ Database
+![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=flat&logo=mysql&logoColor=white)
+![RDS](https://img.shields.io/badge/AWS%20RDS-Database-527FFF?style=flat&logo=amazon-rds&logoColor=white)
+
+### ☁️ Cloud
+![AWS](https://img.shields.io/badge/AWS-Cloud-F28D00?style=flat&logo=amazon-aws&logoColor=white)
+![RDS](https://img.shields.io/badge/AWS%20RDS-Database-527FFF?style=flat&logo=amazon-rds&logoColor=white)
+## 🔍구축기능
 
 - 유저 / 관리자 SIDE별 기능
 - 회원가입, 로그인, 내정보수정 기능
@@ -49,11 +61,12 @@
 
 
 ## 📚참고자료
-| 이름           | 설명                 | 링크                                  |
-|----------------|----------------------|---------------------------------------|
-| 예술의 전당    | 공연 예매 플랫폼     | [바로가기](https://www.sacticket.co.kr) |
-| 모두예술극장   | 다양한 공연 공간 제공 | [바로가기](https://www.moduartcenter.co.kr) |
-| 인터파크 티켓  | 종합 티켓 예매 사이트 | [바로가기](https://tickets.interpark.com) |
+- **[예술의 전당](https://www.sacticket.co.kr)**:
+  - 메인 페이지 이미지 슬라이드 디자인 참고
+- **[모두예술극장](https://www.moduartcenter.co.kr)**:
+  - 전반적인 디자인 참고
+- **[인터파크 티켓](https://tickets.interpark.com)**:
+  - 공연 정보, 예매 페이지 참고
 
 ## 👨‍💻 Developer
 - 오승안
