@@ -24,7 +24,12 @@
 
     <!-- Hero 섹션 -->
     <div class="hero">
-        <h1>hero(slide)</h1>
+        <div class="hero-wrapper">
+            <img src="/imgs/hero/wicked1903x800.webp" alt="wicked">
+            <img src="/imgs/hero/hairspray1903x800.webp" alt="hairspray">
+            <img src="/imgs/hero/matahari1903x800.webp" alt="matahari">
+            <img src="/imgs/hero/kinky1903x800.webp" alt="kinkyboots">
+        </div>
     </div>
 
     <div class="container-fluid nowOn">
@@ -46,7 +51,7 @@
                              class="card-img-top" alt="공연 이미지">
                     </div>
                     <div class="performance-info">
-                        <span class="venue">모담 A홀</span>
+                        <span class="venue" th:text="${performance.location == 'theater1' ? '모담 A홀' : (performance.location == 'theater2' ? '모담 B홀' : '')}">모담 A홀</span>
                         <h3 class="title" th:text="${performance.title}">공연 제목</h3>
                         <p class="date" th:text="${performance.startDate} + ' ~ ' + ${performance.endDate}">공연 기간</p>
                     </div>
@@ -157,6 +162,36 @@
         document.addEventListener("DOMContentLoaded", () => {
             fetchData(0);
         });
+
+        //hero slide
+        let currentIndex = 0;
+        const wrapper = document.querySelector('.hero-wrapper');
+        const images = document.querySelectorAll('.hero-wrapper img');
+        const totalImages = images.length;
+
+        // 첫 번째 이미지를 마지막에 추가하여 무한 슬라이드 효과 구현
+        const firstImage = images[0].cloneNode(true);  // 첫 번째 이미지를 복제
+        wrapper.appendChild(firstImage);  // 복제된 이미지를 맨 뒤에 추가
+
+        function slide() {
+        const imageWidth = document.documentElement.clientWidth;  // 스크롤바를 제외한 화면 너비
+        if (currentIndex === totalImages) {
+            // 마지막 이미지가 화면에 보일 때, 슬라이드를 처음으로 초기화
+            wrapper.style.transition = 'none';
+            wrapper.style.transform = 'translateX(0)';
+            currentIndex = 0;
+
+            // 조금 지연시킨 후에 다시 transition을 활성화
+            setTimeout(() => {
+                wrapper.style.transition = 'transform 1.5s ease';
+            }, 50);
+        } else {
+            wrapper.style.transform = `translateX(-${(currentIndex + 1) * imageWidth}px)`;  // 화면 너비에 맞게 translateX 계산
+            currentIndex++;
+        }
+    }
+
+        setInterval(slide, 4000);  // 3초마다 이미지 슬라이드
     </script>
 </body>
 </html>
