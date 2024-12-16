@@ -63,7 +63,7 @@ spring:
               - email
               - profile
             authorization-grant-type: authorization_code
-            redirect-uri: http://modamarthall.store/login/oauth2/code/google
+            redirect-uri: http://modamarthall.store/login/oauth2/code/google, http://modamart.kro.kr/login/oauth2/code/google
             client-name: Google
         provider:
           kakao:
