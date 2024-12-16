@@ -184,7 +184,7 @@ header {
     flex-direction: row; /* 로고와 텍스트를 가로로 배치 */
     align-items: center;
     color: #333;
-    background-color: #d3d3d3;
+    background-color: #8297ab;
     padding-right: 40px;
     }
 .footer-logo {
@@ -206,7 +206,7 @@ header {
 /* 오른쪽 영역 스타일 */
 .footer-right {
     flex: 1;
-    background-color: #777777;
+    background-color: #10375c;
     color: white;
     display: flex;
     flex-direction: column;
