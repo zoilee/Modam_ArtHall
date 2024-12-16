@@ -1,9 +1,11 @@
-a{
+.showList-poster-container a,
+.performance-item a{
     font-weight: bold;
     color: #000;
     text-decoration: none;
 }
-a:hover{
+.showList-poster-container a:hover,
+.performance-item a:hover{
     color: #F3C623;
 }
 
