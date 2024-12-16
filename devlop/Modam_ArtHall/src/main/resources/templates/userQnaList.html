@@ -36,32 +36,45 @@
                             </td>
                             <td th:text="${#dates.format(qna.createdAt, 'yyyy-MM-dd')}">2024-12-06</td>
                             <td>
-                                <div>
-                                    <!-- 수정 버튼 -->
-                                    <a th:if="${#authentication.principal instanceof T(org.springframework.security.core.userdetails.User) ? 
-                                        #authentication.principal.username eq qna.userId : 
-                                        #authentication.principal.attributes['name'] eq qna.userId}" 
-                                        th:href="@{/userQnaEdit(id=${qna.id})}" 
-                                        class="btn btn-sm common-button" 
-                                        th:classappend="${qna.answered} ? 'btn-secondary' : 'btn-warning'" 
-                                        th:onclick="${qna.answered} ? 'alert(`답변이 완료되어 수정이 불가능합니다.`); return false;' : ''" 
-                                        th:text="${qna.answered} ? '답변' : '수정'">
-                                    </a>
-                                    <form th:if="${#authentication.principal instanceof T(org.springframework.security.core.userdetails.User) ? 
-                                                    #authentication.principal.username eq qna.userId : 
-                                                    #authentication.principal.attributes['name'] eq qna.userId}" 
-                                            th:action="@{/user/qnaDelete}" 
-                                            method="post" 
-                                            style="display: inline;">
-                                        <input type="hidden" name="qnaId" th:value="${qna.id}"/>
-                                        <button type="submit" class="btn btn-sm btn-danger common-button">삭제</button>
-                                    </form>
-                                </div>
+                                <!-- 수정 버튼 -->
+                                <a th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}"
+                                   th:href="@{/admin/qnaEdit(id=${qna.id})}"
+                                   class="btn btn-sm common-button" 
+                                   th:classappend="${qna.answered} ? 'btn-secondary' : 'btn-warning'" 
+                                   th:onclick="${qna.answered} ? 'alert(`답변이 완료되어 수정이 불가능합니다.`); return false;' : ''" 
+                                   th:text="${qna.answered} ? '완료' : '수정'">
+                                </a>
+                            
+                                <a th:if="${!(#authorization.expression('hasRole(''ROLE_ADMIN'')'))}"
+                                   th:href="@{/userQnaEdit(id=${qna.id})}"
+                                   class="btn btn-sm common-button" 
+                                   th:classappend="${qna.answered} ? 'btn-secondary' : 'btn-warning'" 
+                                   th:onclick="${qna.answered} ? 'alert(`답변이 완료되어 수정이 불가능합니다.`); return false;' : ''" 
+                                   th:text="${qna.answered} ? '완료' : '수정'">
+                                </a>
+                            
+                                <!-- 삭제 버튼 -->
+                                <form th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}" 
+                                      th:action="@{/admin/qnaDelete}" 
+                                      method="post" 
+                                      style="display: inline;">
+                                    <input type="hidden" name="qnaId" th:value="${qna.id}"/>
+                                    <button type="submit" class="btn btn-sm btn-danger common-button">삭제</button>
+                                </form>
+                                
+                                <form th:if="${!(#authorization.expression('hasRole(''ROLE_ADMIN'')'))}" 
+                                      th:action="@{/user/qnaDelete}" 
+                                      method="post" 
+                                      style="display: inline;">
+                                    <input type="hidden" name="qnaId" th:value="${qna.id}"/>
+                                    <button type="submit" class="btn btn-sm btn-danger common-button">삭제</button>
+                                </form>
                             </td>
+                            
                         </tr>
-                        
                     </tbody>
                 </table>
+                
             </div>    
             <nav aria-label="Page navigation">
                 <ul class="pagination justify-content-center">
