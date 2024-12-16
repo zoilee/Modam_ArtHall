@@ -1,6 +1,19 @@
 .hero {
     height: 800px;
-    background-color: #ccc;
+    margin-top: 100px;
+    overflow: hidden;
+    justify-content: center;
+}
+.hero-wrapper{
+    width: 100%;
+    max-width: 100%;
+    display: flex;
+    transition: transform 1.5s ease;
+}
+.hero-wrapper img {
+    width: 100%;
+    height: auto;
+    flex-shrink: 0;
 }
 .m_carousel-item {
     padding: 20px 0;
@@ -319,10 +332,19 @@
         width: calc(50% - 80px) !important; /* 2개씩 표시 */
         padding: 0 40px; /* 패딩 조정 */
     }
+
+    .hero{
+        height: 50vh;
+    }
+
 }
 
 /* 모바일 크기 (768px 이하) */
 @media (max-width: 767px) {
+
+    .hero{
+        height: 25vh;
+    }
 
     .swiper-wrapper {
         width: calc(100% - 40px) !important; /* 1개씩 표시 */
