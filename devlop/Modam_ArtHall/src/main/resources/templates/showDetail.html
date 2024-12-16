@@ -23,7 +23,9 @@
                 <p th:text="'공연기간 : ' + ${performance.startDate} + ' ~ ' + ${performance.endDate}">공연 기간</p>
                 <p th:text="'공연시간 : ' + ${performance.time} + '분'">공연 시간</p>
                 <p th:text="'관람연령 : ' + ${performance.age} + '세 이상'">관람 연령</p>
-                <p th:text="'장소 : ' + ${performance.location}">공연 장소</p>
+                <p th:text="'장소 : ' + (${performance.location} == 'theater1' ? '모담 A홀' : (${performance.location} == 'theater2' ? '모담 B홀' : '미정'))">
+                    공연 장소
+                </p>
                 <p th:text="'평균 평점 : ' + (${performance.formattedAverageRating} ?: '0.0') + ' / 5'">
                     평균 평점 : 0.0 / 5
                 </p>
