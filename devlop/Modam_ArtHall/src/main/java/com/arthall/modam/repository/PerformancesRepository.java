@@ -38,7 +38,6 @@ public interface PerformancesRepository extends JpaRepository<PerformancesEntity
     @Query("SELECT p FROM PerformancesEntity p WHERE p.endDate >= CURRENT_DATE ORDER BY p.startDate ASC")
     List<PerformancesEntity> findUpcomingPerformances();
 
-    // 최신 공연 데이터를 가져오는 메서드
-    // 필드명 수정: startDate와 endDate로 변경
-    List<PerformancesEntity> findByStartDateBeforeAndEndDateAfter(Date startDate, Date endDate);
+    // 현재 상연 중이거나 미래에 상연될 공연 리스트
+    List<PerformancesEntity> findByEndDateGreaterThanEqual(Date today);
 }

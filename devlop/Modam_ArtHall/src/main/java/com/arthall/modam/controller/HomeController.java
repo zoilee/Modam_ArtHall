@@ -95,7 +95,7 @@ public class HomeController {
         Date today = Date.valueOf(LocalDate.now());
     
         // 현재 상연 중인 공연 리스트 가져오기
-        List<PerformancesEntity> performances = performanceService.getCurrentPerformances(today);
+        List<PerformancesEntity> performances = performanceService.getActiveAndFuturePerformances(today);
     
         // 공연 데이터 형식화
         performances.forEach(performance -> {

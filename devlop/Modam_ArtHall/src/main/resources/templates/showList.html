@@ -124,14 +124,17 @@
             console.log("Current index before:", currentIndex);
             console.log("Slide width:", slideWidth);
 
+            // 한 화면에 표시될 슬라이드 수 계산
+            const slidesToShow = getSlidesToShow();
+
             // 이동할 인덱스 계산
             currentIndex += direction;
 
-            // 경계를 넘어가지 않도록 설정
+            // 경계 조건 설정
             if (currentIndex < 0) {
                 currentIndex = 0;
-            } else if (currentIndex > slides.length - 4) {
-                currentIndex = slides.length - 4;
+            } else if (currentIndex > slides.length - slidesToShow) {
+                currentIndex = slides.length - slidesToShow;
             }
 
             console.log("Current index after:", currentIndex);
@@ -139,6 +142,23 @@
             // 슬라이드 이동
             slidesContainer.style.transform = `translateX(-${currentIndex * slideWidth}px)`;
         }
+
+        // 화면 너비에 따라 보여질 슬라이드 개수 계산
+        function getSlidesToShow() {
+            if (window.innerWidth >= 1024) {
+                return 4; // 데스크탑: 4개씩
+            } else if (window.innerWidth >= 600) {
+                return 2; // 태블릿: 2개씩
+            } else {
+                return 1; // 모바일: 1개씩
+            }
+        }
+
+        // 창 크기 조절 시 슬라이드 위치 초기화
+        window.addEventListener("resize", () => {
+            currentIndex = 0;
+            moveSlide(0);
+        });
 
         function renderTable(data) {
             const container = document.querySelector("#showList-tableBody");
