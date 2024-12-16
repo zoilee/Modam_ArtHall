@@ -597,6 +597,14 @@ public class AdminController {
         return "redirect:/admin/userCommit"; // 수정 후 회원 목록 페이지로 이동
     }
 
+    @PostMapping("/users/delete")
+    public String deleteUser(@RequestParam("id") int userId, RedirectAttributes redirectAttributes) {
+        userService.deleteUser(userId); // 사용자 삭제 서비스 호출
+        redirectAttributes.addFlashAttribute("message", "회원이 삭제되었습니다.");
+        return "redirect:/admin/userCommit"; // 회원 관리 페이지로 리다이렉트
+    }
+
+
     /************** QnA**************** */
 
     @Controller

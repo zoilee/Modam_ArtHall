@@ -69,40 +69,32 @@ public class UserController {
 
     // 로그인 폼 표시
     @GetMapping("/login")
-    public String showLoginForm(Model model, HttpSession session) {
-            // 세션에서 에러 메시지 가져오기
-        String loginError = (String) session.getAttribute("loginError");
-        if (loginError != null) {
-            model.addAttribute("loginError", loginError);
-            // 메시지 가져온 후 세션에서 제거 (한 번만 표시되도록)
-            session.removeAttribute("loginError");
-        }
+    public String showLoginForm(Model model) {
         model.addAttribute("userDto", new UserDto());
         return "login";
     }
 
     @PostMapping("/login")
     public String loginUser(@RequestParam("loginId") String loginId, @RequestParam("password") String password,
-                            HttpSession session, Model model) {
+            RedirectAttributes redirectAttributes, Model model) {
         UserEntity user = userService.getUserByLoginId(loginId);
 
         // 사용자가 존재하지 않을 경우
         if (user == null || !passwordEncoder.matches(password, user.getPassword())) {
-            session.setAttribute("loginError", "아이디 또는 비밀번호가 잘못되었습니다.");
-            return "redirect:/login"; // 리다이렉트하여 메시지를 세션으로 전달
+            model.addAttribute("loginError", "아이디 또는 비밀번호가 잘못되었습니다.");
+            return "login";
         }
 
         // 계정이 BANNED 상태일 경우 처리
         if (user.getStatus() == UserEntity.Status.BANNED) {
-            session.setAttribute("loginError", "계정이 정지되었습니다. 관리자에게 문의하세요.");
-            return "redirect:/login"; // 리다이렉트하여 메시지를 세션으로 전달
+            model.addAttribute("loginError", "계정이 정지되었습니다. 관리자에게 문의하세요.");
+            return "login";
         }
 
-        // 로컬 사용자 로그인 세션 처리 (로그인 성공)
-        session.setAttribute("user", user); // 사용자 정보를 세션에 저장
+        // 로컬 사용자 로그인 세션 처리
         return "redirect:/"; // 로그인 성공 시 메인 페이지로 이동
     }
-
+    
     // =================================개인정보 수정 폼
     // 표시====================================
     @GetMapping("/registeruserEdit")
