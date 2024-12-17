@@ -1,6 +1,7 @@
 package com.arthall.modam.repository;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,8 +21,14 @@ public interface CommentRepository extends JpaRepository<CommentEntity, Integer>
     @Query("SELECT c FROM CommentEntity c LEFT JOIN FETCH c.user LEFT JOIN FETCH c.performance WHERE c.performance.id = :performanceId")
     List<CommentEntity> findCommentsByPerformanceId(@Param("performanceId") Integer performanceId);
 
+    // 단일 공연 평균 평점 조회
     @Query("SELECT AVG(c.rating) FROM CommentEntity c WHERE c.performance.id = :performanceId")
     Double findAverageRatingByPerformanceId(@Param("performanceId") Integer performanceId);
+
+    // 여러 공연 평균 평점 조회
+    @Query("SELECT c.performance.id AS performanceId, AVG(c.rating) AS averageRating " +
+           "FROM CommentEntity c WHERE c.performance.id IN :performanceIds GROUP BY c.performance.id")
+    List<Map<String, Object>> findAverageRatingByPerformanceIds(@Param("performanceIds") List<Integer> performanceIds);
 
     // Pageable을 사용하는 쿼리
     @Query("SELECT c FROM CommentEntity c WHERE c.performance.id = :performanceId ORDER BY c.createdAt DESC")

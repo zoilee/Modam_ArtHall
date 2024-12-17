@@ -92,7 +92,6 @@ public class PerformanceService {
     public Page<Map<String, Object>> getPastPerformances(Pageable pageable) {
         Page<PerformancesEntity> pastPerformances = performancesRepository.findPastPerformances(pageable);
     
-        // 필요한 필드만 추출하여 Page<Map> 형태로 변환
         return pastPerformances.map(performance -> {
             Map<String, Object> performanceMap = new HashMap<>();
             performanceMap.put("id", performance.getId());
@@ -103,6 +102,11 @@ public class PerformanceService {
             performanceMap.put("endDate", performance.getEndDate() != null
                     ? dateFormatter.format(performance.getEndDate().toLocalDate())
                     : "데이터 없음");
+    
+            // 평균 평점 가져오기
+            Double averageRating = commentRepository.findAverageRatingByPerformanceId(performance.getId());
+            performanceMap.put("averageRating", averageRating != null ? String.format("%.1f", averageRating) : "평점 없음");
+    
             return performanceMap;
         });
     }
