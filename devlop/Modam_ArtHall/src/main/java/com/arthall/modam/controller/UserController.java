@@ -76,25 +76,25 @@ public class UserController {
 
     @PostMapping("/login")
     public String loginUser(@RequestParam("loginId") String loginId, @RequestParam("password") String password,
-    RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes) {
         UserEntity user = userService.getUserByLoginId(loginId);
-    
+
         // 사용자가 존재하지 않을 경우
         if (user == null || !passwordEncoder.matches(password, user.getPassword())) {
             redirectAttributes.addFlashAttribute("loginError", "아이디 또는 비밀번호가 잘못되었습니다.");
             return "redirect:/login";
         }
-    
+
         // 계정이 BANNED 상태일 경우 처리
         if (user.getStatus() == UserEntity.Status.BANNED) {
             redirectAttributes.addFlashAttribute("loginError", "계정이 정지되었습니다. 관리자에게 문의하세요.");
             return "redirect:/login";
         }
-    
+
         // 로컬 사용자 로그인 세션 처리 (실제 로그인 로직 필요)
         return "redirect:/"; // 로그인 성공 시 메인 페이지로 이동
     }
-    
+
     // =================================개인정보 수정 폼
     // 표시====================================
     @GetMapping("/registeruserEdit")
@@ -301,18 +301,18 @@ public class UserController {
     @GetMapping("/user/qnaView")
     public String showUserQnaView(@RequestParam("id") int id, Model model, Authentication authentication) {
         QnaEntity qna = qnaService.getQnaById(id);
-    
+
         if (qna == null) {
             return "redirect:/userQnaList";
         }
-    
+
         boolean isAuthorized = qnaService.isAuthorized(qna, authentication);
         model.addAttribute("qna", qna);
         model.addAttribute("isAuthorized", isAuthorized);
-    
+
         return "userQnaView";
     }
-    
+
     // QnA 작성 페이지 (사용자)
     @GetMapping("/user/qnaWrite")
     public String showCreateQnaForm(Model model, Principal principal) {
@@ -324,50 +324,49 @@ public class UserController {
     }
 
     @PostMapping("/user/qnaWrite")
-    public String saveUserQna(@ModelAttribute QnaEntity qna, @RequestParam(value = "isPrivate", required = false) boolean isPrivate, Principal principal) {
-    qna.setUserId(principal.getName()); // 사용자 ID를 설정
-    qna.setPrivate(isPrivate); // 비밀글 여부 설정
-    qnaService.createQna(qna); // QnA 저장
-    return "redirect:/userQnaList";
-}
+    public String saveUserQna(@ModelAttribute QnaEntity qna,
+            @RequestParam(value = "isPrivate", required = false) boolean isPrivate, Principal principal) {
+        qna.setUserId(principal.getName()); // 사용자 ID를 설정
+        qna.setPrivate(isPrivate); // 비밀글 여부 설정
+        qnaService.createQna(qna); // QnA 저장
+        return "redirect:/userQnaList";
+    }
 
-        @GetMapping("/userQnaEdit")
-        public String showQnaEditForm(@RequestParam("id") int id, Model model, Authentication authentication,
-                                    RedirectAttributes redirectAttributes) {
-            QnaEntity qna = qnaService.getQnaById(id);
+    @GetMapping("/userQnaEdit")
+    public String showQnaEditForm(@RequestParam("id") int id, Model model, Authentication authentication,
+            RedirectAttributes redirectAttributes) {
+        QnaEntity qna = qnaService.getQnaById(id);
 
-            // QnA가 존재하지 않거나 수정 권한이 없는 경우
-            if (qna == null || !qnaService.canEditQna(qna, authentication)) {
-                // alert 메시지를 RedirectAttributes로 전달
-                redirectAttributes.addFlashAttribute("alertMessage", "답변이 완료되어 수정이 불가능합니다.");
-                return "redirect:/userQnaList"; // QnA 목록으로 리다이렉트
-            }
-
-            model.addAttribute("qna", qna);
-            return "userQnaEdit"; // 수정 페이지 템플릿 반환
+        // QnA가 존재하지 않거나 수정 권한이 없는 경우
+        if (qna == null || !qnaService.canEditQna(qna, authentication)) {
+            // alert 메시지를 RedirectAttributes로 전달
+            redirectAttributes.addFlashAttribute("alertMessage", "권한이 없어 수정이 불가능합니다.");
+            return "redirect:/userQnaList"; // QnA 목록으로 리다이렉트
         }
 
-        @PostMapping("/user/qnaEdit")
-        public String updateUserQna(@ModelAttribute QnaEntity qna, Authentication authentication,
-                                    RedirectAttributes redirectAttributes) {
-            QnaEntity existingQna = qnaService.getQnaById(qna.getId());
+        model.addAttribute("qna", qna);
+        return "userQnaEdit"; // 수정 페이지 템플릿 반환
+    }
 
-            // QnA가 존재하지 않거나 수정 권한이 없는 경우
-            if (existingQna == null || !qnaService.canEditQna(existingQna, authentication)) {
-                redirectAttributes.addFlashAttribute("errorMessage", "수정 권한이 없거나 답변이 완료된 질문은 수정할 수 없습니다.");
-                return "redirect:/userQnaList";
-            }
+    @PostMapping("/user/qnaEdit")
+    public String updateUserQna(@ModelAttribute QnaEntity qna, Authentication authentication,
+            RedirectAttributes redirectAttributes) {
+        QnaEntity existingQna = qnaService.getQnaById(qna.getId());
 
-            // 기존 QnA 정보 업데이트
-            existingQna.setTitle(qna.getTitle());
-            existingQna.setContents(qna.getContents());
-
-            qnaService.updateQna(existingQna);
-            redirectAttributes.addFlashAttribute("message", "QnA가 성공적으로 수정되었습니다.");
+        // QnA가 존재하지 않거나 수정 권한이 없는 경우
+        if (existingQna == null || !qnaService.canEditQna(existingQna, authentication)) {
+            redirectAttributes.addFlashAttribute("errorMessage", "수정 권한이 없거나 답변이 완료된 질문은 수정할 수 없습니다.");
             return "redirect:/userQnaList";
         }
 
+        // 기존 QnA 정보 업데이트
+        existingQna.setTitle(qna.getTitle());
+        existingQna.setContents(qna.getContents());
 
+        qnaService.updateQna(existingQna);
+        redirectAttributes.addFlashAttribute("message", "QnA가 성공적으로 수정되었습니다.");
+        return "redirect:/userQnaList";
+    }
 
     // QnA 삭제 처리 (사용자)
     @PostMapping("/user/qnaDelete")

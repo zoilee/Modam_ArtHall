@@ -11,9 +11,12 @@
 </head>
     
 <body>
+    <script th:if="${alertMessage}" type="text/javascript">
+        alert(`[[${alertMessage}]]`);
+    </script>
     <!-- 헤더 -->
     <th:block th:replace="~{fragments/header :: headerFragment}"></th:block>
-
+    
     <div class="content">
         <!-- QnA 목록 Section -->
         <div class="container my-5">
