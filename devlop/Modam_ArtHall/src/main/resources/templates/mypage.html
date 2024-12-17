@@ -121,7 +121,7 @@
                         <div><strong>좌석:</strong></div>
                         <div>
                             <span th:text="${reservation.seatId1 ?: '좌석 정보 없음'}">좌석1</span>
-                            <span th:if="${reservation.seatId2 != null and reservation.seatId2 != ''}" 
+                            <span th:if="${reservation.seatId2 != 'NULL'}" 
                                   th:text="' / ' + ${reservation.seatId2}"></span>
                         </div>
                     </div>
@@ -170,7 +170,7 @@
                 <div><strong>공연장소:</strong> <span th:text="${reservation.showEntity?.performancesEntity?.location == 'theater1' ? '모담 A홀': '모담 B홀'}">공연 장소</span></div>
                 <div><strong>좌석:</strong> 
                     <span th:text="${reservation.seatId1 ?: '좌석 정보 없음'}">좌석1</span>
-                    <span th:if="${reservation.seatId2 != null and reservation.seatId2 != ''}"  th:text="' / ' + ${reservation.seatId2}"></span>
+                    <span th:if="${reservation.seatId2 != 'NULL'}"  th:text="' / ' + ${reservation.seatId2}"></span>
                 </div>
             </div>
 

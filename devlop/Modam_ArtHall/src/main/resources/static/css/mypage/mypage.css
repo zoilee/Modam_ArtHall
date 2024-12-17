@@ -143,6 +143,7 @@
 /* 반응형 디자인 */
 @media (max-width: 768px) {
     .points-section{
+        width: 100%;
         padding: 10px 0;
     }
 
