@@ -1,19 +1,13 @@
-/* Hero Section 스타일 */
-.hero-section {
-    background-color: #f8f9fa;
-    color: #343a40;
-    text-align: center;
-    
-}
 .content-section{
     padding: 50px 0;
-    margin-top: 150px;
+    margin-top: 120px;
 }
 /* 이미지와 텍스트 섹션 스타일 */
 .content-section h2 {
     font-weight: bold;
     border-left: 5px solid #ff6b00;
     padding-left: 15px;
+    margin-top: 20px;
     margin-bottom: 40px;
 }
 .modam-A{
@@ -23,6 +17,7 @@
 .content-section img {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     border-radius: 5px;
+    margin-top: 20px;
 }
 
 .content-section ul {

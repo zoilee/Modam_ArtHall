@@ -67,8 +67,8 @@
         <div class="seatShow">
             <!-- Selected Seats Display -->
             <h5>선택좌석</h5>
-                <p>좌석 1 : <span class="seatPicked1"><!--선택좌석 값 출력--></span></p>
-                <p th:if="${numberOfPeople == 2}">좌석 2 : <span class="seatPicked2"><!--선택좌석 값 출력--></span></p>
+                <p>좌석1 : <span class="seatPicked1"><!--선택좌석 값 출력--></span></p>
+                <p th:if="${numberOfPeople == 2}">좌석2 : <span class="seatPicked2"><!--선택좌석 값 출력--></span></p>
             <!-- Payment Button -->
             <div>
                 <div class="col text-center">
@@ -104,11 +104,9 @@
     <div class="container">
 
         <!-- Seating layout -->
-        <div class="col-md-12 row justify-content-center">
-            <div class="col-md-12 justify-content-center">
-                <div class="col-lg-10 seat-wrapper">
-                    <!--좌석 자동 출력-->
-                </div>
+        <div class="col-md-12 row justify-content-center wrapper-zone">
+            <div class="col-lg-10 seat-wrapper">
+                <!--좌석 자동 출력-->
             </div>
         </div>
     </div>
