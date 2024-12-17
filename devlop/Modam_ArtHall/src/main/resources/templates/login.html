@@ -77,11 +77,16 @@
         </div>
 <!-- 푸터 가져오기 -->
 <th:block th:replace="~{fragments/footer :: footerFragment}"></th:block>
-<script>
-   // 서버에서 전달된 에러 메시지를 확인하고 alert 창에 표시
-   const loginError = /*[[${loginError != null}]]*/ '[[${loginError}]]';
-    if (loginError) {
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var loginError = /*[[${session.loginError}]]*/ null; 
+    /*]]>*/
+
+    if (loginError && loginError !== "null") {
         alert(loginError); // 에러 메시지를 alert로 표시
+
+        // 세션에서 값 제거 (다시 로딩 시 메시지가 남지 않도록)
+        fetch('/clear-login-error', { method: 'POST' });
     }
 </script>
 <!-- Bootstrap JS, Popper.js, and jQuery -->
