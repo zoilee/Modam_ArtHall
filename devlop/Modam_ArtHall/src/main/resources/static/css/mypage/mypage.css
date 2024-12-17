@@ -143,6 +143,7 @@
 /* 반응형 디자인 */
 @media (max-width: 768px) {
     .points-section{
+        width: 100%;
         padding: 10px 0;
     }
 
@@ -179,6 +180,7 @@
 
 .reservation-info > .info-date, 
 .reservation-info > .info-time, 
+.reservation-info > .info-location,
 .reservation-info > .info-seat, 
 .reservation-info > .info-price, 
 .reservation-info > .info-ticket {
@@ -186,7 +188,7 @@
     justify-content: space-between; /* 양 끝 정렬 */
 }
 
-.info-date div, .info-time div, .info-seat div, .info-price div, .info-ticket div {
+.info-date div, .info-time div, .info-location div, .info-seat div, .info-price div, .info-ticket div {
     flex: 1; /* 동일한 넓이 */
 }
 

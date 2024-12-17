@@ -33,7 +33,7 @@
             <div class="points-container">
                 <!-- 왼쪽 텍스트 -->
                 <div class="points-info">
-                    <h5>guest1님의 적립금 현황</h5>
+                    <h5><span th:text="${user.name}"></span>님의 적립금 현황</h5>
                 </div>
         
                 <!-- 중간 구분선 -->
@@ -113,11 +113,16 @@
                         <div><strong>공연시간:</strong></div>
                         <div><span th:text="${reservation.showEntity?.showTime == 1 ? '13:00' : '17:00'}">공연 시간</span></div>
                     </div>
+                    <div class="info-location">
+                        <div><strong>공연장소:</strong></div>
+                        <div><span th:text="${reservation.showEntity?.performancesEntity?.location == 'theater1' ? '모담 A홀': '모담 B홀'}">공연 장소</span></div>
+                    </div>
                     <div class="info-seat">
                         <div><strong>좌석:</strong></div>
                         <div>
                             <span th:text="${reservation.seatId1 ?: '좌석 정보 없음'}">좌석1</span>
-                            <span th:if="${reservation.seatId2 != null}" th:text="' / ' + ${reservation.seatId2}"> / 좌석2</span>
+                            <span th:if="${reservation.seatId2 != 'NULL'}" 
+                                  th:text="' / ' + ${reservation.seatId2}"></span>
                         </div>
                     </div>
                     <div class="info-price">
@@ -162,8 +167,10 @@
                 <h5 class="text-muted" th:text="${reservation.showEntity?.performancesEntity?.title ?: '정보 없음'}">공연 제목</h5>
                 <div><strong>공연날짜:</strong> <span th:text="${#dates.format(reservation.showEntity?.showDate ?: today, 'yyyy-MM-dd')}">날짜</span></div>
                 <div><strong>공연시간:</strong> <span th:text="${reservation.showEntity?.showTime == 1 ? '13:00' : '17:00'}">공연 시간</span></div>
-                <div><strong>좌석:</strong> <span th:text="${reservation.seatId1 ?: '좌석 정보 없음'}">좌석1</span>
-                    <span th:if="${reservation.seatId2 != null}" th:text="' / ' + ${reservation.seatId2}"> / 좌석2</span>
+                <div><strong>공연장소:</strong> <span th:text="${reservation.showEntity?.performancesEntity?.location == 'theater1' ? '모담 A홀': '모담 B홀'}">공연 장소</span></div>
+                <div><strong>좌석:</strong> 
+                    <span th:text="${reservation.seatId1 ?: '좌석 정보 없음'}">좌석1</span>
+                    <span th:if="${reservation.seatId2 != 'NULL'}"  th:text="' / ' + ${reservation.seatId2}"></span>
                 </div>
             </div>
 

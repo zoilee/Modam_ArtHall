@@ -51,7 +51,7 @@
                              class="card-img-top" alt="공연 이미지">
                     </div>
                     <div class="performance-info">
-                        <span class="venue">모담 A홀</span>
+                        <span class="venue" th:text="(${performance.location} == 'theater1' ? '모담 A홀' : (${performance.location} == 'theater2' ? '모담 B홀' : '미정'))">모담 A홀</span>
                         <h3 class="title" th:text="${performance.title}">공연 제목</h3>
                         <p class="date" th:text="${performance.startDate} + ' ~ ' + ${performance.endDate}">공연 기간</p>
                     </div>
