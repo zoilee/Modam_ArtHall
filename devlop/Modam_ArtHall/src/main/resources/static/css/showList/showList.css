@@ -100,13 +100,12 @@ a:hover{
 .slide {
     flex: 0 0 25%; /* 한 슬라이드 너비 */
     box-sizing: border-box;
-    padding: 15px;
+    padding: 10px;
 }
 
 /* 공연 카드 */
 .performance-item {
     text-align: center;
-    padding: 15px;
 }
 
 .performance-item img {
