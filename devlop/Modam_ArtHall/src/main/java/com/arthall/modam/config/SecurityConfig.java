@@ -57,7 +57,7 @@ public class SecurityConfig {
                                 errorMessage = "계정이 정지되었습니다. 관리자에게 문의하세요.";
                             }
 
-                            request.getSession().setAttribute("errorMessage", errorMessage);
+                            request.getSession().setAttribute("loginError", errorMessage);
                             response.sendRedirect("/login");
                         })
                         .defaultSuccessUrl("/", true) // 로그인 성공 시 이동할 기본 URL
