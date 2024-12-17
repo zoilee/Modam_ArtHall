@@ -76,24 +76,24 @@ public class UserController {
 
     @PostMapping("/login")
     public String loginUser(@RequestParam("loginId") String loginId, @RequestParam("password") String password,
-            RedirectAttributes redirectAttributes, Model model) {
-        UserEntity user = userService.getUserByLoginId(loginId);
-
-        // 사용자가 존재하지 않을 경우
-        if (user == null || !passwordEncoder.matches(password, user.getPassword())) {
-            model.addAttribute("loginError", "아이디 또는 비밀번호가 잘못되었습니다.");
-            return "login";
-        }
-
-        // 계정이 BANNED 상태일 경우 처리
-        if (user.getStatus() == UserEntity.Status.BANNED) {
-            model.addAttribute("loginError", "계정이 정지되었습니다. 관리자에게 문의하세요.");
-            return "login";
-        }
-
-        // 로컬 사용자 로그인 세션 처리
-        return "redirect:/"; // 로그인 성공 시 메인 페이지로 이동
-    }
+            RedirectAttributes redirectAttributes) {
+                UserEntity user = userService.getUserByLoginId(loginId);
+            
+                // 사용자가 존재하지 않을 경우
+                if (user == null || !passwordEncoder.matches(password, user.getPassword())) {
+                    redirectAttributes.addFlashAttribute("loginError", "아이디 또는 비밀번호가 잘못되었습니다.");
+                    return "redirect:/login";
+                }
+            
+                // 계정이 BANNED 상태일 경우 처리
+                if (user.getStatus() == UserEntity.Status.BANNED) {
+                    redirectAttributes.addFlashAttribute("loginError", "계정이 정지되었습니다. 관리자에게 문의하세요.");
+                    return "redirect:/login";
+                }
+            
+                // 로컬 사용자 로그인 세션 처리 (실제 로그인 로직 필요)
+                return "redirect:/"; // 로그인 성공 시 메인 페이지로 이동
+            }
     
     // =================================개인정보 수정 폼
     // 표시====================================
