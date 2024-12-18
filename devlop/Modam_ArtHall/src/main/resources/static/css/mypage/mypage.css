@@ -141,16 +141,20 @@
 }
 
 /* 반응형 디자인 */
-@media (max-width: 768px) {
+@media (max-width: 767px) {
+    .userBtn{
+        font-size: 0.8rem;
+        padding: 5px 10px;
+    }
     .points-section{
         width: 100%;
         padding: 10px 0;
+        width: 100%;
     }
 
     .points-container {
-        flex-direction: column; /* 카드가 세로로 정렬 */
+        flex-direction: column !important; /* 카드가 세로로 정렬 */
         padding: 16px; /* 내부 여백 조정 */
-
     }
 
     .divider{
@@ -160,13 +164,19 @@
     .points-button{
         margin-top: 10px;
     }
-
+    .reservation-card{
+        flex-direction: column;
+        gap: 10px;
+    }
+    .reservation-info{
+        width: 100%;
+    }
     .refund-btn{
         margin-left: 250px;
     }
 
     .rebtn{
-        margin-left: 200px;
+        margin-left: 250px;
     }
 
 }

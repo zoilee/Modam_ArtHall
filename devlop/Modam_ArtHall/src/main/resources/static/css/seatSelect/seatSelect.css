@@ -62,29 +62,88 @@
 
 /* 태블릿 화면 */
 @media (min-width: 768px) and (max-width: 1024px) {
+    .head-tab{
+        display: none;
+    }
+    .head-mobile{
+        display: block;
+        width: 100%;
+        margin-top: 100px;
+    }
+    .seatShow{
+        width: 100% !important;
+        height: 80px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .btnPay{
+        width: 90px;
+        font-size: 14px;
+    }
+    .seat-position{
+        width: 100% !important;
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 50px;
+    }
+    .container{
+        width: 100% !important;
+    }
+    .wrapper-zone{
+        padding: 0;
+    }
     .seat-wrapper {
         grid-template-columns: repeat(18, 1fr);
-        gap: 3px;
-        max-width: 900px;
+        gap: 1px;
+        margin: 10px auto;
+        max-width: 100%;
+    }
+    .seat {
+        width: 32px;
+        height: 32px;
+        margin: 1px;
+        font-size: 12px;
+        padding: 1px;
+    }
+    .stage {
+        width: 90%;
+        margin: 10px auto;
+        padding: 8px;
     }
     
-    .seat {
-        width: 30px;
-        height: 30px;
-        margin: 2px;
+    .stage h1 {
+        font-size: 23px;
+        margin: 0;
+    }
+    
+    .legend {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 5px;
+        margin-bottom: 10px;
         font-size: 12px;
     }
     
-    .stage {
-        width: 80%;
-        margin: 15px auto;
-        padding: 12px;
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 3px;
     }
     
-    .seat-position {
-        justify-content: center;
-        gap: 20px;
+    .legend-item .seat {
+        width: 12px;
+        height: 12px;
+        margin-right: 3px;
     }
+    
+    .seatShow {
+        width: 200px;
+        padding: 10px;
+        margin-top: 10px;
+        border-width: 1px;
+    }
+    
 }
 
 /* 모바일 화면 */
@@ -105,7 +164,7 @@
         align-items: center;
     }
     .btnPay{
-        width: 120px;
+        width: 90px;
         font-size: 14px;
     }
     .seat-position{
@@ -113,17 +172,24 @@
         display: flex;
         justify-content: space-between;
     }
+    .container{
+        width: 100% !important;
+    }
+    .wrapper-zone{
+        padding: 0;
+        width: 100%;
+        margin: 10px auto;
+    }
     .seat-wrapper {
         grid-template-columns: repeat(18, 1fr);
         gap: 1px;
-        margin: 10px auto;
         max-width: 100%;
     }
     
     .seat {
-        width: 20px;
-        height: 20px;
-        margin: 1px;
+        width: 19px;
+        height: 19px;
+        margin: 0;
         border-radius: 5px;
         font-size: 8px;
         padding: 1px;
@@ -160,20 +226,13 @@
         margin-right: 3px;
     }
     
-    .seatShow {
-        width: 200px;
-        padding: 10px;
-        margin-top: 10px;
-        border-width: 1px;
-    }
-    
     .seatZone h5 {
-        font-size: 14px;
+        font-size: 12px;
         margin-bottom: 8px;
     }
     
     .seatZone p {
-        font-size: 12px;
+        font-size: 10px;
         margin: 5px 0;
     }
 }

@@ -3,6 +3,7 @@
 /**************** 헤더 ********************/
 .header-container {
     max-width: 100%;
+    width: 100%;
     height: 100px;
     background-color: #ffffff; /* 헤더 배경을 하얀색으로 설정 */
     position: fixed;
@@ -11,13 +12,11 @@
     z-index: 1030; /* 부트스트랩의 고정 네비게이션 바와 같은 레벨 */
 }
 .logo-img {
-/* .logo-img {
-    height: 100%;
-    max-width: 100%; /* 로고가 부모 요소의 너비를 넘지 않도록 설정 */
-    max-width: 100%; 
+    max-width: 100%;
+    width: 70%;
     height: auto; 
     object-fit: contain;
-} */
+} 
 
 .footer-logo img {
     max-width: 100%; /* 기본적으로 컨테이너 크기에 맞춤 */
@@ -234,7 +233,7 @@ header {
 
 
 /* 반응형 스타일 */
-@media (max-width: 992px){
+@media (max-width: 1024px){
     .auth-buttons{
         display: none !important;
     }
