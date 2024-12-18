@@ -141,7 +141,7 @@ body{
 .whatson{
     position: absolute;
     left: 0;
-    width: 600px;
+    width: 100%;
     height: 100px;
 }
 .whatsonBack1{
@@ -337,14 +337,14 @@ body{
     }
 
     .hero{
-        height: 50vh;
+        height: auto;
     }
 }
 
 /* 모바일 크기 (768px 이하) */
 @media (max-width: 768px) {
     .hero{
-        height: 25vh;
+        height: auto;
     }
 
     .swiper-wrapper {
@@ -369,11 +369,9 @@ body{
     .nowOn-header h1 span{
         padding: 0;
     }
-    .whatsonBack1{
-        width: 50vh;
-    }
-    .whatsonBack2{
-        width: 50vh;
+    .whatson{
+        width: 100%;
+        overflow: hidden;
     }
     .show-all-btn{
         margin-top: 30px;
