@@ -56,7 +56,10 @@
 - 게시판 등록 및 관리 기능
 
 ## 📊ERD
-![modamERD](https://github.com/user-attachments/assets/0e2f5463-801b-4ad9-bdd2-255c3843a20a)
+| ![ERD](https://github.com/user-attachments/assets/03c0d6cd-6caf-4ca1-bf1c-0db6a99d8b11) |
+|---|
+|ERD다이어그램|
+
 ## 📑상세페이지
 - 로그인 페이지
 ![modamarthall store_login](https://github.com/user-attachments/assets/625f4d33-58d8-4301-8881-05218ff27c9f)
