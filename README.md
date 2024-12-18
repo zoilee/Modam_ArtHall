@@ -67,6 +67,13 @@
 ![seatselect](https://github.com/user-attachments/assets/f7a3a4ba-1ec5-4c14-8149-2c2f2c46d833)
 
 
+- 반응형디자인
+    - 모든 종류의 디바이스에서 어색함 없이 화면이 출력되도록 조정
+![tnm-main](https://github.com/user-attachments/assets/f8936710-8d4f-41bb-a8ed-f07edd5b1a55)
+![tnm-reservform](https://github.com/user-attachments/assets/9bb12e63-9a30-4233-9cdc-1bfadbb0b741)
+![tnm-seatselect](https://github.com/user-attachments/assets/3c51ea09-f2ca-466e-8944-ed29d8cc4be7)
+
+
 ## 📚참고자료
 - **[예술의 전당](https://www.sacticket.co.kr)**:
   - 메인 페이지 이미지 슬라이드 디자인 참고
