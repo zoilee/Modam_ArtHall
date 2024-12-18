@@ -56,8 +56,15 @@
 ## 📊ERD
 ![modamERD](https://github.com/user-attachments/assets/0e2f5463-801b-4ad9-bdd2-255c3843a20a)
 ## 📑상세페이지
+- 로그인
 ![login](https://github.com/user-attachments/assets/f1be0aab-70b3-4ce3-b9b7-812ce087653a)
-
+- 예약시스템
+    - datepicker를 이용한 날짜선택
+    - database에서 해당 회차의 가용 좌석을 검색해 출력
+![reservform](https://github.com/user-attachments/assets/020c7305-f794-4fdb-b7b8-a065f79cadd2)
+    - javascript로 좌석 생성 및 좌석번호 부여
+    - 선택 인원만큼 좌석을 선택하지 않으면 경고창 출력
+![seatselect](https://github.com/user-attachments/assets/f7a3a4ba-1ec5-4c14-8149-2c2f2c46d833)
 
 
 ## 📚참고자료
