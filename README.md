@@ -75,6 +75,20 @@
 | ![register](https://github.com/user-attachments/assets/23905db7-dcf9-48f7-89b7-e2c361b5db2a) | ![findAccount](https://github.com/user-attachments/assets/99a0a2b0-d5fd-4ada-a43c-2309fd563fc3) | ![find](https://github.com/user-attachments/assets/1f94067b-d436-4011-a0b0-6b7590b7c4f4) |
 |---|---|---|
 | 계정 찾기 | 회원가입 | 비밀번호 찾기 |
+- 예약시스템
+    - datepicker를 이용한 날짜선택
+    - database에서 해당 회차의 가용 좌석을 검색해 출력
+![reservform](https://github.com/user-attachments/assets/020c7305-f794-4fdb-b7b8-a065f79cadd2)
+    - javascript로 좌석 생성 및 좌석번호 부여
+    - 선택 인원만큼 좌석을 선택하지 않으면 경고창 출력
+![seatselect](https://github.com/user-attachments/assets/f7a3a4ba-1ec5-4c14-8149-2c2f2c46d833)
+
+
+- 반응형디자인
+    - 모든 종류의 디바이스에서 어색함 없이 화면이 출력되도록 조정
+![tnm-main](https://github.com/user-attachments/assets/f8936710-8d4f-41bb-a8ed-f07edd5b1a55)
+![tnm-reservform](https://github.com/user-attachments/assets/9bb12e63-9a30-4233-9cdc-1bfadbb0b741)
+![tnm-seatselect](https://github.com/user-attachments/assets/3c51ea09-f2ca-466e-8944-ed29d8cc4be7)
 ## 📚참고자료
 - **[예술의 전당](https://www.sacticket.co.kr)**:
   - 메인 페이지 이미지 슬라이드 디자인 참고
