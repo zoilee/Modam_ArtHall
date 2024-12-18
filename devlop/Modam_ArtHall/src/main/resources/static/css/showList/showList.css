@@ -21,7 +21,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between; /* 포스터와 이미지를 양쪽으로 배치 */
-    gap: 20px;
+    gap: 10px;
     width: 1100px; /* 화면 전체 너비 사용 */
 }
 
@@ -102,7 +102,7 @@
 .slide {
     flex: 0 0 25%; /* 한 슬라이드 너비 */
     box-sizing: border-box;
-    padding: 15px;
+    padding: 10px;
 }
 
 /* 공연 카드 */
