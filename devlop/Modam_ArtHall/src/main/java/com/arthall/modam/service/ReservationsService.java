@@ -14,8 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.arthall.modam.entity.ReservationsEntity;
+import com.arthall.modam.entity.UserEntity;
 import com.arthall.modam.repository.PaymentsRepository;
 import com.arthall.modam.repository.ReservationsRepository;
+import com.arthall.modam.repository.UserRepository;
 
 @Service
 public class ReservationsService {
@@ -24,6 +26,9 @@ public class ReservationsService {
 
     @Autowired
     private PaymentsRepository paymentsRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     public void saveReservation(ReservationsEntity reservation) {
         reservationRepository.save(reservation);
@@ -99,7 +104,7 @@ public class ReservationsService {
     public List<Map<String, Object>> getReservationsByShowDate() {
         Date endDate = Date.valueOf(LocalDate.now().plusDays(7));
         List<Object[]> results = reservationRepository.findReservationsByShowDate(endDate);
-    
+
         // 결과를 가공하여 반환
         return results.stream().map(row -> {
             Map<String, Object> map = new HashMap<>();
@@ -116,11 +121,25 @@ public class ReservationsService {
         // 금액 포맷팅
         for (ReservationsEntity reservation : todayReservations) {
             if (reservation.getTotalPrice() != null) {
-                reservation.setFormattedTotalPrice("₩" + reservation.getTotalPrice().setScale(0, RoundingMode.HALF_UP).toString());
+                reservation.setFormattedTotalPrice(
+                        "₩" + reservation.getTotalPrice().setScale(0, RoundingMode.HALF_UP).toString());
             } else {
                 reservation.setFormattedTotalPrice("₩0");
             }
         }
         return todayReservations;
     }
+
+    // 이름이랑 전화번호로 공연찾기
+    public List<ReservationsEntity> getReservByNameAndNum(String name, String num) {
+
+        // 이름이랑 전화번호로 유저찾기
+        UserEntity userEntity = userRepository.findByNameAndPhoneNumber(name, num).orElse(null);
+        // 유저아이디로 공연찾기
+        List<ReservationsEntity> thisReserv = reservationRepository.findByUserId(userEntity.getId());
+
+        // 리턴 공연
+        return thisReserv;
+    }
+
 }
