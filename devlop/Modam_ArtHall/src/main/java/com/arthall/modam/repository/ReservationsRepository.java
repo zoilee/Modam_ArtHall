@@ -23,11 +23,13 @@ public interface ReservationsRepository extends JpaRepository<ReservationsEntity
 
         // 미래 예약 조회
         @Query("SELECT r FROM ReservationsEntity r JOIN r.showEntity s WHERE r.userEntity.id = :userId AND s.showDate >= :today ORDER BY s.showDate ASC")
-        List<ReservationsEntity> findUpcomingReservationsByShowDate(@Param("userId") int userId, @Param("today") LocalDate today);
+        List<ReservationsEntity> findUpcomingReservationsByShowDate(@Param("userId") int userId,
+                        @Param("today") LocalDate today);
 
         // 과거 예약 조회
         @Query("SELECT r FROM ReservationsEntity r JOIN r.showEntity s WHERE r.userEntity.id = :userId AND s.showDate < :today ORDER BY s.showDate DESC")
-        List<ReservationsEntity> findPastReservationsByShowDate(@Param("userId") int userId, @Param("today") LocalDate today);
+        List<ReservationsEntity> findPastReservationsByShowDate(@Param("userId") int userId,
+                        @Param("today") LocalDate today);
 
         @Query("SELECT r.ticket FROM ReservationsEntity r WHERE r.id = :id")
         String findTicketById(@Param("id") int id);
@@ -42,22 +44,23 @@ public interface ReservationsRepository extends JpaRepository<ReservationsEntity
 
         List<ReservationsEntity> findByShowEntity_Id(int showId);
 
+        List<ReservationsEntity> findByUserId(int userId);
+
         @Query("SELECT s.showDate AS showDate, p.title AS performanceTitle, COUNT(r.id) AS totalReservations " +
-                "FROM ReservationsEntity r " +
-                "JOIN r.showEntity s " +
-                "JOIN s.performancesEntity p " +
-                "WHERE r.status <> 'CANCEL' AND s.showDate BETWEEN CURRENT_DATE AND :endDate " +
-                "GROUP BY s.showDate, p.title " +
-                "ORDER BY s.showDate, p.title")
+                        "FROM ReservationsEntity r " +
+                        "JOIN r.showEntity s " +
+                        "JOIN s.performancesEntity p " +
+                        "WHERE r.status <> 'CANCEL' AND s.showDate BETWEEN CURRENT_DATE AND :endDate " +
+                        "GROUP BY s.showDate, p.title " +
+                        "ORDER BY s.showDate, p.title")
         List<Object[]> findReservationsByShowDate(@Param("endDate") Date endDate);
- 
+
         List<ReservationsEntity> findByShowEntity_IdAndStatus(int showId, String status);
 
-
         @Query("SELECT r FROM ReservationsEntity r " +
-       "JOIN FETCH r.showEntity s " +
-       "JOIN FETCH s.performancesEntity p " +
-       "WHERE DATE(r.reservationDate) = CURRENT_DATE AND r.status = 'CONFIRMED'")
+                        "JOIN FETCH r.showEntity s " +
+                        "JOIN FETCH s.performancesEntity p " +
+                        "WHERE DATE(r.reservationDate) = CURRENT_DATE AND r.status = 'CONFIRMED'")
         List<ReservationsEntity> findTodayConfirmedReservations();
 
         // 전화번호와 티켓번호를 기준으로 예약을 조회
