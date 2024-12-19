@@ -57,6 +57,31 @@ public class ReservationsService {
                 .collect(Collectors.toList());
     }
 
+    // 전체 예약 조회
+    public List<ReservationsEntity> getAllReservations() {
+        return reservationRepository.findAll();
+    }
+
+    // 전화번호나 티켓번호를 기반으로 예약을 조회하는 메소드
+    public List<ReservationsEntity> getReservationsByPhoneOrTicket(String phoneNumber, String ticket) {
+        // 전화번호와 티켓번호가 모두 null이 아닌 경우
+        if (phoneNumber != null && !phoneNumber.isEmpty() && ticket != null && !ticket.isEmpty()) {
+            return reservationRepository.findByUserEntity_PhoneNumberContainingAndTicketContaining(phoneNumber, ticket);
+        }
+        // 전화번호만 있는 경우
+        else if (phoneNumber != null && !phoneNumber.isEmpty()) {
+            return reservationRepository.findByUserEntity_PhoneNumberContaining(phoneNumber);
+        }
+        // 티켓번호만 있는 경우
+        else if (ticket != null && !ticket.isEmpty()) {
+            return reservationRepository.findByTicketContaining(ticket);
+        }
+        // 전화번호와 티켓번호가 모두 null인 경우 전체 예약을 반환
+        else {
+            return reservationRepository.findAll();
+        }
+    }
+
     public ReservationsEntity createReservation(ReservationsEntity reservationEntity) {
         // 예약을 DB에 저장
         reservationEntity.setReservationDate(new Timestamp(System.currentTimeMillis())); // 예약 날짜 설정

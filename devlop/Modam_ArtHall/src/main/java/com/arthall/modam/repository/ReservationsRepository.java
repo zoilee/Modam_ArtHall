@@ -59,4 +59,16 @@ public interface ReservationsRepository extends JpaRepository<ReservationsEntity
        "JOIN FETCH s.performancesEntity p " +
        "WHERE DATE(r.reservationDate) = CURRENT_DATE AND r.status = 'CONFIRMED'")
         List<ReservationsEntity> findTodayConfirmedReservations();
+
+        // 전화번호와 티켓번호를 기준으로 예약을 조회
+        List<ReservationsEntity> findByUserEntity_PhoneNumberContainingAndTicketContaining(String phoneNumber, String ticket);
+
+        // 전화번호만 기준으로 예약을 조회
+        List<ReservationsEntity> findByUserEntity_PhoneNumberContaining(String phoneNumber);
+
+        // 티켓번호만 기준으로 예약을 조회
+        List<ReservationsEntity> findByTicketContaining(String ticket);
+
+        // 모든 예약 조회 (사용자 및 공연 정보 포함)
+        List<ReservationsEntity> findAll();
 }
