@@ -17,23 +17,58 @@
 <!-- 헤더 -->
 <th:block th:replace="~{fragments/header :: headerFragment}"></th:block>
 
-    <!-- 예약현황 확인 Section -->
+    <!-- 예약 확인 Section -->
     <div class="container my-5" style="padding: 100px 0;">
-        <h2 class="mb-4 notice-title">예약현황 확인</h2>
-
-        <!-- 공연 정보 반복 출력 -->
-        <div th:each="performance : ${performances}" class="row mb-4 bg-light p-3 align-items-center">
-            <div class="col-md-2">
-                <img th:src="@{${performance.imageUrl}}" alt="공연 이미지" style="width: 100%; height: 150px;">
+        <h2 class="mb-4 notice-title">예약 검색</h2>
+        <!-- 검색 폼 -->
+        <form action="/admin/redservView/searching" method="get">
+            <!-- 전화번호 입력 필드 -->
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label for="phoneNumber">전화번호</label>
+                <input type="text" oninput="logInputData()" class="form-control" id="phoneNumber" name="phoneNumber" placeholder="전화번호를 입력하세요">
             </div>
+
+            <!-- 티켓번호 입력 필드 -->
+            <div class="form-group">
+                <label for="ticket">티켓 번호</label>
+                <input type="text" oninput="logInputData()" class="form-control" id="ticket" name="ticket" placeholder="티켓 번호를 입력하세요">
+            </div>
+
+            <!-- 검색 버튼 -->
+            <button type="submit" class="btn btn-primary" style="margin-top: 20px; padding: 10px; width: 150px;">검색</button>
+        </form>
+
+        <!-- 예약 정보 반복 출력 -->
+        <div th:each="reservation : ${reservations}" class="row mb-4 bg-light p-3 align-items-center">
             <div class="col-md-10">
-                <h5 th:text="${performance.title}">공연 제목</h5>
-                <p>예매율: <span th:text="${performance.reservationRate}">0</span>%</p>
+                <h5 th:text="${reservation.showEntity.performancesEntity.title}">공연 제목</h5>
+                <p>예약자 이름 : <span th:text="${reservation.userEntity.name}"></span></p>
+                <p>예약 날짜 : <span th:text="${reservation.reservationDate}"></span></p>
+                <p>공연 날짜 : <span th:text="${reservation.showEntity.showDate}"></span></p>
+                <p>예약좌석1 : <span th:text="${reservation.seatId1}"></span></p>
+                <p>예약좌석2 : <span th:text="${reservation.seatId2}"></span></p>
+                <p>티켓번호 : <span th:text="${reservation.ticket}"></span></p>
+                <p>전화번호 : <span th:text="${reservation.userEntity.phoneNumber}"></span></p>
             </div>
         </div>
     </div>
+
+    <!-- 오류 메시지 출력 -->
+    <div th:if="${errorMessage}" class="alert alert-danger">
+        <span th:text="${errorMessage}"></span>
+    </div>
 <!-- 푸터 가져오기 -->
 <th:block th:replace="~{fragments/footer :: footerFragment}"></th:block>
+<script>
+    // input 값이 바뀔 때마다 콘솔 로그 출력
+    function logInputData() {
+        var phoneNumber = document.getElementById('phoneNumber').value;
+        var ticket = document.getElementById('ticket').value;
 
+        // 전화번호와 티켓번호가 바뀔 때마다 콘솔에 출력
+        console.log("전화번호: " + phoneNumber);
+        console.log("티켓 번호: " + ticket);
+    }
+</script>
 </body>
 </html>

@@ -338,9 +338,32 @@ public class AdminController {
 
     @GetMapping("/redservView")
     public String reservationStatus(Model model) {
-        List<PerformancesDto> performances = performanceService.getPerformancesWithReservationRate();
-        model.addAttribute("performances", performances);
+         // 전체 예약을 조회
+        List<ReservationsEntity> reservations = reservationsService.getAllReservations();
+
+        model.addAttribute("reservations", reservations);
+
         return "admin/adminRedservView";
+    }
+
+    @GetMapping("/redservView/searching")
+    public String reservationSearching(@RequestParam(name="phoneNumber", defaultValue = "") String phoneNumber,
+                                        @RequestParam(name="ticket", defaultValue = "") String ticket,
+                                        Model model){
+         // 전화번호나 티켓번호로 예약을 조회
+         List<ReservationsEntity> reservations = reservationsService.getReservationsByPhoneOrTicket(phoneNumber, ticket);
+        
+         // 예약이 없을 경우 예외 발생
+         if (reservations.isEmpty()) {
+             model.addAttribute("errorMessage", "해당하는 예약이 존재하지 않습니다.");
+             return "admin/adminRedservView";  // 예외를 처리하고 동일 페이지로 이동
+         }
+ 
+        model.addAttribute("reservations", reservations);
+        model.addAttribute("phoneNumber", phoneNumber);  // 폼에 값을 채워 넣기 위함
+        model.addAttribute("ticket", ticket); // 폼에 값을 채워 넣기 위함
+ 
+         return "admin/adminRedservView";
     }
 
     @GetMapping("/showCommitList")
