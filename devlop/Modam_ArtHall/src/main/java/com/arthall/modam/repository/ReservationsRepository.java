@@ -44,7 +44,6 @@ public interface ReservationsRepository extends JpaRepository<ReservationsEntity
 
         List<ReservationsEntity> findByShowEntity_Id(int showId);
 
-        List<ReservationsEntity> findByUserId(int userId);
 
         @Query("SELECT s.showDate AS showDate, p.title AS performanceTitle, COUNT(r.id) AS totalReservations " +
                         "FROM ReservationsEntity r " +
