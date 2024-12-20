@@ -44,8 +44,6 @@ public interface ReservationsRepository extends JpaRepository<ReservationsEntity
 
         List<ReservationsEntity> findByShowEntity_Id(int showId);
 
-        List<ReservationsEntity> findByUserId(int userId);
-
         @Query("SELECT s.showDate AS showDate, p.title AS performanceTitle, COUNT(r.id) AS totalReservations " +
                         "FROM ReservationsEntity r " +
                         "JOIN r.showEntity s " +
@@ -64,7 +62,8 @@ public interface ReservationsRepository extends JpaRepository<ReservationsEntity
         List<ReservationsEntity> findTodayConfirmedReservations();
 
         // 전화번호와 티켓번호를 기준으로 예약을 조회
-        List<ReservationsEntity> findByUserEntity_PhoneNumberContainingAndTicketContaining(String phoneNumber, String ticket);
+        List<ReservationsEntity> findByUserEntity_PhoneNumberContainingAndTicketContaining(String phoneNumber,
+                        String ticket);
 
         // 전화번호만 기준으로 예약을 조회
         List<ReservationsEntity> findByUserEntity_PhoneNumberContaining(String phoneNumber);

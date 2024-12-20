@@ -155,16 +155,5 @@ public class ReservationsService {
         return todayReservations;
     }
 
-    // 이름이랑 전화번호로 공연찾기
-    public List<ReservationsEntity> getReservByNameAndNum(String name, String num) {
-
-        // 이름이랑 전화번호로 유저찾기
-        UserEntity userEntity = userRepository.findByNameAndPhoneNumber(name, num).orElse(null);
-        // 유저아이디로 공연찾기
-        List<ReservationsEntity> thisReserv = reservationRepository.findByUserId(userEntity.getId());
-
-        // 리턴 공연
-        return thisReserv;
-    }
 
 }
