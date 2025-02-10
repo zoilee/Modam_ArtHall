@@ -1,6 +1,6 @@
 # 🎙️SpringBoot-project-ModamArthall🎙️
 ### SpringBoot 기반 공연 예매시스템
-
+### 서버: http://modamarthall.store/
 ## 📖목차
 ### 1. [소개]
 ### 2. [기술스택]
